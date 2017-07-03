@@ -1,0 +1,97 @@
+/*
+ * The MIT License
+ *
+ * Copyright (c) 2017, CloudBees, Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+package org.jenkinsci.plugin.gitea;
+
+import edu.umd.cs.findbugs.annotations.NonNull;
+import hudson.Extension;
+import java.util.Collections;
+import java.util.Map;
+import jenkins.scm.api.SCMHead;
+import jenkins.scm.api.SCMHeadEvent;
+import jenkins.scm.api.SCMNavigator;
+import jenkins.scm.api.SCMRevision;
+import jenkins.scm.api.SCMSource;
+import org.eclipse.jgit.lib.Constants;
+import org.jenkinsci.plugin.gitea.client.api.GiteaCreateEvent;
+
+public class GiteaCreateSCMEvent extends AbstractGiteaSCMHeadEvent<GiteaCreateEvent> {
+    public GiteaCreateSCMEvent(GiteaCreateEvent createEvent, String origin) {
+        super(Type.CREATED, createEvent, origin);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String descriptionFor(@NonNull SCMNavigator navigator) {
+        String ref = getPayload().getRef();
+        ref = ref.startsWith(Constants.R_HEADS) ? ref.substring(Constants.R_HEADS.length()) : ref;
+        return "Create event for branch " + ref + " in repository " + getPayload().getRepository().getName();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String descriptionFor(SCMSource source) {
+        String ref = getPayload().getRef();
+        ref = ref.startsWith(Constants.R_HEADS) ? ref.substring(Constants.R_HEADS.length()) : ref;
+        return "Create event for branch " + ref;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String description() {
+        String ref = getPayload().getRef();
+        ref = ref.startsWith(Constants.R_HEADS) ? ref.substring(Constants.R_HEADS.length()) : ref;
+        return "Create event for branch " + ref + " in repository " +
+                getPayload().getRepository().getOwner().getUsername() + "/" +
+                getPayload().getRepository().getName();
+    }
+
+    @NonNull
+    @Override
+    public Map<SCMHead, SCMRevision> headsFor(GiteaSCMSource source) {
+        String ref = getPayload().getRef();
+        ref = ref.startsWith(Constants.R_HEADS) ? ref.substring(Constants.R_HEADS.length()) : ref;
+        BranchSCMHead h = new BranchSCMHead(ref);
+        return Collections.<SCMHead, SCMRevision>singletonMap(h, new BranchSCMRevision(h, getPayload().getSha()));
+    }
+
+    @Extension
+    public static class HandlerImpl extends GiteaWebhookHandler<GiteaCreateSCMEvent, GiteaCreateEvent> {
+
+        @Override
+        protected GiteaCreateSCMEvent createEvent(GiteaCreateEvent payload, String origin) {
+            return new GiteaCreateSCMEvent(payload, origin);
+        }
+
+        @Override
+        protected void process(GiteaCreateSCMEvent event) {
+            SCMHeadEvent.fireNow(event);
+        }
+    }
+}

@@ -1,0 +1,20 @@
+<div>
+    Determines which branches are discovered.
+    <dl>
+        <dt>Exclude branches that are also filed as PRs</dt>
+        <dd>
+            If you are discovering origin pull requests, it may not make sense to discover the same changes both as a
+            pull request and as a branch.
+        </dd>
+        <dt>Only branches that are also filed as PRs</dt>
+        <dd>
+            This option exists to preserve legacy behaviour when upgrading from older versions of the plugin.
+            NOTE: If you have an actual use case for this option please file a pull request against this text.
+        </dd>
+        <dt>All branches</dt>
+        <dd>
+            Ignores whether the branch is also filed as a pull request and instead discovers all branches on the
+            origin repository.
+        </dd>
+    </dl>
+</div>

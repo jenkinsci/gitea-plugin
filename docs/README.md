@@ -1,0 +1,1 @@
+# Gitea Plugin documentation

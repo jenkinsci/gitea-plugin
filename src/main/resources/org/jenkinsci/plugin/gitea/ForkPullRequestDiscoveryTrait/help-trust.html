@@ -1,0 +1,34 @@
+<div>
+    <p>
+        One of the great powers of pull requests is that anyone with read access to a repository can fork it, commit
+        some changes to their fork and then create a pull request against the original repository with their changes.
+        There are some files stored in source control that are important. For example, a <code>Jenkinsfile</code>
+        may contain configuration details to sandbox pull requests in order to mitigate against malicious pull requests.
+        In order to protect against a malicious pull request itself modifying the <code>Jenkinsfile</code> to remove
+        the protections, you can define the trust policy for pull requests from forks.
+    </p>
+    <p>
+        Other plugins can extend the available trust policies. The default policies are:
+    </p>
+    <dl>
+        <dt>Nobody</dt>
+        <dd>
+            Pull requests from forks will all be treated as untrusted. This means that where Jenkins requires a
+            trusted file (e.g. <code>Jenkinsfile</code>) the contents of that file will be retrieved from the
+            target branch on the origin repository and not from the pull request branch on the fork repository.
+        </dd>
+        <dt>Contributors</dt>
+        <dd>
+            Pull requests from collaborators to the origin repository will be treated as trusted, all other pull
+            requests from fork repositories will be treated as untrusted.
+            Note that if credentials used by Jenkins for scanning the repository does not have permission to
+            query the list of contributors to the origin repository then only the origin account will be treated
+            as trusted - i.e. this will fall back to <code>Nobody</code>.
+        </dd>
+        <dt>Everyone</dt>
+        <dd>
+            All pull requests from forks will be treated as trusted. <strong>NOTE:</strong> this option can be dangerous
+            if used on a public repository hosted on a Gitea instance that allows signup.
+        </dd>
+    </dl>
+</div>

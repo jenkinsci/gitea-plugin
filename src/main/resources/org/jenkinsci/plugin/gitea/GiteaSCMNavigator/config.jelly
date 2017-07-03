@@ -1,0 +1,16 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:c="/lib/credentials"
+         xmlns:f="/lib/form" xmlns:scm="/jenkins/scm/api/form">
+  <f:entry title="${%Server}" field="serverUrl">
+    <f:select/>
+  </f:entry>
+  <f:entry title="${%Credentials}" field="credentialsId">
+    <c:select/>
+  </f:entry>
+  <f:entry title="${%Owner}" field="repoOwner">
+    <f:textbox/>
+  </f:entry>
+  <f:entry title="${%Behaviours}">
+    <scm:traits field="traits"/>
+  </f:entry>
+</j:jelly>
