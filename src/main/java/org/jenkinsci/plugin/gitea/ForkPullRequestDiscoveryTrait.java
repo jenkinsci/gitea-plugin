@@ -227,7 +227,7 @@ public class ForkPullRequestDiscoveryTrait extends SCMSourceTrait {
     /**
      * An {@link SCMHeadAuthority} that trusts nothing.
      */
-    public static class TrustNobody extends SCMHeadAuthority<SCMSourceRequest, ChangeRequestSCMHead2, SCMRevision> {
+    public static class TrustNobody extends SCMHeadAuthority<SCMSourceRequest, PullRequestSCMHead, PullRequestSCMRevision> {
 
         /**
          * Constructor.
@@ -240,7 +240,7 @@ public class ForkPullRequestDiscoveryTrait extends SCMSourceTrait {
          * {@inheritDoc}
          */
         @Override
-        public boolean checkTrusted(@NonNull SCMSourceRequest request, @NonNull ChangeRequestSCMHead2 head) {
+        public boolean checkTrusted(@NonNull SCMSourceRequest request, @NonNull PullRequestSCMHead head) {
             return false;
         }
 
@@ -254,17 +254,17 @@ public class ForkPullRequestDiscoveryTrait extends SCMSourceTrait {
              * {@inheritDoc}
              */
             @Override
-            public boolean isApplicableToOrigin(@NonNull Class<? extends SCMHeadOrigin> originClass) {
-                return SCMHeadOrigin.Fork.class.isAssignableFrom(originClass);
-            }            /**
-             * {@inheritDoc}
-             */
-            @Override
             public String getDisplayName() {
                 return Messages.ForkPullRequestDiscoveryTrait_nobodyDisplayName();
             }
 
-
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            public boolean isApplicableToOrigin(@NonNull Class<? extends SCMHeadOrigin> originClass) {
+                return SCMHeadOrigin.Fork.class.isAssignableFrom(originClass);
+            }
         }
     }
 
@@ -278,6 +278,15 @@ public class ForkPullRequestDiscoveryTrait extends SCMSourceTrait {
          */
         @DataBoundConstructor
         public TrustContributors() {
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected boolean checkTrusted(@NonNull GiteaSCMSourceRequest request, @NonNull PullRequestSCMHead head) {
+            return !head.getOrigin().equals(SCMHeadOrigin.DEFAULT)
+                    && request.getCollaboratorNames().contains(head.getOriginOwner());
         }
 
         /**
@@ -302,27 +311,26 @@ public class ForkPullRequestDiscoveryTrait extends SCMSourceTrait {
                 return SCMHeadOrigin.Fork.class.isAssignableFrom(originClass);
             }
 
-        }        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected boolean checkTrusted(@NonNull GiteaSCMSourceRequest request, @NonNull PullRequestSCMHead head) {
-            return !head.getOrigin().equals(SCMHeadOrigin.DEFAULT)
-                    && request.getCollaboratorNames().contains(head.getOriginOwner());
         }
-
-
     }
 
     /**
      * An {@link SCMHeadAuthority} that trusts everyone.
      */
-    public static class TrustEveryone extends SCMHeadAuthority<SCMSourceRequest, ChangeRequestSCMHead2, SCMRevision> {
+    public static class TrustEveryone extends SCMHeadAuthority<SCMSourceRequest, PullRequestSCMHead, PullRequestSCMRevision> {
         /**
          * Constructor.
          */
         @DataBoundConstructor
         public TrustEveryone() {
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected boolean checkTrusted(@NonNull SCMSourceRequest request, @NonNull PullRequestSCMHead head) {
+            return true;
         }
 
         /**
@@ -346,14 +354,6 @@ public class ForkPullRequestDiscoveryTrait extends SCMSourceTrait {
             public boolean isApplicableToOrigin(@NonNull Class<? extends SCMHeadOrigin> originClass) {
                 return SCMHeadOrigin.Fork.class.isAssignableFrom(originClass);
             }
-        }        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected boolean checkTrusted(@NonNull SCMSourceRequest request, @NonNull ChangeRequestSCMHead2 head) {
-            return true;
         }
-
-
     }
 }
