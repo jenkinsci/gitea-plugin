@@ -23,5 +23,8 @@
  */
 package org.jenkinsci.plugin.gitea.client.api;
 
+/**
+ * Represents anonymous authentication to the Gitea API.
+ */
 public class GiteaAuthNone implements GiteaAuth {
 }

@@ -23,6 +23,12 @@
  */
 package org.jenkinsci.plugin.gitea.client.api;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+/**
+ * Represents a Gitea Branch.
+ */
+@JsonIgnoreProperties(ignoreUnknown = GiteaObject.IGNORE_UNKNOWN_PROPERTIES)
 public final class GiteaBranch extends GiteaObject<GiteaBranch> {
     private String name;
     private GiteaCommit commit;
@@ -33,14 +39,6 @@ public final class GiteaBranch extends GiteaObject<GiteaBranch> {
     public GiteaBranch(String name, GiteaCommit commit) {
         this.name = name;
         this.commit = commit;
-    }
-
-    @Override
-    public String toString() {
-        return "GiteaBranch{" +
-                "name='" + name + '\'' +
-                ", commit=" + commit +
-                '}';
     }
 
     public String getName() {
@@ -57,5 +55,16 @@ public final class GiteaBranch extends GiteaObject<GiteaBranch> {
 
     public void setCommit(GiteaCommit commit) {
         this.commit = commit == null ? null : commit.clone();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return "GiteaBranch{" +
+                "name='" + name + '\'' +
+                ", commit=" + commit +
+                '}';
     }
 }

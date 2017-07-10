@@ -23,9 +23,11 @@
  */
 package org.jenkinsci.plugin.gitea.client.api;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Date;
 
+@JsonIgnoreProperties(ignoreUnknown = GiteaObject.IGNORE_UNKNOWN_PROPERTIES)
 public final class GiteaMilestone extends GiteaObject<GiteaMilestone> {
     private long id;
     private String title;

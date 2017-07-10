@@ -30,21 +30,47 @@ import java.util.ServiceLoader;
 import jenkins.model.Jenkins;
 import org.jenkinsci.plugin.gitea.client.spi.GiteaConnectionFactory;
 
+/**
+ * Entry point to the Gitea client API for opening a {@link GiteaConnection}.
+ */
 public final class GiteaConnectionBuilder {
 
+    /**
+     * The URL of the Gitea server.
+     */
     @NonNull
     private final String serverUrl;
 
+    /**
+     * The {@link ClassLoader} to resolve {@link GiteaConnectionFactory} implementations from.
+     */
+    @CheckForNull
+    private ClassLoader classLoader;
+
+    /**
+     * The authentication to connect with.
+     */
     @NonNull
     private GiteaAuth authentication = new GiteaAuthNone();
 
+    /**
+     * Private constructor.
+     *
+     * @param serverUrl the URL of the Gitea server.
+     */
     private GiteaConnectionBuilder(@NonNull String serverUrl) {
         this.serverUrl = serverUrl;
     }
 
+    /**
+     * Creates a new {@link GiteaConnectionBuilder}.
+     *
+     * @param serverUrl URL of the Gitea server.
+     * @return the {@link GiteaConnectionBuilder}.
+     */
     @NonNull
     public static GiteaConnectionBuilder newBuilder(@NonNull String serverUrl) {
-        return new GiteaConnectionBuilder(serverUrl);
+        return new GiteaConnectionBuilder(serverUrl).jenkinsPluginClassLoader();
     }
 
     @NonNull
@@ -63,15 +89,24 @@ public final class GiteaConnectionBuilder {
         return authentication;
     }
 
+    @CheckForNull
+    public ClassLoader classLoader() {
+        return classLoader;
+    }
+
+    /**
+     * Sets the {@link ClassLoader} that the SPI implementation will be resolved from.
+     *
+     * @param classLoader the {@link ClassLoader}
+     * @return {@code this} for method chaining.
+     */
+    public GiteaConnectionBuilder classLoader(@CheckForNull ClassLoader classLoader) {
+        this.classLoader = classLoader;
+        return this;
+    }
+
     @NonNull
     public GiteaConnection open() throws IOException {
-        // HACK for Jenkins
-        // by rights this should be the context classloader, but Jenkins does not expose plugins on that
-        // so we need instead to use the uberClassLoader as that will have the implementations
-        Jenkins instance = Jenkins.getInstance();
-        ClassLoader classLoader =
-                instance == null ? getClass().getClassLoader() : instance.getPluginManager().uberClassLoader;
-        // END HACK
         ServiceLoader<GiteaConnectionFactory> loader = ServiceLoader.load(GiteaConnectionFactory.class, classLoader);
         long priority = 0L;
         GiteaConnectionFactory best = null;
@@ -88,5 +123,15 @@ public final class GiteaConnectionBuilder {
             return best.open(this);
         }
         throw new IOException("No implementation for connecting to " + serverUrl);
+    }
+
+    public GiteaConnectionBuilder jenkinsPluginClassLoader() {
+        // HACK for Jenkins
+        // by rights this should be the context classloader, but Jenkins does not expose plugins on that
+        // so we need instead to use the uberClassLoader as that will have the implementations
+        Jenkins instance = Jenkins.getInstance();
+        classLoader = instance == null ? getClass().getClassLoader() : instance.getPluginManager().uberClassLoader;
+        // END HACK
+        return this;
     }
 }

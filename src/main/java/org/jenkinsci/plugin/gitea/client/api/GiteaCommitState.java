@@ -26,6 +26,9 @@ package org.jenkinsci.plugin.gitea.client.api;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+/**
+ * Represents the status of a commit.
+ */
 public enum GiteaCommitState {
     PENDING("pending"),
     SUCCESS("success"),

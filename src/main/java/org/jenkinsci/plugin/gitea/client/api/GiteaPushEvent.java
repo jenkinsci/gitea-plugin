@@ -23,11 +23,13 @@
  */
 package org.jenkinsci.plugin.gitea.client.api;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import hudson.Util;
 import java.util.ArrayList;
 import java.util.List;
 
+@JsonIgnoreProperties(ignoreUnknown = GiteaObject.IGNORE_UNKNOWN_PROPERTIES)
 public class GiteaPushEvent extends GiteaEvent {
     private String ref;
     private String before;

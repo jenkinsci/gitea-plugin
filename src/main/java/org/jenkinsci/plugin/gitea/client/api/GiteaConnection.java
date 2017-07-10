@@ -27,6 +27,14 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * The Gitea Client connection, use {@link GiteaConnectionBuilder} to open a connection. Example:
+ * <pre>
+ *     try (GiteaConnection c = ConnectionBuilder.newBuilder(...).authentication(...).open()) {
+ *         // use the connection
+ *     }
+ * </pre>
+ */
 public interface GiteaConnection extends AutoCloseable {
 
     GiteaVersion fetchVersion() throws IOException, InterruptedException;
@@ -126,6 +134,9 @@ public interface GiteaConnection extends AutoCloseable {
 
     boolean checkFile(GiteaRepository repository, String ref, String path) throws IOException, InterruptedException;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     void close() throws IOException;
 }

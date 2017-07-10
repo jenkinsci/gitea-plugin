@@ -23,6 +23,9 @@
  */
 package org.jenkinsci.plugin.gitea.client.api;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = GiteaObject.IGNORE_UNKNOWN_PROPERTIES)
 public final class GiteaLabel extends GiteaObject<GiteaLabel> {
     private long id;
     private String name;

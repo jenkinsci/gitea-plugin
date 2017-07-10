@@ -23,8 +23,10 @@
  */
 package org.jenkinsci.plugin.gitea.client.api;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+@JsonIgnoreProperties(ignoreUnknown = GiteaObject.IGNORE_UNKNOWN_PROPERTIES)
 public class GiteaCreateEvent extends GiteaEvent {
     private String ref;
     private String refType;

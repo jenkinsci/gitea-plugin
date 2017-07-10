@@ -23,13 +23,29 @@
  */
 package org.jenkinsci.plugin.gitea.client.api;
 
+/**
+ * Represents token based authentication to the Gitea API.
+ */
 public class GiteaAuthToken implements GiteaAuth {
+    /**
+     * The token.
+     */
     private final String token;
 
+    /**
+     * Constructor.
+     *
+     * @param token the token.
+     */
     public GiteaAuthToken(String token) {
         this.token = token;
     }
 
+    /**
+     * Gets the token.
+     *
+     * @return the token.
+     */
     public String getToken() {
         return token;
     }

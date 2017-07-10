@@ -26,8 +26,17 @@ package org.jenkinsci.plugin.gitea.client.api;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.Date;
 
-@JsonIgnoreProperties({"added", "removed", "modified", "verification"})
+/**
+ * Represents a commit.
+ */
+@JsonIgnoreProperties(
+        value = {"added", "removed", "modified", "verification"},
+        ignoreUnknown = GiteaObject.IGNORE_UNKNOWN_PROPERTIES
+)
 public final class GiteaCommit extends GiteaObject<GiteaCommit> {
+    /**
+     * The SHA1 of the commit.
+     */
     private String id;
     private String message;
     private String url;
@@ -45,13 +54,23 @@ public final class GiteaCommit extends GiteaObject<GiteaCommit> {
         this.url = url;
         this.author = author;
         this.committer = committer;
-        this.timestamp = timestamp == null ? null : (Date)timestamp.clone();
+        this.timestamp = timestamp == null ? null : (Date) timestamp.clone();
     }
 
+    /**
+     * Gets the SHA1 of the commit.
+     *
+     * @return the SHA1 of the commit.
+     */
     public String getId() {
         return id;
     }
 
+    /**
+     * Sets the SHA1 of the commit.
+     *
+     * @param id the SHA1 of the commit.
+     */
     public void setId(String id) {
         this.id = id;
     }
@@ -96,7 +115,23 @@ public final class GiteaCommit extends GiteaObject<GiteaCommit> {
         this.timestamp = timestamp == null ? null : (Date) timestamp.clone();
     }
 
-    public static class Actor implements Cloneable {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return "GiteaCommit{" +
+                "id='" + id + '\'' +
+                ", message='" + message + '\'' +
+                ", url='" + url + '\'' +
+                ", author=" + author +
+                ", committer=" + committer +
+                ", timestamp=" + timestamp +
+                '}';
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = GiteaObject.IGNORE_UNKNOWN_PROPERTIES)
+    public static class Actor extends GiteaObject<Actor> implements Cloneable {
         private String name;
         private String email;
         private String username;
@@ -110,13 +145,6 @@ public final class GiteaCommit extends GiteaObject<GiteaCommit> {
 
         public void setName(String name) {
             this.name = name;
-        }        @Override
-        public Actor clone() {
-            try {
-                return (Actor) super.clone();
-            } catch (CloneNotSupportedException e) {
-                throw new IllegalStateException(e);
-            }
         }
 
         public String getEmail() {
@@ -135,9 +163,9 @@ public final class GiteaCommit extends GiteaObject<GiteaCommit> {
             this.username = username;
         }
 
-
-
-
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public String toString() {
             return "Actor{" +
@@ -146,18 +174,6 @@ public final class GiteaCommit extends GiteaObject<GiteaCommit> {
                     ", username='" + username + '\'' +
                     '}';
         }
-    }
-
-    @Override
-    public String toString() {
-        return "GiteaCommit{" +
-                "id='" + id + '\'' +
-                ", message='" + message + '\'' +
-                ", url='" + url + '\'' +
-                ", author=" + author +
-                ", committer=" + committer +
-                ", timestamp=" + timestamp +
-                '}';
     }
 
 

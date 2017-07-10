@@ -23,46 +23,32 @@
  */
 package org.jenkinsci.plugin.gitea.client.api;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Date;
 
+/**
+ * Represents a commit status.
+ */
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-public final class GiteaCommitStatus implements Cloneable {
+@JsonIgnoreProperties(ignoreUnknown = GiteaObject.IGNORE_UNKNOWN_PROPERTIES)
+public final class GiteaCommitStatus extends GiteaObject<GiteaCommitStatus> implements Cloneable {
     private long id;
     private String url;
     private String context;
     private String description;
     private String targetUrl;
+    /**
+     * The state of the commit. NOTE: that Gitea's API is inconsistent in its JSON data model, some requests / responses
+     * use this as {@code state} and others use this as {@code status}
+     */
     private GiteaCommitState state;
     private GiteaUser creator;
     private Date createdAt;
     private Date updatedAt;
 
     public GiteaCommitStatus() {
-    }
-
-    @Override
-    public GiteaCommitStatus clone() {
-        try {
-            return (GiteaCommitStatus) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new IllegalStateException(e);
-        }
-    }
-
-    @Override
-    public String toString() {
-        return "GiteaCommitStatus{" +
-                "id=" + id +
-                ", url='" + url + '\'' +
-                ", context='" + context + '\'' +
-                ", description='" + description + '\'' +
-                ", targetUrl='" + targetUrl + '\'' +
-                ", state=" + state +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                '}';
     }
 
     public GiteaUser getCreator() {
@@ -146,5 +132,22 @@ public final class GiteaCommitStatus implements Cloneable {
     @JsonProperty("updated_at")
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt == null ? null : (Date) updatedAt.clone();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return "GiteaCommitStatus{" +
+                "id=" + id +
+                ", url='" + url + '\'' +
+                ", context='" + context + '\'' +
+                ", description='" + description + '\'' +
+                ", targetUrl='" + targetUrl + '\'' +
+                ", state=" + state +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
     }
 }

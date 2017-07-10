@@ -27,7 +27,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Date;
 
-@JsonIgnoreProperties({"size"})
+@JsonIgnoreProperties(
+        value = {"size"},
+        ignoreUnknown = GiteaObject.IGNORE_UNKNOWN_PROPERTIES
+)
 public class GiteaRepository extends GiteaObject<GiteaRepository> {
     private long id;
     private GiteaOwner owner;
@@ -269,6 +272,7 @@ public class GiteaRepository extends GiteaObject<GiteaRepository> {
         this.permissions = permissions == null ? null : permissions.clone();
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = GiteaObject.IGNORE_UNKNOWN_PROPERTIES)
     public static class Permissions implements Cloneable {
         private boolean admin;
         private boolean push;
