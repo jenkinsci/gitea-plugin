@@ -145,7 +145,7 @@ public class GiteaSCMFileSystem extends SCMFileSystem {
                 CredentialsProvider.track(owner, credentials);
             }
             GiteaConnection connection = Gitea.server(serverUrl)
-                    .authentication(AuthenticationTokens.convert(GiteaAuth.class, credentials))
+                    .as(AuthenticationTokens.convert(GiteaAuth.class, credentials))
                     .open();
             try {
                 return new GiteaSCMFileSystem(connection, connection.fetchRepository(repoOwner, repository), ref, rev);

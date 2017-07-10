@@ -129,7 +129,7 @@ public class GiteaNotifier {
                 jsl.resolving.remove(build.getParent());
             }
         }
-        try (GiteaConnection c = source.connectionBuilder().open()) {
+        try (GiteaConnection c = source.gitea().open()) {
             c.createCommitStatus(source.getRepoOwner(), source.getRepository(), hash, status);
             listener.getLogger().format("[Gitea] Notified%n");
         }
@@ -198,7 +198,7 @@ public class GiteaNotifier {
                         status.setDescription("Build queued...");
                         status.setState(GiteaCommitState.PENDING);
 
-                        try (GiteaConnection c = source.connectionBuilder().open()) {
+                        try (GiteaConnection c = source.gitea().open()) {
                             // check are we still the task to set pending
                             synchronized (resolving) {
                                 if (!nonce.equals(resolving.get(job))) {

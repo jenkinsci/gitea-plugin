@@ -137,7 +137,7 @@ public class GiteaSCMNavigator extends SCMNavigator {
         try (GiteaSCMNavigatorRequest request = new GiteaSCMNavigatorContext()
                 .withTraits(traits)
                 .newRequest(this, observer);
-             GiteaConnection c = connectionBuilder(observer.getContext()).open()) {
+             GiteaConnection c = gitea(observer.getContext()).open()) {
             giteaOwner = c.fetchUser(repoOwner);
             if (StringUtils.isBlank(giteaOwner.getEmail())) {
                 giteaOwner = c.fetchOrganization(repoOwner);
@@ -203,7 +203,7 @@ public class GiteaSCMNavigator extends SCMNavigator {
     protected List<Action> retrieveActions(@NonNull SCMNavigatorOwner owner, SCMNavigatorEvent event,
                                            @NonNull TaskListener listener) throws IOException, InterruptedException {
         if (this.giteaOwner == null) {
-            try (GiteaConnection c = connectionBuilder(owner).open()) {
+            try (GiteaConnection c = gitea(owner).open()) {
                 this.giteaOwner = c.fetchUser(repoOwner);
                 if (StringUtils.isBlank(giteaOwner.getEmail())) {
                     this.giteaOwner = c.fetchOrganization(repoOwner);
@@ -244,7 +244,7 @@ public class GiteaSCMNavigator extends SCMNavigator {
         GiteaWebhookListener.register(owner, this, mode, credentialsId);
     }
 
-    private Gitea connectionBuilder(SCMSourceOwner owner) throws AbortException {
+    private Gitea gitea(SCMSourceOwner owner) throws AbortException {
         GiteaServer server = GiteaServers.get().findServer(serverUrl);
         if (server == null) {
             throw new AbortException("Unknown server: " + serverUrl);
@@ -252,7 +252,7 @@ public class GiteaSCMNavigator extends SCMNavigator {
         StandardCredentials credentials = credentials(owner);
         CredentialsProvider.track(owner, credentials);
         return Gitea.server(serverUrl)
-                .authentication(AuthenticationTokens.convert(GiteaAuth.class, credentials));
+                .as(AuthenticationTokens.convert(GiteaAuth.class, credentials));
     }
 
     public StandardCredentials credentials(SCMSourceOwner owner) {

@@ -81,8 +81,13 @@ public final class Gitea {
         return new Gitea(serverUrl).jenkinsPluginClassLoader();
     }
 
+    /**
+     * Specify the authentication to connect to the server with.
+     * @param authentication the authentication.
+     * @return {@code this} for method chaining.
+     */
     @NonNull
-    public Gitea authentication(@CheckForNull GiteaAuth authentication) {
+    public Gitea as(@CheckForNull GiteaAuth authentication) {
         this.authentication = authentication == null ? new GiteaAuthNone() : authentication;
         return this;
     }
@@ -93,7 +98,7 @@ public final class Gitea {
     }
 
     @NonNull
-    public GiteaAuth authentication() {
+    public GiteaAuth as() {
         return authentication;
     }
 
@@ -113,8 +118,14 @@ public final class Gitea {
         return this;
     }
 
+    /**
+     * Opens a {@link GiteaConnection} to the Gitea server.
+     * @return the connection.
+     * @throws IOException if the connection could not be established.
+     * @throws InterruptedException if interrupted while opening the connection.
+     */
     @NonNull
-    public GiteaConnection open() throws IOException {
+    public GiteaConnection open() throws IOException, InterruptedException {
         ServiceLoader<GiteaConnectionFactory> loader = ServiceLoader.load(GiteaConnectionFactory.class, classLoader);
         long priority = 0L;
         GiteaConnectionFactory best = null;

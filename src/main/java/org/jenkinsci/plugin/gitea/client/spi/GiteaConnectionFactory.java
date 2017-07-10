@@ -40,30 +40,30 @@ public abstract class GiteaConnectionFactory {
     /**
      * SPI: confirm that this factory can open connections to the supplied builder.
      *
-     * @param builder the builder.
+     * @param gitea the builder.
      * @return {@code true} if connections can be opened.
      */
-    public abstract boolean canOpen(@NonNull Gitea builder);
+    public abstract boolean canOpen(@NonNull Gitea gitea);
 
     /**
      * SPI: return the priority with which this factory claims ownership of the supplied URL and authentication.
      * This method's return value is only valid after {@link #canOpen(Gitea)} has returned {@code true}.
      *
-     * @param builder the builder.
+     * @param gitea the builder.
      * @return the priority.
      */
-    public long priority(@NonNull Gitea builder) {
+    public long priority(@NonNull Gitea gitea) {
         return 0L;
     }
 
     /**
      * SPI: open the connection to the supplied URL with the supplied authentication.
      *
-     * @param builder the builder.
+     * @param gitea the builder.
      * @return the connection.
      * @throws IOException if the connection could not be opened.
+     * @throws InterruptedException if interrupted while opening the connection.
      */
     @NonNull
-    public abstract GiteaConnection open(@NonNull Gitea builder)
-            throws IOException;
+    public abstract GiteaConnection open(@NonNull Gitea gitea) throws IOException, InterruptedException;
 }

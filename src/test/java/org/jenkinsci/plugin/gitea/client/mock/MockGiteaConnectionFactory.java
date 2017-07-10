@@ -25,22 +25,23 @@ public class MockGiteaConnectionFactory extends GiteaConnectionFactory {
     }
 
     @Override
-    public long priority(@NonNull Gitea builder) {
+    public long priority(@NonNull Gitea gitea) {
         return 1000L;
     }
 
     @Override
-    public boolean canOpen(@NonNull Gitea builder) {
+    public boolean canOpen(@NonNull Gitea gitea) {
         synchronized (mocks) {
-            return mocks.containsKey(builder.serverUrl());
+            return mocks.containsKey(gitea.serverUrl());
 
         }
     }
 
+    @NonNull
     @Override
-    public GiteaConnection open(@NonNull Gitea builder) {
+    public GiteaConnection open(@NonNull Gitea gitea) {
         synchronized (mocks) {
-            return mocks.get(builder.serverUrl());
+            return mocks.get(gitea.serverUrl());
         }
     }
 }

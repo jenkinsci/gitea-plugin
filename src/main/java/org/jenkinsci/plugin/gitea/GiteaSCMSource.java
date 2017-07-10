@@ -166,7 +166,7 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
     @Override
     protected SCMRevision retrieve(@NonNull SCMHead head, @NonNull TaskListener listener)
             throws IOException, InterruptedException {
-        try (GiteaConnection c = connectionBuilder().open()) {
+        try (GiteaConnection c = gitea().open()) {
             if (head instanceof BranchSCMHead) {
                 listener.getLogger().format("Querying the current revision of branch %s...%n", head.getName());
                 String revision = c.fetchBranch(repoOwner, repository, head.getName()).getCommit().getId();
@@ -205,7 +205,7 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
     @Override
     protected void retrieve(SCMSourceCriteria criteria, @NonNull SCMHeadObserver observer, SCMHeadEvent<?> event,
                             @NonNull final TaskListener listener) throws IOException, InterruptedException {
-        try (GiteaConnection c = connectionBuilder().open()) {
+        try (GiteaConnection c = gitea().open()) {
             listener.getLogger().format("Looking up repository %s/%s%n", repoOwner, repository);
             giteaRepository = c.fetchRepository(repoOwner, repository);
             sshRemote = giteaRepository.getSshUrl();
@@ -390,7 +390,7 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
     protected List<Action> retrieveActions(SCMSourceEvent event, @NonNull TaskListener listener)
             throws IOException, InterruptedException {
         if (giteaRepository == null) {
-            try (GiteaConnection c = connectionBuilder().open()) {
+            try (GiteaConnection c = gitea().open()) {
                 listener.getLogger().format("Looking up repository %s/%s%n", repoOwner, repository);
                 giteaRepository = c.fetchRepository(repoOwner, repository);
             }
@@ -413,7 +413,7 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
     protected List<Action> retrieveActions(@NonNull SCMHead head, SCMHeadEvent event, @NonNull TaskListener listener)
             throws IOException, InterruptedException {
         if (giteaRepository == null) {
-            try (GiteaConnection c = connectionBuilder().open()) {
+            try (GiteaConnection c = gitea().open()) {
                 listener.getLogger().format("Looking up repository %s/%s%n", repoOwner, repository);
                 giteaRepository = c.fetchRepository(repoOwner, repository);
             }
@@ -533,7 +533,7 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
         GiteaWebhookListener.register(getOwner(), this, mode, credentialsId);
     }
 
-    /*package*/ Gitea connectionBuilder() throws AbortException {
+    /*package*/ Gitea gitea() throws AbortException {
         GiteaServer server = GiteaServers.get().findServer(serverUrl);
         if (server == null) {
             throw new AbortException("Unknown server: " + serverUrl);
@@ -544,7 +544,7 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
             CredentialsProvider.track(owner, credentials);
         }
         return Gitea.server(serverUrl)
-                .authentication(AuthenticationTokens.convert(GiteaAuth.class, credentials));
+                .as(AuthenticationTokens.convert(GiteaAuth.class, credentials));
     }
 
     public StandardCredentials credentials() {
@@ -733,7 +733,7 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
                     )
             );
             try (GiteaConnection c = Gitea.server(serverUrl)
-                    .authentication(AuthenticationTokens.convert(GiteaAuth.class, credentials))
+                    .as(AuthenticationTokens.convert(GiteaAuth.class, credentials))
                     .open()) {
                 for (GiteaRepository r : c.fetchRepositories(repoOwner)) {
                     result.add(r.getName());

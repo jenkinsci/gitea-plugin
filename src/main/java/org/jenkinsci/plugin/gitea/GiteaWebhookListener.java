@@ -126,9 +126,10 @@ public class GiteaWebhookListener {
         }
     }
 
-    private static GiteaConnection connect(String serverUrl, StandardCredentials credentials) throws IOException {
+    private static GiteaConnection connect(String serverUrl, StandardCredentials credentials)
+            throws IOException, InterruptedException {
         return Gitea.server(serverUrl)
-                .authentication(AuthenticationTokens.convert(GiteaAuth.class, credentials))
+                .as(AuthenticationTokens.convert(GiteaAuth.class, credentials))
                 .open();
     }
 

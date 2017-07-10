@@ -37,8 +37,8 @@ public class DefaultGiteaConnectionFactory extends GiteaConnectionFactory {
      * {@inheritDoc}
      */
     @Override
-    public boolean canOpen(@NonNull Gitea builder) {
-        return builder.serverUrl().startsWith("http://") || builder.serverUrl().startsWith("https://");
+    public boolean canOpen(@NonNull Gitea gitea) {
+        return gitea.serverUrl().startsWith("http://") || gitea.serverUrl().startsWith("https://");
     }
 
     /**
@@ -46,7 +46,7 @@ public class DefaultGiteaConnectionFactory extends GiteaConnectionFactory {
      */
     @NonNull
     @Override
-    public GiteaConnection open(@NonNull Gitea builder) throws IOException {
-        return new DefaultGiteaConnection(builder.serverUrl(), builder.authentication());
+    public GiteaConnection open(@NonNull Gitea gitea) throws IOException {
+        return new DefaultGiteaConnection(gitea.serverUrl(), gitea.as());
     }
 }

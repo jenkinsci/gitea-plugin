@@ -301,7 +301,7 @@ public class GiteaServer extends AbstractDescribableImpl<GiteaServer> {
                 return FormValidation.errorWithMarkup(Messages.GiteaServer_credentialsNotResolved(Util.escape(value)));
             }
             try (GiteaConnection c = Gitea.server(serverUrl)
-                    .authentication(AuthenticationTokens.convert(GiteaAuth.class, credentials))
+                    .as(AuthenticationTokens.convert(GiteaAuth.class, credentials))
                     .open()) {
                 GiteaUser user = c.fetchCurrentUser();
                 return FormValidation.okWithMarkup(

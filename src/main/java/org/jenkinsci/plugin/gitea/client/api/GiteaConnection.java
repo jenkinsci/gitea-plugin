@@ -30,7 +30,7 @@ import java.util.Set;
 /**
  * The Gitea Client connection, use {@link Gitea} to open a connection. Example:
  * <pre>
- *     try (GiteaConnection c = Gitea.server(...).authentication(...).open()) {
+ *     try (GiteaConnection c = Gitea.server(...).as(...).open()) {
  *         // use the connection
  *     }
  * </pre>
