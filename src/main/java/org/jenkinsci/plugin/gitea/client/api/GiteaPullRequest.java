@@ -288,7 +288,38 @@ public final class GiteaPullRequest extends GiteaObject<GiteaPullRequest> {
         this.updatedAt = updatedAt == null ? null : (Date) updatedAt.clone();
     }
 
-    public static class Reference implements Cloneable {
+    @Override
+    public String toString() {
+        return "GiteaPullRequest{" +
+                "id=" + id +
+                ", url='" + url + '\'' +
+                ", number=" + number +
+                ", user=" + user +
+                ", title='" + title + '\'' +
+                ", body='" + body + '\'' +
+                ", labels=" + labels +
+                ", milestone=" + milestone +
+                ", assignee=" + assignee +
+                ", state='" + state + '\'' +
+                ", comments=" + comments +
+                ", htmlUrl='" + htmlUrl + '\'' +
+                ", diffUrl='" + diffUrl + '\'' +
+                ", patchUrl='" + patchUrl + '\'' +
+                ", mergeable=" + mergeable +
+                ", merged=" + merged +
+                ", mergedAt=" + mergedAt +
+                ", mergeCommitSha='" + mergeCommitSha + '\'' +
+                ", mergedBy=" + mergedBy +
+                ", base=" + base +
+                ", head=" + head +
+                ", mergeBase='" + mergeBase + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = Gitea.IGNORE_UNKNOWN_PROPERTIES)
+    public static class Reference extends GiteaObject<Reference> {
         private String label;
         private String ref;
         private String sha;
@@ -304,13 +335,6 @@ public final class GiteaPullRequest extends GiteaObject<GiteaPullRequest> {
 
         public void setLabel(String label) {
             this.label = label;
-        }        @Override
-        public Reference clone() {
-            try {
-                return (Reference) super.clone();
-            } catch (CloneNotSupportedException e) {
-                throw new IllegalStateException(e);
-            }
         }
 
         public String getRef() {
@@ -346,9 +370,6 @@ public final class GiteaPullRequest extends GiteaObject<GiteaPullRequest> {
             this.repo = repo == null ? null : repo.clone();
         }
 
-
-
-
         @Override
         public String toString() {
             return "Reference{" +
@@ -359,36 +380,6 @@ public final class GiteaPullRequest extends GiteaObject<GiteaPullRequest> {
                     ", repo=" + repo +
                     '}';
         }
-    }
-
-    @Override
-    public String toString() {
-        return "GiteaPullRequest{" +
-                "id=" + id +
-                ", url='" + url + '\'' +
-                ", number=" + number +
-                ", user=" + user +
-                ", title='" + title + '\'' +
-                ", body='" + body + '\'' +
-                ", labels=" + labels +
-                ", milestone=" + milestone +
-                ", assignee=" + assignee +
-                ", state='" + state + '\'' +
-                ", comments=" + comments +
-                ", htmlUrl='" + htmlUrl + '\'' +
-                ", diffUrl='" + diffUrl + '\'' +
-                ", patchUrl='" + patchUrl + '\'' +
-                ", mergeable=" + mergeable +
-                ", merged=" + merged +
-                ", mergedAt=" + mergedAt +
-                ", mergeCommitSha='" + mergeCommitSha + '\'' +
-                ", mergedBy=" + mergedBy +
-                ", base=" + base +
-                ", head=" + head +
-                ", mergeBase='" + mergeBase + '\'' +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                '}';
     }
 
 

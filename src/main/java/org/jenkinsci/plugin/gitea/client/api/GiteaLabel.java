@@ -35,16 +35,6 @@ public final class GiteaLabel extends GiteaObject<GiteaLabel> {
     public GiteaLabel() {
     }
 
-    @Override
-    public String toString() {
-        return "GiteaLabel{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", color='" + color + '\'' +
-                ", url='" + url + '\'' +
-                '}';
-    }
-
     public long getId() {
         return id;
     }
@@ -75,5 +65,18 @@ public final class GiteaLabel extends GiteaObject<GiteaLabel> {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return "GiteaLabel{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", color='" + color + '\'' +
+                ", url='" + url + '\'' +
+                '}';
     }
 }

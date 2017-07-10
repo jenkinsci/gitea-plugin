@@ -26,6 +26,9 @@ package org.jenkinsci.plugin.gitea.client.api;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * Owner of a repository. Currently two concrete implementations: {@link GiteaOrganization} and {@link GiteaUser}.
+ */
 @JsonIgnoreProperties(ignoreUnknown = Gitea.IGNORE_UNKNOWN_PROPERTIES)
 public class GiteaOwner extends GiteaObject<GiteaOwner> {
     private long id;
@@ -44,18 +47,6 @@ public class GiteaOwner extends GiteaObject<GiteaOwner> {
         this.email = email;
         this.avatarUrl = avatarUrl;
         this.username = login;
-    }
-
-    @Override
-    public String toString() {
-        return "GiteaOwner{" +
-                "id=" + id +
-                ", login='" + login + '\'' +
-                ", fullName='" + fullName + '\'' +
-                ", email='" + email + '\'' +
-                ", avatarUrl='" + avatarUrl + '\'' +
-                ", username='" + username + '\'' +
-                '}';
     }
 
     public long getId() {
@@ -106,5 +97,20 @@ public class GiteaOwner extends GiteaObject<GiteaOwner> {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return "GiteaOwner{" +
+                "id=" + id +
+                ", login='" + login + '\'' +
+                ", fullName='" + fullName + '\'' +
+                ", email='" + email + '\'' +
+                ", avatarUrl='" + avatarUrl + '\'' +
+                ", username='" + username + '\'' +
+                '}';
     }
 }

@@ -26,6 +26,9 @@ package org.jenkinsci.plugin.gitea.client.api;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+/**
+ * Gitea event types.
+ */
 public enum GiteaEventType {
     CREATE("create"),
     PUSH("push"),

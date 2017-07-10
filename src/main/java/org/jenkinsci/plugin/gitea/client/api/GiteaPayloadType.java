@@ -26,6 +26,9 @@ package org.jenkinsci.plugin.gitea.client.api;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+/**
+ * The {@link GiteaHook} event payload.
+ */
 public enum GiteaPayloadType {
     JSON("json"),
     FORM("form");

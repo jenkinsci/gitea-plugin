@@ -29,6 +29,9 @@ import hudson.Util;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Gitea {@link GiteaEventType#PUSH} event.
+ */
 @JsonIgnoreProperties(ignoreUnknown = Gitea.IGNORE_UNKNOWN_PROPERTIES)
 public class GiteaPushEvent extends GiteaEvent {
     private String ref;

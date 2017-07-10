@@ -25,6 +25,9 @@ package org.jenkinsci.plugin.gitea.client.api;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+/**
+ * A Gitea organization.
+ */
 @JsonIgnoreProperties(ignoreUnknown = Gitea.IGNORE_UNKNOWN_PROPERTIES)
 public class GiteaOrganization extends GiteaOwner {
     private String description;
@@ -45,19 +48,6 @@ public class GiteaOrganization extends GiteaOwner {
     @Override
     public GiteaOrganization clone() {
         return (GiteaOrganization) super.clone();
-    }
-
-    @Override
-    public String toString() {
-        return "GiteaOrganization{" +
-                "id=" + getId() +
-                ", fullName='" + getFullName() + '\'' +
-                ", description='" + description + '\'' +
-                ", website='" + website + '\'' +
-                ", username='" + getUsername() + '\'' +
-                ", avatarUrl='" + getAvatarUrl() + '\'' +
-                ", location='" + location + '\'' +
-                '}';
     }
 
     @Override
@@ -92,6 +82,22 @@ public class GiteaOrganization extends GiteaOwner {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return "GiteaOrganization{" +
+                "id=" + getId() +
+                ", fullName='" + getFullName() + '\'' +
+                ", description='" + description + '\'' +
+                ", website='" + website + '\'' +
+                ", username='" + getUsername() + '\'' +
+                ", avatarUrl='" + getAvatarUrl() + '\'' +
+                ", location='" + location + '\'' +
+                '}';
     }
 
 }

@@ -272,6 +272,33 @@ public class GiteaRepository extends GiteaObject<GiteaRepository> {
         this.permissions = permissions == null ? null : permissions.clone();
     }
 
+    @Override
+    public String toString() {
+        return "GiteaRepository{" +
+                "id=" + id +
+                ", owner=" + owner +
+                ", name='" + name + '\'' +
+                ", fullName='" + fullName + '\'' +
+                ", description='" + description + '\'' +
+                ", private=" + _private +
+                ", fork=" + fork +
+                ", empty=" + empty +
+                ", mirror=" + mirror +
+                ", htmlUrl='" + htmlUrl + '\'' +
+                ", sshUrl='" + sshUrl + '\'' +
+                ", cloneUrl='" + cloneUrl + '\'' +
+                ", website='" + website + '\'' +
+                ", starsCount=" + starsCount +
+                ", forksCount=" + forksCount +
+                ", watchersCount=" + watchersCount +
+                ", openIssuesCount=" + openIssuesCount +
+                ", defaultBranch='" + defaultBranch + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", permissions=" + permissions +
+                '}';
+    }
+
     @JsonIgnoreProperties(ignoreUnknown = Gitea.IGNORE_UNKNOWN_PROPERTIES)
     public static class Permissions implements Cloneable {
         private boolean admin;
@@ -312,9 +339,6 @@ public class GiteaRepository extends GiteaObject<GiteaRepository> {
             this.pull = pull;
         }
 
-
-
-
         @Override
         public String toString() {
             return "PullSummary{" +
@@ -324,33 +348,5 @@ public class GiteaRepository extends GiteaObject<GiteaRepository> {
                     '}';
         }
     }
-
-    @Override
-    public String toString() {
-        return "GiteaRepository{" +
-                "id=" + id +
-                ", owner=" + owner +
-                ", name='" + name + '\'' +
-                ", fullName='" + fullName + '\'' +
-                ", description='" + description + '\'' +
-                ", private=" + _private +
-                ", fork=" + fork +
-                ", empty=" + empty +
-                ", mirror=" + mirror +
-                ", htmlUrl='" + htmlUrl + '\'' +
-                ", sshUrl='" + sshUrl + '\'' +
-                ", cloneUrl='" + cloneUrl + '\'' +
-                ", website='" + website + '\'' +
-                ", starsCount=" + starsCount +
-                ", forksCount=" + forksCount +
-                ", watchersCount=" + watchersCount +
-                ", openIssuesCount=" + openIssuesCount +
-                ", defaultBranch='" + defaultBranch + '\'' +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                ", permissions=" + permissions +
-                '}';
-    }
-
 
 }

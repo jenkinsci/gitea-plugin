@@ -26,6 +26,9 @@ package org.jenkinsci.plugin.gitea.client.api;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+/**
+ * The type of {@link GiteaHook}.
+ */
 public enum GiteaHookType {
     GITEA("gitea"),
     GOGS("gogs"),

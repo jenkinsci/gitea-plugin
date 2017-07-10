@@ -37,13 +37,6 @@ public final class GiteaVersion extends GiteaObject<GiteaVersion> {
         this.version = version;
     }
 
-    @Override
-    public String toString() {
-        return "GiteaVersion{" +
-                "version='" + version + '\'' +
-                '}';
-    }
-
     public String getVersion() {
         return version;
     }
@@ -51,5 +44,15 @@ public final class GiteaVersion extends GiteaObject<GiteaVersion> {
     @JsonProperty("Version")
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return "GiteaVersion{" +
+                "version='" + version + '\'' +
+                '}';
     }
 }

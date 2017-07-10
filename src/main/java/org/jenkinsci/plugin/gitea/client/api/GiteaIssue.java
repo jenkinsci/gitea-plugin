@@ -154,7 +154,7 @@ public final class GiteaIssue extends GiteaObject<GiteaIssue> {
     public Date getCreatedAt() {
         return createdAt == null ? null : (Date) createdAt.clone();
     }
-    
+
     @JsonProperty("created_at")
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt == null ? null : (Date) createdAt.clone();
@@ -170,49 +170,12 @@ public final class GiteaIssue extends GiteaObject<GiteaIssue> {
     }
 
     public PullSummary getPullRequest() {
-        return pullRequest;
+        return pullRequest == null ? null : pullRequest.clone();
     }
 
     @JsonProperty("pull_request")
     public void setPullRequest(PullSummary pullRequest) {
-        this.pullRequest = pullRequest;
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = Gitea.IGNORE_UNKNOWN_PROPERTIES)
-    public static class PullSummary implements Cloneable {
-        private boolean merged;
-        private Date mergedAt;
-
-        public PullSummary() {
-        }
-
-        public boolean isMerged() {
-            return merged;
-        }
-
-        public void setMerged(boolean merged) {
-            this.merged = merged;
-        }        @Override
-        public PullSummary clone() {
-            try {
-                return (PullSummary) super.clone();
-            } catch (CloneNotSupportedException e) {
-                throw new IllegalStateException(e);
-            }
-        }
-
-        public Date getMergedAt() {
-            return mergedAt == null ? null : (Date) mergedAt.clone();
-        }
-
-        @JsonProperty("merged_at")
-        public void setMergedAt(Date mergedAt) {
-            this.mergedAt = mergedAt == null ? null : (Date) mergedAt.clone();
-        }
-
-
-
-
+        this.pullRequest = pullRequest == null ? null : pullRequest.clone();
     }
 
     @Override
@@ -233,6 +196,50 @@ public final class GiteaIssue extends GiteaObject<GiteaIssue> {
                 ", updatedAt=" + updatedAt +
                 ", pullRequest=" + pullRequest +
                 '}';
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = Gitea.IGNORE_UNKNOWN_PROPERTIES)
+    public static class PullSummary implements Cloneable {
+        private boolean merged;
+
+        private Date mergedAt;
+
+        public PullSummary() {
+        }
+
+        public boolean isMerged() {
+            return merged;
+        }
+
+        public void setMerged(boolean merged) {
+            this.merged = merged;
+        }
+
+        @Override
+        public PullSummary clone() {
+            try {
+                return (PullSummary) super.clone();
+            } catch (CloneNotSupportedException e) {
+                throw new IllegalStateException(e);
+            }
+        }
+
+        public Date getMergedAt() {
+            return mergedAt == null ? null : (Date) mergedAt.clone();
+        }
+
+        @JsonProperty("merged_at")
+        public void setMergedAt(Date mergedAt) {
+            this.mergedAt = mergedAt == null ? null : (Date) mergedAt.clone();
+        }
+        @Override
+        public String toString() {
+            return "PullSummary{" +
+                    "merged=" + merged +
+                    ", mergedAt=" + mergedAt +
+                    '}';
+        }
+
     }
 
 

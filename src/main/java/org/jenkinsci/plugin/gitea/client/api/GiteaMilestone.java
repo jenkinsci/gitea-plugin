@@ -108,4 +108,21 @@ public final class GiteaMilestone extends GiteaObject<GiteaMilestone> {
     public void setDueOn(Date dueOn) {
         this.dueOn = dueOn == null ? null : (Date) dueOn.clone();
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return "GiteaMilestone{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", state='" + state + '\'' +
+                ", openIssues=" + openIssues +
+                ", closedIssues=" + closedIssues +
+                ", closedAt=" + closedAt +
+                ", dueOn=" + dueOn +
+                '}';
+    }
 }

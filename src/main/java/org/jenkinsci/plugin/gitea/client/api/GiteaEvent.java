@@ -25,16 +25,19 @@ package org.jenkinsci.plugin.gitea.client.api;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+/**
+ * Generic Gitea event.
+ */
 @JsonIgnoreProperties(ignoreUnknown = Gitea.IGNORE_UNKNOWN_PROPERTIES)
 public class GiteaEvent extends GiteaObject<GiteaEvent> {
     private String secret;
     private GiteaRepository repository;
     private GiteaOwner sender;
 
-    protected GiteaEvent() {
+    public GiteaEvent() {
     }
 
-    protected GiteaEvent(String secret, GiteaRepository repository, GiteaOwner sender) {
+    public GiteaEvent(String secret, GiteaRepository repository, GiteaOwner sender) {
         this.secret = secret;
         this.repository = repository;
         this.sender = sender;

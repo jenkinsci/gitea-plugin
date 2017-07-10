@@ -25,9 +25,17 @@ package org.jenkinsci.plugin.gitea.client.api;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+/**
+ * Base class for all types in the Gitea object model.
+ *
+ * @param <T> the implementation type.
+ */
 @JsonIgnoreProperties(ignoreUnknown = Gitea.IGNORE_UNKNOWN_PROPERTIES)
 public abstract class GiteaObject<T extends GiteaObject<T>> implements Cloneable {
 
+    /**
+     * {@inheritDoc}
+     */
     @SuppressWarnings("unchecked")
     @Override
     public T clone() {
