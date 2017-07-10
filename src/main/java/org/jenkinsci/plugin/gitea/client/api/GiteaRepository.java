@@ -29,7 +29,7 @@ import java.util.Date;
 
 @JsonIgnoreProperties(
         value = {"size"},
-        ignoreUnknown = GiteaObject.IGNORE_UNKNOWN_PROPERTIES
+        ignoreUnknown = Gitea.IGNORE_UNKNOWN_PROPERTIES
 )
 public class GiteaRepository extends GiteaObject<GiteaRepository> {
     private long id;
@@ -272,7 +272,7 @@ public class GiteaRepository extends GiteaObject<GiteaRepository> {
         this.permissions = permissions == null ? null : permissions.clone();
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = GiteaObject.IGNORE_UNKNOWN_PROPERTIES)
+    @JsonIgnoreProperties(ignoreUnknown = Gitea.IGNORE_UNKNOWN_PROPERTIES)
     public static class Permissions implements Cloneable {
         private boolean admin;
         private boolean push;

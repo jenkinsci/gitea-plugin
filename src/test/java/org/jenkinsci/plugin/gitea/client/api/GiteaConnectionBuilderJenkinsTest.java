@@ -19,13 +19,13 @@ public class GiteaConnectionBuilderJenkinsTest {
     public void given__registered_mock__when__open__then__mock_returned() throws Exception {
         MockGiteaConnectionFactory.reset();
         MockGiteaConnectionFactory.register(new MockGiteaConnection("bob"), "http://gitea.test/open");
-        assertThat(GiteaConnectionBuilder.newBuilder("http://gitea.test/open").open(), instanceOf(MockGiteaConnection.class));
+        assertThat(Gitea.server("http://gitea.test/open").open(), instanceOf(MockGiteaConnection.class));
     }
 
     @Test
     public void given__no_registered_mock__when__open__then__real_returned() throws Exception {
         MockGiteaConnectionFactory.reset();
-        assertThat(GiteaConnectionBuilder.newBuilder("http://gitea.test/open").open(), not(instanceOf(MockGiteaConnection.class)));
+        assertThat(Gitea.server("http://gitea.test/open").open(), not(instanceOf(MockGiteaConnection.class)));
     }
 
 }

@@ -28,7 +28,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 /**
  * Represents a Gitea Branch.
  */
-@JsonIgnoreProperties(ignoreUnknown = GiteaObject.IGNORE_UNKNOWN_PROPERTIES)
+@JsonIgnoreProperties(ignoreUnknown = Gitea.IGNORE_UNKNOWN_PROPERTIES)
 public final class GiteaBranch extends GiteaObject<GiteaBranch> {
     private String name;
     private GiteaCommit commit;

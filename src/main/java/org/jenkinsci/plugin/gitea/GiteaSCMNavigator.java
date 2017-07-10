@@ -27,7 +27,6 @@ import com.cloudbees.plugins.credentials.CredentialsMatchers;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
-import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.URIRequirementBuilder;
 import com.damnhandy.uri.template.UriTemplate;
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -75,19 +74,16 @@ import jenkins.scm.impl.trait.Selection;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugin.gitea.client.api.GiteaAuth;
 import org.jenkinsci.plugin.gitea.client.api.GiteaConnection;
-import org.jenkinsci.plugin.gitea.client.api.GiteaConnectionBuilder;
+import org.jenkinsci.plugin.gitea.client.api.Gitea;
 import org.jenkinsci.plugin.gitea.client.api.GiteaOrganization;
 import org.jenkinsci.plugin.gitea.client.api.GiteaOwner;
 import org.jenkinsci.plugin.gitea.client.api.GiteaRepository;
-import org.jenkinsci.plugin.gitea.credentials.PersonalAccessToken;
 import org.jenkinsci.plugin.gitea.servers.GiteaServer;
 import org.jenkinsci.plugin.gitea.servers.GiteaServers;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
-
-import static com.cloudbees.plugins.credentials.CredentialsMatchers.instanceOf;
 
 public class GiteaSCMNavigator extends SCMNavigator {
     private final String serverUrl;
@@ -248,14 +244,14 @@ public class GiteaSCMNavigator extends SCMNavigator {
         GiteaWebhookListener.register(owner, this, mode, credentialsId);
     }
 
-    private GiteaConnectionBuilder connectionBuilder(SCMSourceOwner owner) throws AbortException {
+    private Gitea connectionBuilder(SCMSourceOwner owner) throws AbortException {
         GiteaServer server = GiteaServers.get().findServer(serverUrl);
         if (server == null) {
             throw new AbortException("Unknown server: " + serverUrl);
         }
         StandardCredentials credentials = credentials(owner);
         CredentialsProvider.track(owner, credentials);
-        return GiteaConnectionBuilder.newBuilder(serverUrl)
+        return Gitea.server(serverUrl)
                 .authentication(AuthenticationTokens.convert(GiteaAuth.class, credentials));
     }
 

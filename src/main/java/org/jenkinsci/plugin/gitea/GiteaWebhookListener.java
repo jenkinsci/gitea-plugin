@@ -37,7 +37,7 @@ import jenkins.scm.api.SCMSourceOwner;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugin.gitea.client.api.GiteaAuth;
 import org.jenkinsci.plugin.gitea.client.api.GiteaConnection;
-import org.jenkinsci.plugin.gitea.client.api.GiteaConnectionBuilder;
+import org.jenkinsci.plugin.gitea.client.api.Gitea;
 import org.jenkinsci.plugin.gitea.client.api.GiteaEventType;
 import org.jenkinsci.plugin.gitea.client.api.GiteaHook;
 import org.jenkinsci.plugin.gitea.client.api.GiteaHookType;
@@ -127,7 +127,7 @@ public class GiteaWebhookListener {
     }
 
     private static GiteaConnection connect(String serverUrl, StandardCredentials credentials) throws IOException {
-        return GiteaConnectionBuilder.newBuilder(serverUrl)
+        return Gitea.server(serverUrl)
                 .authentication(AuthenticationTokens.convert(GiteaAuth.class, credentials))
                 .open();
     }

@@ -30,7 +30,7 @@ import java.util.Date;
 import java.util.Set;
 
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-@JsonIgnoreProperties(ignoreUnknown = GiteaObject.IGNORE_UNKNOWN_PROPERTIES)
+@JsonIgnoreProperties(ignoreUnknown = Gitea.IGNORE_UNKNOWN_PROPERTIES)
 public final class GiteaHook extends GiteaObject<GiteaHook> {
     private long id;
     private GiteaHookType type;

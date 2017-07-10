@@ -89,7 +89,7 @@ import org.jenkins.ui.icon.IconSet;
 import org.jenkinsci.plugin.gitea.client.api.GiteaAuth;
 import org.jenkinsci.plugin.gitea.client.api.GiteaBranch;
 import org.jenkinsci.plugin.gitea.client.api.GiteaConnection;
-import org.jenkinsci.plugin.gitea.client.api.GiteaConnectionBuilder;
+import org.jenkinsci.plugin.gitea.client.api.Gitea;
 import org.jenkinsci.plugin.gitea.client.api.GiteaIssueState;
 import org.jenkinsci.plugin.gitea.client.api.GiteaPullRequest;
 import org.jenkinsci.plugin.gitea.client.api.GiteaRepository;
@@ -533,7 +533,7 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
         GiteaWebhookListener.register(getOwner(), this, mode, credentialsId);
     }
 
-    /*package*/ GiteaConnectionBuilder connectionBuilder() throws AbortException {
+    /*package*/ Gitea connectionBuilder() throws AbortException {
         GiteaServer server = GiteaServers.get().findServer(serverUrl);
         if (server == null) {
             throw new AbortException("Unknown server: " + serverUrl);
@@ -543,7 +543,7 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
         if (owner != null) {
             CredentialsProvider.track(owner, credentials);
         }
-        return GiteaConnectionBuilder.newBuilder(serverUrl)
+        return Gitea.server(serverUrl)
                 .authentication(AuthenticationTokens.convert(GiteaAuth.class, credentials));
     }
 
@@ -732,7 +732,7 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
                             CredentialsMatchers.withId(credentialsId)
                     )
             );
-            try (GiteaConnection c = GiteaConnectionBuilder.newBuilder(serverUrl)
+            try (GiteaConnection c = Gitea.server(serverUrl)
                     .authentication(AuthenticationTokens.convert(GiteaAuth.class, credentials))
                     .open()) {
                 for (GiteaRepository r : c.fetchRepositories(repoOwner)) {

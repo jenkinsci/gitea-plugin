@@ -50,9 +50,8 @@ import jenkins.model.Jenkins;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugin.gitea.client.api.GiteaAuth;
 import org.jenkinsci.plugin.gitea.client.api.GiteaConnection;
-import org.jenkinsci.plugin.gitea.client.api.GiteaConnectionBuilder;
+import org.jenkinsci.plugin.gitea.client.api.Gitea;
 import org.jenkinsci.plugin.gitea.client.api.GiteaUser;
-import org.jenkinsci.plugin.gitea.client.api.GiteaVersion;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -239,7 +238,7 @@ public class GiteaServer extends AbstractDescribableImpl<GiteaServer> {
          */
         public static FormValidation doCheckServerUrl(@QueryParameter String value) {
             Jenkins.getActiveInstance().checkPermission(Jenkins.ADMINISTER);
-            try (GiteaConnection c = GiteaConnectionBuilder.newBuilder(GiteaServers.normalizeServerUrl(value)).open()) {
+            try (GiteaConnection c = Gitea.server(GiteaServers.normalizeServerUrl(value)).open()) {
                 return FormValidation
                         .okWithMarkup(Messages.GiteaServer_serverVersion(Util.escape(c.fetchVersion().getVersion())));
             } catch (MalformedURLException e) {
@@ -301,7 +300,7 @@ public class GiteaServer extends AbstractDescribableImpl<GiteaServer> {
             if (credentials == null) {
                 return FormValidation.errorWithMarkup(Messages.GiteaServer_credentialsNotResolved(Util.escape(value)));
             }
-            try (GiteaConnection c = GiteaConnectionBuilder.newBuilder(serverUrl)
+            try (GiteaConnection c = Gitea.server(serverUrl)
                     .authentication(AuthenticationTokens.convert(GiteaAuth.class, credentials))
                     .open()) {
                 GiteaUser user = c.fetchCurrentUser();

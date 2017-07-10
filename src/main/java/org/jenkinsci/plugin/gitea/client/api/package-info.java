@@ -25,6 +25,6 @@
  * Client API for Gitea.
  * Ideally this would be a separate non-Jenkins plugin dependency. This client is designed to not require any
  * Jenkins classes. (Note there is one Jenkins specific detail around classloaders in
- * {@link org.jenkinsci.plugin.gitea.client.api.GiteaConnectionBuilder}).
+ * {@link org.jenkinsci.plugin.gitea.client.api.Gitea}).
  */
 package org.jenkinsci.plugin.gitea.client.api;

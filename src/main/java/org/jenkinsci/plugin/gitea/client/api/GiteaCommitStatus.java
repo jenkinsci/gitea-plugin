@@ -32,7 +32,7 @@ import java.util.Date;
  * Represents a commit status.
  */
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-@JsonIgnoreProperties(ignoreUnknown = GiteaObject.IGNORE_UNKNOWN_PROPERTIES)
+@JsonIgnoreProperties(ignoreUnknown = Gitea.IGNORE_UNKNOWN_PROPERTIES)
 public final class GiteaCommitStatus extends GiteaObject<GiteaCommitStatus> implements Cloneable {
     private long id;
     private String url;

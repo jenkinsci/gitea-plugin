@@ -23,6 +23,7 @@
  */
 package org.jenkinsci.plugin.gitea.client.api;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import java.io.IOException;
@@ -33,7 +34,14 @@ import org.jenkinsci.plugin.gitea.client.spi.GiteaConnectionFactory;
 /**
  * Entry point to the Gitea client API for opening a {@link GiteaConnection}.
  */
-public final class GiteaConnectionBuilder {
+public final class Gitea {
+
+    /**
+     * The {@link JsonIgnoreProperties#ignoreUnknown()} to use. (For production use this should always be {@code true},
+     * but during testing of API changes it can be changed to {@code false} so that the API can be verified as
+     * correctly implemented.
+     */
+    public static final boolean IGNORE_UNKNOWN_PROPERTIES = true;
 
     /**
      * The URL of the Gitea server.
@@ -58,23 +66,23 @@ public final class GiteaConnectionBuilder {
      *
      * @param serverUrl the URL of the Gitea server.
      */
-    private GiteaConnectionBuilder(@NonNull String serverUrl) {
+    private Gitea(@NonNull String serverUrl) {
         this.serverUrl = serverUrl;
     }
 
     /**
-     * Creates a new {@link GiteaConnectionBuilder}.
+     * Creates a new {@link Gitea}.
      *
      * @param serverUrl URL of the Gitea server.
-     * @return the {@link GiteaConnectionBuilder}.
+     * @return the {@link Gitea}.
      */
     @NonNull
-    public static GiteaConnectionBuilder newBuilder(@NonNull String serverUrl) {
-        return new GiteaConnectionBuilder(serverUrl).jenkinsPluginClassLoader();
+    public static Gitea server(@NonNull String serverUrl) {
+        return new Gitea(serverUrl).jenkinsPluginClassLoader();
     }
 
     @NonNull
-    public GiteaConnectionBuilder authentication(@CheckForNull GiteaAuth authentication) {
+    public Gitea authentication(@CheckForNull GiteaAuth authentication) {
         this.authentication = authentication == null ? new GiteaAuthNone() : authentication;
         return this;
     }
@@ -100,7 +108,7 @@ public final class GiteaConnectionBuilder {
      * @param classLoader the {@link ClassLoader}
      * @return {@code this} for method chaining.
      */
-    public GiteaConnectionBuilder classLoader(@CheckForNull ClassLoader classLoader) {
+    public Gitea classLoader(@CheckForNull ClassLoader classLoader) {
         this.classLoader = classLoader;
         return this;
     }
@@ -125,7 +133,7 @@ public final class GiteaConnectionBuilder {
         throw new IOException("No implementation for connecting to " + serverUrl);
     }
 
-    public GiteaConnectionBuilder jenkinsPluginClassLoader() {
+    public Gitea jenkinsPluginClassLoader() {
         // HACK for Jenkins
         // by rights this should be the context classloader, but Jenkins does not expose plugins on that
         // so we need instead to use the uberClassLoader as that will have the implementations

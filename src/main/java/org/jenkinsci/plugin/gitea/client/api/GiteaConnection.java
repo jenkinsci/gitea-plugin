@@ -28,9 +28,9 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * The Gitea Client connection, use {@link GiteaConnectionBuilder} to open a connection. Example:
+ * The Gitea Client connection, use {@link Gitea} to open a connection. Example:
  * <pre>
- *     try (GiteaConnection c = ConnectionBuilder.newBuilder(...).authentication(...).open()) {
+ *     try (GiteaConnection c = Gitea.server(...).authentication(...).open()) {
  *         // use the connection
  *     }
  * </pre>

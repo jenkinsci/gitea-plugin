@@ -44,7 +44,7 @@ import jenkins.scm.api.SCMSourceOwner;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugin.gitea.client.api.GiteaAuth;
 import org.jenkinsci.plugin.gitea.client.api.GiteaConnection;
-import org.jenkinsci.plugin.gitea.client.api.GiteaConnectionBuilder;
+import org.jenkinsci.plugin.gitea.client.api.Gitea;
 import org.jenkinsci.plugin.gitea.client.api.GiteaRepository;
 
 public class GiteaSCMFileSystem extends SCMFileSystem {
@@ -144,7 +144,7 @@ public class GiteaSCMFileSystem extends SCMFileSystem {
             if (owner != null) {
                 CredentialsProvider.track(owner, credentials);
             }
-            GiteaConnection connection = GiteaConnectionBuilder.newBuilder(serverUrl)
+            GiteaConnection connection = Gitea.server(serverUrl)
                     .authentication(AuthenticationTokens.convert(GiteaAuth.class, credentials))
                     .open();
             try {

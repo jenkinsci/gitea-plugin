@@ -26,15 +26,14 @@ package org.jenkinsci.plugin.gitea.client.spi;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import java.io.IOException;
 import java.util.ServiceLoader;
-import org.jenkinsci.plugin.gitea.client.api.GiteaAuth;
 import org.jenkinsci.plugin.gitea.client.api.GiteaConnection;
-import org.jenkinsci.plugin.gitea.client.api.GiteaConnectionBuilder;
+import org.jenkinsci.plugin.gitea.client.api.Gitea;
 
 /**
- * The SPI for instantiating {@link GiteaConnection} implementations from {@link GiteaConnectionBuilder}.
+ * The SPI for instantiating {@link GiteaConnection} implementations from {@link Gitea}.
  * All the {@link ServiceLoader} registered implementations will be filtered to only those that
- * {@link #canOpen(GiteaConnectionBuilder)}. In the event of multiple implementations, the one with the highest
- * {@link #priority(GiteaConnectionBuilder)} will be selected and then {@link #open(GiteaConnectionBuilder)} will be
+ * {@link #canOpen(Gitea)}. In the event of multiple implementations, the one with the highest
+ * {@link #priority(Gitea)} will be selected and then {@link #open(Gitea)} will be
  * called.
  */
 public abstract class GiteaConnectionFactory {
@@ -44,16 +43,16 @@ public abstract class GiteaConnectionFactory {
      * @param builder the builder.
      * @return {@code true} if connections can be opened.
      */
-    public abstract boolean canOpen(@NonNull GiteaConnectionBuilder builder);
+    public abstract boolean canOpen(@NonNull Gitea builder);
 
     /**
      * SPI: return the priority with which this factory claims ownership of the supplied URL and authentication.
-     * This method's return value is only valid after {@link #canOpen(GiteaConnectionBuilder)} has returned {@code true}.
+     * This method's return value is only valid after {@link #canOpen(Gitea)} has returned {@code true}.
      *
      * @param builder the builder.
      * @return the priority.
      */
-    public long priority(@NonNull GiteaConnectionBuilder builder) {
+    public long priority(@NonNull Gitea builder) {
         return 0L;
     }
 
@@ -65,6 +64,6 @@ public abstract class GiteaConnectionFactory {
      * @throws IOException if the connection could not be opened.
      */
     @NonNull
-    public abstract GiteaConnection open(@NonNull GiteaConnectionBuilder builder)
+    public abstract GiteaConnection open(@NonNull Gitea builder)
             throws IOException;
 }

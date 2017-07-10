@@ -26,7 +26,7 @@ package org.jenkinsci.plugin.gitea.client.impl;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import java.io.IOException;
 import org.jenkinsci.plugin.gitea.client.api.GiteaConnection;
-import org.jenkinsci.plugin.gitea.client.api.GiteaConnectionBuilder;
+import org.jenkinsci.plugin.gitea.client.api.Gitea;
 import org.jenkinsci.plugin.gitea.client.spi.GiteaConnectionFactory;
 
 /**
@@ -37,7 +37,7 @@ public class DefaultGiteaConnectionFactory extends GiteaConnectionFactory {
      * {@inheritDoc}
      */
     @Override
-    public boolean canOpen(@NonNull GiteaConnectionBuilder builder) {
+    public boolean canOpen(@NonNull Gitea builder) {
         return builder.serverUrl().startsWith("http://") || builder.serverUrl().startsWith("https://");
     }
 
@@ -46,7 +46,7 @@ public class DefaultGiteaConnectionFactory extends GiteaConnectionFactory {
      */
     @NonNull
     @Override
-    public GiteaConnection open(@NonNull GiteaConnectionBuilder builder) throws IOException {
+    public GiteaConnection open(@NonNull Gitea builder) throws IOException {
         return new DefaultGiteaConnection(builder.serverUrl(), builder.authentication());
     }
 }

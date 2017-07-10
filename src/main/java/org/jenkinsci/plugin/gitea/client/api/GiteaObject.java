@@ -25,14 +25,8 @@ package org.jenkinsci.plugin.gitea.client.api;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@JsonIgnoreProperties(ignoreUnknown = GiteaObject.IGNORE_UNKNOWN_PROPERTIES)
+@JsonIgnoreProperties(ignoreUnknown = Gitea.IGNORE_UNKNOWN_PROPERTIES)
 public abstract class GiteaObject<T extends GiteaObject<T>> implements Cloneable {
-    /**
-     * The {@link JsonIgnoreProperties#ignoreUnknown()} to use. (For production use this should always be {@code true},
-     * but during testing of API changes it can be changed to {@code false} so that the API can be verified as
-     * correctly implemented.
-     */
-    public static final boolean IGNORE_UNKNOWN_PROPERTIES = true;
 
     @SuppressWarnings("unchecked")
     @Override

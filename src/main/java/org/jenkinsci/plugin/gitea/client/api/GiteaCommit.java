@@ -31,7 +31,7 @@ import java.util.Date;
  */
 @JsonIgnoreProperties(
         value = {"added", "removed", "modified", "verification"},
-        ignoreUnknown = GiteaObject.IGNORE_UNKNOWN_PROPERTIES
+        ignoreUnknown = Gitea.IGNORE_UNKNOWN_PROPERTIES
 )
 public final class GiteaCommit extends GiteaObject<GiteaCommit> {
     /**
@@ -130,7 +130,7 @@ public final class GiteaCommit extends GiteaObject<GiteaCommit> {
                 '}';
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = GiteaObject.IGNORE_UNKNOWN_PROPERTIES)
+    @JsonIgnoreProperties(ignoreUnknown = Gitea.IGNORE_UNKNOWN_PROPERTIES)
     public static class Actor extends GiteaObject<Actor> implements Cloneable {
         private String name;
         private String email;

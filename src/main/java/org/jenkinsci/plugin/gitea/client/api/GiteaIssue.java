@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@JsonIgnoreProperties(ignoreUnknown = GiteaObject.IGNORE_UNKNOWN_PROPERTIES)
+@JsonIgnoreProperties(ignoreUnknown = Gitea.IGNORE_UNKNOWN_PROPERTIES)
 public final class GiteaIssue extends GiteaObject<GiteaIssue> {
     private long id;
     private String url;
@@ -178,7 +178,7 @@ public final class GiteaIssue extends GiteaObject<GiteaIssue> {
         this.pullRequest = pullRequest;
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = GiteaObject.IGNORE_UNKNOWN_PROPERTIES)
+    @JsonIgnoreProperties(ignoreUnknown = Gitea.IGNORE_UNKNOWN_PROPERTIES)
     public static class PullSummary implements Cloneable {
         private boolean merged;
         private Date mergedAt;

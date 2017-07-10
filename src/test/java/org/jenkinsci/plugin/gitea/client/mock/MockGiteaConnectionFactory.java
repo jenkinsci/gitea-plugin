@@ -4,7 +4,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import java.util.HashMap;
 import java.util.Map;
 import org.jenkinsci.plugin.gitea.client.api.GiteaConnection;
-import org.jenkinsci.plugin.gitea.client.api.GiteaConnectionBuilder;
+import org.jenkinsci.plugin.gitea.client.api.Gitea;
 import org.jenkinsci.plugin.gitea.client.spi.GiteaConnectionFactory;
 
 public class MockGiteaConnectionFactory extends GiteaConnectionFactory {
@@ -25,12 +25,12 @@ public class MockGiteaConnectionFactory extends GiteaConnectionFactory {
     }
 
     @Override
-    public long priority(@NonNull GiteaConnectionBuilder builder) {
+    public long priority(@NonNull Gitea builder) {
         return 1000L;
     }
 
     @Override
-    public boolean canOpen(@NonNull GiteaConnectionBuilder builder) {
+    public boolean canOpen(@NonNull Gitea builder) {
         synchronized (mocks) {
             return mocks.containsKey(builder.serverUrl());
 
@@ -38,7 +38,7 @@ public class MockGiteaConnectionFactory extends GiteaConnectionFactory {
     }
 
     @Override
-    public GiteaConnection open(@NonNull GiteaConnectionBuilder builder) {
+    public GiteaConnection open(@NonNull Gitea builder) {
         synchronized (mocks) {
             return mocks.get(builder.serverUrl());
         }

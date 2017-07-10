@@ -25,7 +25,7 @@ package org.jenkinsci.plugin.gitea.client.api;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@JsonIgnoreProperties(ignoreUnknown = GiteaObject.IGNORE_UNKNOWN_PROPERTIES)
+@JsonIgnoreProperties(ignoreUnknown = Gitea.IGNORE_UNKNOWN_PROPERTIES)
 public class GiteaOrganization extends GiteaOwner {
     private String description;
     private String website;
