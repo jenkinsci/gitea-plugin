@@ -23,6 +23,7 @@
  */
 package org.jenkinsci.plugin.gitea;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import java.util.Collections;
@@ -35,9 +36,18 @@ import jenkins.scm.api.SCMSource;
 import org.eclipse.jgit.lib.Constants;
 import org.jenkinsci.plugin.gitea.client.api.GiteaCreateEvent;
 
+/**
+ * A {@link SCMHeadEvent} for a {@link GiteaCreateEvent}.
+ */
 public class GiteaCreateSCMEvent extends AbstractGiteaSCMHeadEvent<GiteaCreateEvent> {
-    public GiteaCreateSCMEvent(GiteaCreateEvent createEvent, String origin) {
-        super(Type.CREATED, createEvent, origin);
+    /**
+     * Constructor.
+     *
+     * @param payload the payload.
+     * @param origin  the origin.
+     */
+    public GiteaCreateSCMEvent(@NonNull GiteaCreateEvent payload, @CheckForNull String origin) {
+        super(Type.CREATED, payload, origin);
     }
 
     /**
@@ -72,6 +82,9 @@ public class GiteaCreateSCMEvent extends AbstractGiteaSCMHeadEvent<GiteaCreateEv
                 getPayload().getRepository().getName();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @NonNull
     @Override
     public Map<SCMHead, SCMRevision> headsFor(GiteaSCMSource source) {
@@ -81,14 +94,23 @@ public class GiteaCreateSCMEvent extends AbstractGiteaSCMHeadEvent<GiteaCreateEv
         return Collections.<SCMHead, SCMRevision>singletonMap(h, new BranchSCMRevision(h, getPayload().getSha()));
     }
 
+    /**
+     * Our handler.
+     */
     @Extension
     public static class HandlerImpl extends GiteaWebhookHandler<GiteaCreateSCMEvent, GiteaCreateEvent> {
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         protected GiteaCreateSCMEvent createEvent(GiteaCreateEvent payload, String origin) {
             return new GiteaCreateSCMEvent(payload, origin);
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         protected void process(GiteaCreateSCMEvent event) {
             SCMHeadEvent.fireNow(event);

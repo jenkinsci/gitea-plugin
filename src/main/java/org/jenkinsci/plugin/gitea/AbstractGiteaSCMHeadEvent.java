@@ -23,6 +23,7 @@
  */
 package org.jenkinsci.plugin.gitea;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.scm.SCM;
 import java.net.URI;
@@ -37,11 +38,26 @@ import jenkins.scm.api.SCMSource;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugin.gitea.client.api.GiteaEvent;
 
+/**
+ * Base class for {@link SCMHeadEvent} from Gitea.
+ *
+ * @param <E> the {@link GiteaEvent}.
+ */
 public abstract class AbstractGiteaSCMHeadEvent<E extends GiteaEvent> extends SCMHeadEvent<E> {
-    public AbstractGiteaSCMHeadEvent(Type type, E createEvent, String origin) {
-        super(type, createEvent, origin);
+    /**
+     * Constructor.
+     *
+     * @param type    the type of event.
+     * @param payload the payload.
+     * @param origin  the origin.
+     */
+    public AbstractGiteaSCMHeadEvent(@NonNull Type type, @NonNull E payload, @CheckForNull String origin) {
+        super(type, payload, origin);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isMatch(@NonNull SCMNavigator navigator) {
         if (navigator instanceof GiteaSCMNavigator) {
@@ -100,12 +116,18 @@ public abstract class AbstractGiteaSCMHeadEvent<E extends GiteaEvent> extends SC
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @NonNull
     @Override
     public String getSourceName() {
         return getPayload().getRepository().getName();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @NonNull
     @Override
     public Map<SCMHead, SCMRevision> heads(@NonNull SCMSource source) {
@@ -174,11 +196,17 @@ public abstract class AbstractGiteaSCMHeadEvent<E extends GiteaEvent> extends SC
         return Collections.emptyMap();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isMatch(@NonNull SCM scm) {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @NonNull
     protected abstract Map<SCMHead, SCMRevision> headsFor(GiteaSCMSource source);
 

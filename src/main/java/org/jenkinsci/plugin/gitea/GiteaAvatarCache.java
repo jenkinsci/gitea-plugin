@@ -77,6 +77,7 @@ import static java.awt.RenderingHints.VALUE_INTERPOLATION_BICUBIC;
 /**
  * An avatar cache that will serve URLs that have been recently registered through {@link #buildUrl(String, String)}
  */
+// TODO move to SCM API or a separate plugin
 @Extension
 public class GiteaAvatarCache implements UnprotectedRootAction {
     /**

@@ -40,15 +40,28 @@ import org.jenkinsci.plugin.gitea.servers.GiteaServers;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 
+/**
+ * A {@link GitRepositoryBrowser} for Gitea.
+ */
 public class GiteaBrowser extends GitRepositoryBrowser {
 
+    /**
+     * Standardize serialization.
+     */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Constructor.
+     * @param repoUrl the repository URL.
+     */
     @DataBoundConstructor
     public GiteaBrowser(String repoUrl) {
         super(GiteaServers.normalizeServerUrl(repoUrl));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public URL getChangeSetLink(GitChangeSet changeSet) throws IOException {
         return new URL(
@@ -61,6 +74,9 @@ public class GiteaBrowser extends GitRepositoryBrowser {
         );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public URL getDiffLink(Path path) throws IOException {
         if (path.getEditType() != EditType.EDIT || path.getSrc() == null || path.getDst() == null
@@ -70,6 +86,9 @@ public class GiteaBrowser extends GitRepositoryBrowser {
         return diffLink(path);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public URL getFileLink(Path path) throws IOException {
         if (path.getEditType().equals(EditType.DELETE)) {
@@ -88,6 +107,12 @@ public class GiteaBrowser extends GitRepositoryBrowser {
         }
     }
 
+    /**
+     * Generates a diff link for the supplied path.
+     * @param path the path.
+     * @return the diff link.
+     * @throws IOException if there was an error parsing the index of the path from the changeset.
+     */
     private URL diffLink(Path path) throws IOException {
         return new URL(
                 UriTemplate.buildFromTemplate(getRepoUrl())
@@ -101,12 +126,22 @@ public class GiteaBrowser extends GitRepositoryBrowser {
         );
     }
 
+    /**
+     * Our descriptor.
+     */
     @Extension
     public static class DescriptorImpl extends Descriptor<RepositoryBrowser<?>> {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
         public String getDisplayName() {
-            return "Gitea";
+            return Messages.GiteaBrowser_displayName();
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public GiteaBrowser newInstance(StaplerRequest req, JSONObject jsonObject) throws FormException {
             return req.bindJSON(GiteaBrowser.class, jsonObject);

@@ -48,21 +48,38 @@ public class GiteaLink implements Action, IconSpec {
     @NonNull
     private final String url;
 
+    /**
+     * Constructor.
+     *
+     * @param iconClassName the icon to display.
+     * @param url           the url the link should redirect to.
+     */
     public GiteaLink(@NonNull String iconClassName, @NonNull String url) {
         this.iconClassName = iconClassName;
         this.url = url;
     }
 
+    /**
+     * Returns the URL the link should redirect to.
+     *
+     * @return the URL the link should redirect to.
+     */
     @NonNull
     public String getUrl() {
         return url;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getIconClassName() {
         return iconClassName;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getIconFileName() {
         String iconClassName = getIconClassName();
@@ -77,16 +94,25 @@ public class GiteaLink implements Action, IconSpec {
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getDisplayName() {
-        return "Gitea";
+        return Messages.GiteaLink_displayName();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getUrlName() {
         return url;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode() {
         int result = iconClassName.hashCode();
@@ -94,6 +120,9 @@ public class GiteaLink implements Action, IconSpec {
         return result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -111,6 +140,9 @@ public class GiteaLink implements Action, IconSpec {
         return url.equals(that.url);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return "GiteaLink{" +

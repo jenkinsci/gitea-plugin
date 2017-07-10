@@ -24,8 +24,18 @@
 package org.jenkinsci.plugin.gitea;
 
 import jenkins.plugins.git.AbstractGitSCMSource;
+import jenkins.scm.api.SCMRevision;
 
+/**
+ * Our {@link SCMRevision} for {@link BranchSCMHead}.
+ */
 public class BranchSCMRevision extends AbstractGitSCMSource.SCMRevisionImpl {
+    /**
+     * Constructor.
+     *
+     * @param head the head.
+     * @param hash the hash.
+     */
     public BranchSCMRevision(BranchSCMHead head, String hash) {
         super(head, hash);
     }

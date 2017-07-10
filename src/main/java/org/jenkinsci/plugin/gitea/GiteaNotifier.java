@@ -59,8 +59,14 @@ import org.jenkinsci.plugin.gitea.client.api.GiteaCommitStatus;
 import org.jenkinsci.plugin.gitea.client.api.GiteaConnection;
 import org.jenkinsci.plugins.displayurlapi.DisplayURLProvider;
 
+/**
+ * Notification of commit status information to Gitea.
+ */
 public class GiteaNotifier {
 
+    /**
+     * Our logger.
+     */
     private static final Logger LOGGER = Logger.getLogger(GiteaNotifier.class.getName());
 
     /**
@@ -135,13 +141,22 @@ public class GiteaNotifier {
         }
     }
 
+    /**
+     * Listener to catch jobs being added to the build queue.
+     */
     @Extension
     public static class JobScheduledListener extends QueueListener {
+        /**
+         * Track requests so that we can know if there is a newer request.
+         */
         private final AtomicLong nonce = new AtomicLong();
+        /**
+         * Active resolution of likely revisions for queued jobs.
+         */
         private final Map<Job, Long> resolving = new HashMap<>();
 
         /**
-         * Manages the GitHub Commit Pending Status.
+         * {@inheritDoc}
          */
         @Override
         public void onEnterWaiting(final Queue.WaitingItem wi) {
@@ -173,6 +188,7 @@ public class GiteaNotifier {
                 public void run() {
                     SecurityContext context = ACL.impersonate(Tasks.getAuthenticationOf(wi.task));
                     try {
+                        // we need to determine the revision that *should* be built so that we can tag that as pending
                         SCMRevision revision = source.fetch(head, new LogTaskListener(LOGGER, Level.INFO));
                         String hash;
                         if (revision instanceof BranchSCMRevision) {
@@ -198,6 +214,17 @@ public class GiteaNotifier {
                         status.setDescription("Build queued...");
                         status.setState(GiteaCommitState.PENDING);
 
+                        // now it may have taken some time to collect the information, we only want to set the status
+                        // if our status would still be relevant... so if another build was scheduled by say another
+                        // commit, or if the build was actually flagged as started, then in those cases we should
+                        // skip setting the status... this is where the nonce comes in... if anything else
+                        // has set the status for this job, they will have removed the nonce and the job is re-submitted
+                        // to the build queue then the nonce will have been changed from our tasks value
+                        //
+                        // Note: we could have some race conditions on the pending status if a job is scheduled
+                        // while already running, as in that case if the running job completes while our request
+                        // is in-flight then the pending would not get set... but that will ultimately be resolved
+                        // once the second job completes, so not seen as important enough to worry about
                         try (GiteaConnection c = source.gitea().open()) {
                             // check are we still the task to set pending
                             synchronized (resolving) {
@@ -247,6 +274,9 @@ public class GiteaNotifier {
     @Extension
     public static class JobCompletedListener extends RunListener<Run<?, ?>> {
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public void onCompleted(Run<?, ?> build, TaskListener listener) {
             try {
@@ -256,6 +286,9 @@ public class GiteaNotifier {
             }
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public void onStarted(Run<?, ?> run, TaskListener listener) {
             try {

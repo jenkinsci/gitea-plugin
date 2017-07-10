@@ -23,11 +23,13 @@
  */
 package org.jenkinsci.plugin.gitea;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import java.util.Collections;
 import java.util.Map;
 import jenkins.scm.api.SCMHead;
+import jenkins.scm.api.SCMHeadEvent;
 import jenkins.scm.api.SCMNavigator;
 import jenkins.scm.api.SCMRevision;
 import jenkins.scm.api.SCMSource;
@@ -35,18 +37,34 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.jgit.lib.Constants;
 import org.jenkinsci.plugin.gitea.client.api.GiteaPushEvent;
 
+/**
+ * A {@link SCMHeadEvent} for a {@link GiteaPushEvent}.
+ */
 public class GiteaPushSCMEvent extends AbstractGiteaSCMHeadEvent<GiteaPushEvent> {
-    public GiteaPushSCMEvent(GiteaPushEvent pushEvent, String origin) {
-        super(typeOf(pushEvent), pushEvent, origin);
+    /**
+     * Constructor.
+     *
+     * @param payload the payload.
+     * @param origin  the origin.
+     */
+    public GiteaPushSCMEvent(@NonNull GiteaPushEvent payload, @CheckForNull String origin) {
+        super(typeOf(payload), payload, origin);
     }
 
-    private static Type typeOf(GiteaPushEvent pushEvent) {
-        if (StringUtils.isBlank(pushEvent.getBefore())
-                || "0000000000000000000000000000000000000000".equals(pushEvent.getBefore())) {
+    /**
+     * Determines the type of a push event.
+     *
+     * @param event the event.
+     * @return the type.
+     */
+    @NonNull
+    private static Type typeOf(@NonNull GiteaPushEvent event) {
+        if (StringUtils.isBlank(event.getBefore())
+                || "0000000000000000000000000000000000000000".equals(event.getBefore())) {
             return Type.CREATED;
         }
-        if (StringUtils.isBlank(pushEvent.getAfter())
-                || "0000000000000000000000000000000000000000".equals(pushEvent.getAfter())) {
+        if (StringUtils.isBlank(event.getAfter())
+                || "0000000000000000000000000000000000000000".equals(event.getAfter())) {
             // TODO currently do not receive these ever: https://github.com/go-gitea/gitea/issues/2105
             return Type.REMOVED;
         }
@@ -85,6 +103,9 @@ public class GiteaPushSCMEvent extends AbstractGiteaSCMHeadEvent<GiteaPushEvent>
                 getPayload().getRepository().getName();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @NonNull
     @Override
     public Map<SCMHead, SCMRevision> headsFor(GiteaSCMSource source) {
@@ -96,14 +117,23 @@ public class GiteaPushSCMEvent extends AbstractGiteaSCMHeadEvent<GiteaPushEvent>
                         ? new BranchSCMRevision(h, getPayload().getAfter()) : null);
     }
 
+    /**
+     * Our handler.
+     */
     @Extension
     public static class HandlerImpl extends GiteaWebhookHandler<GiteaPushSCMEvent, GiteaPushEvent> {
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         protected GiteaPushSCMEvent createEvent(GiteaPushEvent payload, String origin) {
             return new GiteaPushSCMEvent(payload, origin);
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         protected void process(GiteaPushSCMEvent event) {
 

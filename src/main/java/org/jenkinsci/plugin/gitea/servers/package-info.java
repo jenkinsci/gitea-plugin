@@ -22,5 +22,6 @@
  * THE SOFTWARE.
  */
 /**
+ * Jenkins UI for managing the list of Gitea servers.
  */
 package org.jenkinsci.plugin.gitea.servers;

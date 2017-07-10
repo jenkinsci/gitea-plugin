@@ -26,6 +26,9 @@ package org.jenkinsci.plugin.gitea;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import jenkins.scm.api.SCMHead;
 
+/**
+ * Our {@link SCMHead} for Gitea branches.
+ */
 public class BranchSCMHead extends SCMHead {
     /**
      * Constructor.

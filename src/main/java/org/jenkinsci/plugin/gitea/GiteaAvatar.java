@@ -27,19 +27,35 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import jenkins.scm.api.metadata.AvatarMetadataAction;
 import org.apache.commons.lang.StringUtils;
 
+/**
+ * Metadata for the avatar of a Gitea Organization / user / repository.
+ */
 public class GiteaAvatar extends AvatarMetadataAction {
 
+    /**
+     * The avatar URL.
+     */
     private final String avatar;
 
+    /**
+     * Constructor.
+     *
+     * @param avatar the avatar URL.
+     */
     public GiteaAvatar(String avatar) {
         this.avatar = avatar;
     }
 
     @Override
     public String getAvatarImageOf(@NonNull String size) {
-        return StringUtils.isBlank(avatar) ? null : GiteaAvatarCache.buildUrl(avatar, size);
+        return StringUtils.isBlank(avatar)
+                ? avatarIconClassNameImageOf("icon-gitea-logo", size)
+                : GiteaAvatarCache.buildUrl(avatar, size);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -54,8 +70,23 @@ public class GiteaAvatar extends AvatarMetadataAction {
         return avatar != null ? avatar.equals(that.avatar) : that.avatar == null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode() {
         return avatar != null ? avatar.hashCode() : 0;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return "GiteaAvatar{" +
+                "avatar='" + avatar + '\'' +
+                '}';
+    }
+
+
 }

@@ -23,6 +23,7 @@
  */
 package org.jenkinsci.plugin.gitea;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import java.io.IOException;
@@ -42,13 +43,29 @@ import org.jenkinsci.plugin.gitea.client.api.GiteaPullRequest;
 import org.jenkinsci.plugin.gitea.client.api.GiteaPullRequestEvent;
 import org.jenkinsci.plugin.gitea.client.api.GiteaPullRequestEventType;
 
+/**
+ * A {@link SCMHeadEvent} for a {@link GiteaPullRequestEvent}.
+ */
 public class GiteaPullSCMEvent extends AbstractGiteaSCMHeadEvent<GiteaPullRequestEvent> {
-    public GiteaPullSCMEvent(GiteaPullRequestEvent pushEvent, String origin) {
-        super(typeOf(pushEvent), pushEvent, origin);
+    /**
+     * Constructor.
+     *
+     * @param payload the payload.
+     * @param origin  the origin
+     */
+    public GiteaPullSCMEvent(@NonNull GiteaPullRequestEvent payload, @CheckForNull String origin) {
+        super(typeOf(payload), payload, origin);
     }
 
-    private static Type typeOf(GiteaPullRequestEvent pushEvent) {
-        switch (pushEvent.getAction()) {
+    /**
+     * Determines the {@link Type} of of a pull request event.
+     *
+     * @param event the pull request event.
+     * @return the type.
+     */
+    @NonNull
+    private static Type typeOf(@NonNull GiteaPullRequestEvent event) {
+        switch (event.getAction()) {
             case OPENED:
                 return Type.CREATED;
             case CLOSED:
@@ -59,6 +76,9 @@ public class GiteaPullSCMEvent extends AbstractGiteaSCMHeadEvent<GiteaPullReques
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String descriptionFor(@NonNull SCMNavigator navigator) {
         GiteaPullRequestEventType action = getPayload().getAction();
@@ -79,6 +99,9 @@ public class GiteaPullSCMEvent extends AbstractGiteaSCMHeadEvent<GiteaPullReques
                 .getName();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String descriptionFor(SCMSource source) {
         GiteaPullRequestEventType action = getPayload().getAction();
@@ -95,6 +118,9 @@ public class GiteaPullSCMEvent extends AbstractGiteaSCMHeadEvent<GiteaPullReques
         return "Pull request #" + getPayload().getNumber() + " event";
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String description() {
         GiteaPullRequestEventType action = getPayload().getAction();
@@ -119,7 +145,9 @@ public class GiteaPullSCMEvent extends AbstractGiteaSCMHeadEvent<GiteaPullReques
                 + getPayload().getRepository().getName();
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @NonNull
     @Override
     public Map<SCMHead, SCMRevision> headsFor(GiteaSCMSource source) {
@@ -168,14 +196,23 @@ public class GiteaPullSCMEvent extends AbstractGiteaSCMHeadEvent<GiteaPullReques
         return result;
     }
 
+    /**
+     * Our handler.
+     */
     @Extension
     public static class HandlerImpl extends GiteaWebhookHandler<GiteaPullSCMEvent, GiteaPullRequestEvent> {
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         protected GiteaPullSCMEvent createEvent(GiteaPullRequestEvent payload, String origin) {
             return new GiteaPullSCMEvent(payload, origin);
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         protected void process(GiteaPullSCMEvent event) {
             SCMHeadEvent.fireNow(event);
