@@ -22,7 +22,7 @@
 
     <properties>
         <jenkins.version>1.625.3</jenkins.version>
-        <scm-api.version>2.2.0-20170711.104235-14</scm-api.version>
+        <scm-api.version>2.2.0-20170711.141026-16</scm-api.version>
     </properties>
 
     <scm>
