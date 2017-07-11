@@ -50,7 +50,7 @@ public class GiteaAvatar extends AvatarMetadataAction {
     public String getAvatarImageOf(@NonNull String size) {
         return StringUtils.isBlank(avatar)
                 ? avatarIconClassNameImageOf("icon-gitea-logo", size)
-                : GiteaAvatarCache.buildUrl(avatar, size);
+                : cachedResizedImageOf(avatar, size);
     }
 
     /**
