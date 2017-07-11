@@ -47,6 +47,7 @@ import java.util.Locale;
 import javax.annotation.Nonnull;
 import jenkins.authentication.tokens.api.AuthenticationTokens;
 import jenkins.model.Jenkins;
+import jenkins.scm.api.SCMName;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugin.gitea.client.api.GiteaAuth;
 import org.jenkinsci.plugin.gitea.client.api.GiteaConnection;
@@ -108,55 +109,9 @@ public class GiteaServer extends AbstractDescribableImpl<GiteaServer> {
         this.manageHooks = manageHooks && StringUtils.isNotBlank(credentialsId);
         this.credentialsId = manageHooks ? credentialsId : null;
         this.serverUrl = GiteaServers.normalizeServerUrl(serverUrl);
-        if (displayName == null || StringUtils.isBlank(displayName)) {
-            // try to infer the display name
-            String hostName = null;
-            try {
-                hostName = inferDisplayName(serverUrl);
-            } catch (LinkageError e) {
-                // guava changed their @Beta API that we have compiled against
-            }
-            this.displayName = hostName;
-        } else {
-            this.displayName = displayName;
-        }
-    }
-
-    /**
-     * Makes best effort to guess a "sensible" display name from the hostname in the server URL.
-     *
-     * @param serverUrl the server URL.
-     * @return the display name or {@code null}
-     * @throws LinkageError if Guava changes their API that we have depended on.
-     */
-    @CheckForNull
-    /*package*/ static String inferDisplayName(@NonNull String serverUrl) throws LinkageError {
-        String hostName;
-        try {
-            URI serverUri = new URI(serverUrl);
-            hostName = serverUri.getHost();
-            if (hostName != null) {
-                // let's see if we can make this more "friendly"
-                InternetDomainName host = InternetDomainName.from(hostName);
-                if (host.hasPublicSuffix()) {
-                    String publicName = host.publicSuffix().name();
-                    hostName = StringUtils.removeEnd(StringUtils.removeEnd(host.name(), publicName), ".")
-                            .toLowerCase(Locale.ENGLISH);
-                } else {
-                    hostName = StringUtils.removeEnd(host.name(), ".").toLowerCase(Locale.ENGLISH);
-                }
-                for (String prefix : COMMON_PREFIX_HOSTNAMES) {
-                    if (hostName.startsWith(prefix)) {
-                        hostName = hostName.substring(prefix.length());
-                        break;
-                    }
-                }
-            }
-        } catch (URISyntaxException e) {
-            // ignore, best effort
-            hostName = null;
-        }
-        return hostName;
+        this.displayName = StringUtils.isBlank(displayName)
+                ? SCMName.fromUrl(this.serverUrl, COMMON_PREFIX_HOSTNAMES)
+                : displayName;
     }
 
     /**
