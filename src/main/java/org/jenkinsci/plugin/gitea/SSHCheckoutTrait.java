@@ -39,6 +39,7 @@ import hudson.model.queue.Tasks;
 import hudson.plugins.git.GitSCM;
 import hudson.scm.SCM;
 import hudson.security.ACL;
+import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import jenkins.model.Jenkins;
 import jenkins.plugins.git.GitSCMBuilder;
@@ -47,6 +48,7 @@ import jenkins.scm.api.trait.SCMBuilder;
 import jenkins.scm.api.trait.SCMSourceContext;
 import jenkins.scm.api.trait.SCMSourceTrait;
 import jenkins.scm.api.trait.SCMSourceTraitDescriptor;
+import org.apache.commons.lang.StringUtils;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.AncestorInPath;
@@ -79,7 +81,7 @@ public class SSHCheckoutTrait extends SCMSourceTrait {
         @NonNull
         @Override
         public String getDisplayName() {
-            return "Checkout over SSH";
+            return Messages.SSHCheckoutTrait_displayName();
         }
 
         @Override
@@ -122,7 +124,7 @@ public class SSHCheckoutTrait extends SCMSourceTrait {
                     return result;
                 }
             }
-            result.includeEmptyValue();
+            result.add(Messages.SSHCheckoutTrait_useAgentKey(), "");
             result.includeMatchingAs(
                     context instanceof Queue.Task ?
                             Tasks.getDefaultAuthenticationOf((Queue.Task) context)
@@ -134,5 +136,45 @@ public class SSHCheckoutTrait extends SCMSourceTrait {
             );
             return result;
         }
+
+        /**
+         * Validation for checkout credentials.
+         *
+         * @param context   the context.
+         * @param serverUrl the server url.
+         * @param value     the current selection.
+         * @return the validation results
+         */
+        @Restricted(NoExternalUse.class)
+        @SuppressWarnings("unused") // stapler form binding
+        public FormValidation doCheckCredentialsId(@CheckForNull @AncestorInPath Item context,
+                                                   @QueryParameter String serverUrl,
+                                                   @QueryParameter String value) {
+            if (context == null
+                    ? !Jenkins.getActiveInstance().hasPermission(Jenkins.ADMINISTER)
+                    : !context.hasPermission(Item.EXTENDED_READ)) {
+                return FormValidation.ok();
+            }
+            if (StringUtils.isBlank(value)) {
+                // use agent key
+                return FormValidation.ok();
+            }
+            if (CredentialsMatchers.firstOrNull(CredentialsProvider
+                            .lookupCredentials(SSHUserPrivateKey.class, context, context instanceof Queue.Task
+                                    ? Tasks.getDefaultAuthenticationOf((Queue.Task) context)
+                                    : ACL.SYSTEM, URIRequirementBuilder.fromUri(serverUrl).build()),
+                    CredentialsMatchers.withId(value)) != null) {
+                return FormValidation.ok();
+            }
+            if (CredentialsMatchers.firstOrNull(CredentialsProvider
+                            .lookupCredentials(StandardUsernameCredentials.class, context, context instanceof Queue.Task
+                                    ? Tasks.getDefaultAuthenticationOf((Queue.Task) context)
+                                    : ACL.SYSTEM, URIRequirementBuilder.fromUri(serverUrl).build()),
+                    CredentialsMatchers.withId(value)) != null) {
+                return FormValidation.error(Messages.SSHCheckoutTrait_incompatibleCredentials());
+            }
+            return FormValidation.warning(Messages.SSHCheckoutTrait_missingCredentials());
+        }
+
     }
 }
