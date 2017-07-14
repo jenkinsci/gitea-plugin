@@ -234,7 +234,7 @@ public class BranchDiscoveryTrait extends SCMSourceTrait {
                     if (p.getBase().getRepo().getOwner().getUsername()
                             .equalsIgnoreCase(p.getHead().getRepo().getOwner().getUsername())
                             && p.getBase().getRepo().getName().equalsIgnoreCase(p.getHead().getRepo().getName())
-                            && p.getHead().getRef().equalsIgnoreCase(head.getName())) {
+                            && p.getHead().getRef().equals(head.getName())) {
                         return true;
                     }
                 }
@@ -257,10 +257,11 @@ public class BranchDiscoveryTrait extends SCMSourceTrait {
                     if (p.getBase().getRepo().getOwner().getUsername()
                             .equalsIgnoreCase(p.getHead().getRepo().getOwner().getUsername())
                             && p.getBase().getRepo().getName().equalsIgnoreCase(p.getHead().getRepo().getName())
-                            && !p.getHead().getRef().equalsIgnoreCase(head.getName())) {
-                        return true;
+                            && !p.getHead().getRef().equals(head.getName())) {
+                        return false;
                     }
                 }
+                return true;
             }
             return false;
         }
