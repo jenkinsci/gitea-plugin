@@ -568,70 +568,70 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
         static {
             IconSet.icons.addIcon(
                     new Icon("icon-gitea-org icon-sm",
-                            "plugin/gitea-scm/images/16x16/gitea-org.png",
+                            "plugin/gitea/images/16x16/gitea-org.png",
                             Icon.ICON_SMALL_STYLE));
             IconSet.icons.addIcon(
                     new Icon("icon-gitea-org icon-md",
-                            "plugin/gitea-scm/images/24x24/gitea-org.png",
+                            "plugin/gitea/images/24x24/gitea-org.png",
                             Icon.ICON_MEDIUM_STYLE));
             IconSet.icons.addIcon(
                     new Icon("icon-gitea-org icon-lg",
-                            "plugin/gitea-scm/images/32x32/gitea-org.png",
+                            "plugin/gitea/images/32x32/gitea-org.png",
                             Icon.ICON_LARGE_STYLE));
             IconSet.icons.addIcon(
                     new Icon("icon-gitea-org icon-xlg",
-                            "plugin/gitea-scm/images/48x48/gitea-org.png",
+                            "plugin/gitea/images/48x48/gitea-org.png",
                             Icon.ICON_XLARGE_STYLE));
 
             IconSet.icons.addIcon(
                     new Icon("icon-gitea-logo icon-sm",
-                            "plugin/gitea-scm/images/16x16/gitea.png",
+                            "plugin/gitea/images/16x16/gitea.png",
                             Icon.ICON_SMALL_STYLE));
             IconSet.icons.addIcon(
                     new Icon("icon-gitea-logo icon-md",
-                            "plugin/gitea-scm/images/24x24/gitea.png",
+                            "plugin/gitea/images/24x24/gitea.png",
                             Icon.ICON_MEDIUM_STYLE));
             IconSet.icons.addIcon(
                     new Icon("icon-gitea-logo icon-lg",
-                            "plugin/gitea-scm/images/32x32/gitea.png",
+                            "plugin/gitea/images/32x32/gitea.png",
                             Icon.ICON_LARGE_STYLE));
             IconSet.icons.addIcon(
                     new Icon("icon-gitea-logo icon-xlg",
-                            "plugin/gitea-scm/images/48x48/gitea.png",
+                            "plugin/gitea/images/48x48/gitea.png",
                             Icon.ICON_XLARGE_STYLE));
 
             IconSet.icons.addIcon(
                     new Icon("icon-gitea-repo icon-sm",
-                            "plugin/gitea-scm/images/16x16/gitea-repo.png",
+                            "plugin/gitea/images/16x16/gitea-repo.png",
                             Icon.ICON_SMALL_STYLE));
             IconSet.icons.addIcon(
                     new Icon("icon-gitea-repo icon-md",
-                            "plugin/gitea-scm/images/24x24/gitea-repo.png",
+                            "plugin/gitea/images/24x24/gitea-repo.png",
                             Icon.ICON_MEDIUM_STYLE));
             IconSet.icons.addIcon(
                     new Icon("icon-gitea-repo icon-lg",
-                            "plugin/gitea-scm/images/32x32/gitea-repo.png",
+                            "plugin/gitea/images/32x32/gitea-repo.png",
                             Icon.ICON_LARGE_STYLE));
             IconSet.icons.addIcon(
                     new Icon("icon-gitea-repo icon-xlg",
-                            "plugin/gitea-scm/images/48x48/gitea-repo.png",
+                            "plugin/gitea/images/48x48/gitea-repo.png",
                             Icon.ICON_XLARGE_STYLE));
 
             IconSet.icons.addIcon(
                     new Icon("icon-gitea-branch icon-sm",
-                            "plugin/gitea-scm/images/16x16/gitea-branch.png",
+                            "plugin/gitea/images/16x16/gitea-branch.png",
                             Icon.ICON_SMALL_STYLE));
             IconSet.icons.addIcon(
                     new Icon("icon-gitea-branch icon-md",
-                            "plugin/gitea-scm/images/24x24/gitea-branch.png",
+                            "plugin/gitea/images/24x24/gitea-branch.png",
                             Icon.ICON_MEDIUM_STYLE));
             IconSet.icons.addIcon(
                     new Icon("icon-gitea-branch icon-lg",
-                            "plugin/gitea-scm/images/32x32/gitea-branch.png",
+                            "plugin/gitea/images/32x32/gitea-branch.png",
                             Icon.ICON_LARGE_STYLE));
             IconSet.icons.addIcon(
                     new Icon("icon-gitea-branch icon-xlg",
-                            "plugin/gitea-scm/images/48x48/gitea-branch.png",
+                            "plugin/gitea/images/48x48/gitea-branch.png",
                             Icon.ICON_XLARGE_STYLE));
         }
 
