@@ -42,6 +42,7 @@ import hudson.model.Queue;
 import hudson.model.TaskListener;
 import hudson.model.queue.Tasks;
 import hudson.security.ACL;
+import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -275,7 +276,7 @@ public class GiteaSCMNavigator extends SCMNavigator {
 
         @Override
         public String getDisplayName() {
-            return "Gitea Organization";
+            return Messages.GiteaSCMNavigator_displayName();
         }
 
         public ListBoxModel doFillServerUrlItems(@AncestorInPath SCMSourceOwner context,
@@ -329,10 +330,48 @@ public class GiteaSCMNavigator extends SCMNavigator {
             return result;
         }
 
+        public FormValidation doCheckCredentialsId(@AncestorInPath SCMSourceOwner context,
+                                                   @QueryParameter String serverUrl,
+                                                   @QueryParameter String value)
+                throws IOException, InterruptedException {
+            if (context == null) {
+                if (!Jenkins.getActiveInstance().hasPermission(Jenkins.ADMINISTER)) {
+                    return FormValidation.ok();
+                }
+            } else {
+                if (!context.hasPermission(Item.EXTENDED_READ)
+                        && !context.hasPermission(CredentialsProvider.USE_ITEM)) {
+                    return FormValidation.ok();
+                }
+            }
+            GiteaServer server = GiteaServers.get().findServer(serverUrl);
+            if (server == null) {
+                return FormValidation.ok();
+            }
+            if (StringUtils.isBlank(value)) {
+                return FormValidation.ok();
+            }
+            if (CredentialsProvider.listCredentials(
+                    StandardCredentials.class,
+                    context,
+                    context instanceof Queue.Task ?
+                            Tasks.getDefaultAuthenticationOf((Queue.Task) context)
+                            : ACL.SYSTEM,
+                    URIRequirementBuilder.fromUri(serverUrl).build(),
+                    CredentialsMatchers.allOf(
+                            CredentialsMatchers.withId(value),
+                            AuthenticationTokens.matcher(GiteaAuth.class)
+
+                    )).isEmpty()) {
+                return FormValidation.error(Messages.GiteaSCMNavigator_selectedCredentialsMissing());
+            }
+            return FormValidation.ok();
+        }
+
         @NonNull
         @Override
         public String getDescription() {
-            return "Scans a Gitea Organization (or user account) for all repositories matching some defined markers.";
+            return Messages.GiteaSCMNavigator_description();
         }
 
         @Override
@@ -342,7 +381,7 @@ public class GiteaSCMNavigator extends SCMNavigator {
 
         @Override
         public String getPronoun() {
-            return "Gitea Organization";
+            return Messages.GiteaSCMNavigator_pronoun();
         }
 
         @Override
@@ -374,18 +413,18 @@ public class GiteaSCMNavigator extends SCMNavigator {
                 }
             }
             List<NamedArrayList<? extends SCMTraitDescriptor<?>>> result = new ArrayList<>();
-            NamedArrayList.select(all, "Repositories", new NamedArrayList.Predicate<SCMTraitDescriptor<?>>() {
+            NamedArrayList.select(all, Messages.GiteaSCMNavigator_traitSection_repositories(), new NamedArrayList.Predicate<SCMTraitDescriptor<?>>() {
                         @Override
                         public boolean test(SCMTraitDescriptor<?> scmTraitDescriptor) {
                             return scmTraitDescriptor instanceof SCMNavigatorTraitDescriptor;
                         }
                     },
                     true, result);
-            NamedArrayList.select(all, "Within repository", NamedArrayList
+            NamedArrayList.select(all, Messages.GiteaSCMNavigator_traitSection_withinRepo(), NamedArrayList
                             .anyOf(NamedArrayList.withAnnotation(Discovery.class),
                                     NamedArrayList.withAnnotation(Selection.class)),
                     true, result);
-            NamedArrayList.select(all, "Additional", null, true, result);
+            NamedArrayList.select(all, Messages.GiteaSCMNavigator_traitSection_additional(), null, true, result);
             return result;
         }
 

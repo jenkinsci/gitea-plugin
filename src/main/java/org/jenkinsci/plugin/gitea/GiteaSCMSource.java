@@ -44,6 +44,7 @@ import hudson.model.TaskListener;
 import hudson.model.queue.Tasks;
 import hudson.scm.SCM;
 import hudson.security.ACL;
+import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -55,6 +56,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import jenkins.authentication.tokens.api.AuthenticationTokens;
 import jenkins.model.Jenkins;
 import jenkins.plugins.git.AbstractGitSCMSource;
@@ -84,12 +87,13 @@ import jenkins.scm.impl.UncategorizedSCMHeadCategory;
 import jenkins.scm.impl.form.NamedArrayList;
 import jenkins.scm.impl.trait.Discovery;
 import jenkins.scm.impl.trait.Selection;
+import org.apache.commons.lang.StringUtils;
 import org.jenkins.ui.icon.Icon;
 import org.jenkins.ui.icon.IconSet;
+import org.jenkinsci.plugin.gitea.client.api.Gitea;
 import org.jenkinsci.plugin.gitea.client.api.GiteaAuth;
 import org.jenkinsci.plugin.gitea.client.api.GiteaBranch;
 import org.jenkinsci.plugin.gitea.client.api.GiteaConnection;
-import org.jenkinsci.plugin.gitea.client.api.Gitea;
 import org.jenkinsci.plugin.gitea.client.api.GiteaIssueState;
 import org.jenkinsci.plugin.gitea.client.api.GiteaPullRequest;
 import org.jenkinsci.plugin.gitea.client.api.GiteaRepository;
@@ -101,6 +105,7 @@ import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 
 public class GiteaSCMSource extends AbstractGitSCMSource {
+    private static final Logger LOGGER = Logger.getLogger(GiteaSCMSource.class.getName());
     private final String serverUrl;
     private final String repoOwner;
     private final String repository;
@@ -691,6 +696,44 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
             return result;
         }
 
+        public FormValidation doCheckCredentialsId(@AncestorInPath SCMSourceOwner context,
+                                                   @QueryParameter String serverUrl,
+                                                   @QueryParameter String value)
+                throws IOException, InterruptedException{
+            if (context == null) {
+                if (!Jenkins.getActiveInstance().hasPermission(Jenkins.ADMINISTER)) {
+                    return FormValidation.ok();
+                }
+            } else {
+                if (!context.hasPermission(Item.EXTENDED_READ)
+                        && !context.hasPermission(CredentialsProvider.USE_ITEM)) {
+                    return FormValidation.ok();
+                }
+            }
+            GiteaServer server = GiteaServers.get().findServer(serverUrl);
+            if (server == null) {
+                return FormValidation.ok();
+            }
+            if (StringUtils.isBlank(value)) {
+                return FormValidation.ok();
+            }
+            if (CredentialsProvider.listCredentials(
+                    StandardCredentials.class,
+                    context,
+                    context instanceof Queue.Task ?
+                            Tasks.getDefaultAuthenticationOf((Queue.Task) context)
+                            : ACL.SYSTEM,
+                    URIRequirementBuilder.fromUri(serverUrl).build(),
+                    CredentialsMatchers.allOf(
+                            CredentialsMatchers.withId(value),
+                            AuthenticationTokens.matcher(GiteaAuth.class)
+
+                    )).isEmpty()) {
+                return FormValidation.error(Messages.GiteaSCMSource_selectedCredentialsMissing());
+            }
+            return FormValidation.ok();
+        }
+
         public ListBoxModel doFillRepositoryItems(@AncestorInPath SCMSourceOwner context,
                                                   @QueryParameter String serverUrl,
                                                   @QueryParameter String credentialsId,
@@ -711,6 +754,10 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
                     result.add(repository);
                     return result;
                 }
+            }
+            if (StringUtils.isBlank(repoOwner)) {
+                result.add(repository);
+                return result;
             }
             GiteaServer server = GiteaServers.get().findServer(serverUrl);
             if (server == null) {
@@ -739,6 +786,13 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
                     result.add(r.getName());
                 }
                 return result;
+            } catch (IOException e) {
+                // TODO once enhanced <f:select> that can handle error responses, just throw
+                LOGGER.log(Level.FINE, "Could not populate repositories", e);
+                if (result.isEmpty()) {
+                    result.add(repository);
+                }
+                return result;
             }
         }
 
@@ -758,11 +812,11 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
                 }
             }
             List<NamedArrayList<? extends SCMTraitDescriptor<?>>> result = new ArrayList<>();
-            NamedArrayList.select(all, "Within repository", NamedArrayList
+            NamedArrayList.select(all, Messages.GiteaSCMSource_traitSection_withinRepo(), NamedArrayList
                             .anyOf(NamedArrayList.withAnnotation(Discovery.class),
                                     NamedArrayList.withAnnotation(Selection.class)),
                     true, result);
-            NamedArrayList.select(all, "Additional", null, true, result);
+            NamedArrayList.select(all, Messages.GiteaSCMSource_traitSection_additional(), null, true, result);
             return result;
         }
 
