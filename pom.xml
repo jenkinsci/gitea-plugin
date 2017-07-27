@@ -60,7 +60,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>git</artifactId>
-            <version>3.4.0</version>
+            <version>3.5.0-20170727.090936-2</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
