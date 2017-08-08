@@ -136,7 +136,7 @@ public class GiteaPushSCMEvent extends AbstractGiteaSCMHeadEvent<GiteaPushEvent>
          */
         @Override
         protected void process(GiteaPushSCMEvent event) {
-
+            SCMHeadEvent.fireNow(event);
         }
     }
 }
