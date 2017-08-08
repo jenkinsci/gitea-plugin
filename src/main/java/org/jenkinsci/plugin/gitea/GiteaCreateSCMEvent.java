@@ -26,6 +26,12 @@ package org.jenkinsci.plugin.gitea;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
+import hudson.plugins.git.BranchSpec;
+import hudson.plugins.git.GitSCM;
+import hudson.plugins.git.GitStatus;
+import hudson.plugins.git.extensions.impl.IgnoreNotifyCommit;
+import hudson.scm.SCM;
+import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.Map;
 import jenkins.scm.api.SCMHead;
@@ -34,6 +40,8 @@ import jenkins.scm.api.SCMNavigator;
 import jenkins.scm.api.SCMRevision;
 import jenkins.scm.api.SCMSource;
 import org.eclipse.jgit.lib.Constants;
+import org.eclipse.jgit.transport.RemoteConfig;
+import org.eclipse.jgit.transport.URIish;
 import org.jenkinsci.plugin.gitea.client.api.GiteaCreateEvent;
 
 /**
@@ -92,6 +100,44 @@ public class GiteaCreateSCMEvent extends AbstractGiteaSCMHeadEvent<GiteaCreateEv
         ref = ref.startsWith(Constants.R_HEADS) ? ref.substring(Constants.R_HEADS.length()) : ref;
         BranchSCMHead h = new BranchSCMHead(ref);
         return Collections.<SCMHead, SCMRevision>singletonMap(h, new BranchSCMRevision(h, getPayload().getSha()));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isMatch(@NonNull SCM scm) {
+        URIish uri;
+        try {
+            uri = new URIish(getPayload().getRepository().getHtmlUrl());
+        } catch (URISyntaxException e) {
+            return false;
+        }
+        String ref = getPayload().getRef();
+        ref = ref.startsWith(Constants.R_HEADS) ? ref.substring(Constants.R_HEADS.length()) : ref;
+        if (scm instanceof GitSCM) {
+            GitSCM git = (GitSCM) scm;
+            if (git.getExtensions().get(IgnoreNotifyCommit.class) != null) {
+                return false;
+            }
+            for (RemoteConfig repository : git.getRepositories()) {
+                for (URIish remoteURL : repository.getURIs()) {
+                    if (GitStatus.looselyMatches(uri, remoteURL)) {
+                        for (BranchSpec branchSpec : git.getBranches()) {
+                            if (branchSpec.getName().contains("$")) {
+                                // If the branchspec is parametrized, always run the polling
+                                return true;
+                            } else {
+                                if (branchSpec.matches(repository.getName() + "/" + ref)) {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     /**
