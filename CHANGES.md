@@ -10,9 +10,14 @@
 
 -->
 
-## Version 1.0.2 (unreleased)
+## Version 1.0.3 (unreleased)
 
 * ...
+
+## Version 1.0.2 (2017-08-08)
+
+* Fix Webhook notification of pushes to branches
+* Add webhook notification and management of non-`SCMSource` based job types
 
 ## Version 1.0.1 (2017-07-28)
 
