@@ -355,7 +355,7 @@ public class GiteaWebhookListener {
     // TODO remove class once GitSCM implements jenkins.scm.SCM2
     @Restricted(DoNotUse.class)
     @Extension
-    public class GitSCMOnSaveNotifier extends SaveableListener {
+    public static class GitSCMOnSaveNotifier extends SaveableListener {
 
         /**
          * {@inheritDoc}
