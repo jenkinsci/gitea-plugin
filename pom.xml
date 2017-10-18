@@ -106,6 +106,7 @@
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>branch-api</artifactId>
             <version>2.5.4</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>

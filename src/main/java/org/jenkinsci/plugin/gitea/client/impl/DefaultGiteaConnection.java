@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2017, CloudBees, Inc.
+ * Copyright (c) 2017-2020, CloudBees, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -51,10 +51,12 @@ import jenkins.model.Jenkins;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.jenkinsci.plugin.gitea.client.api.GiteaAnnotatedTag;
 import org.jenkinsci.plugin.gitea.client.api.GiteaAuth;
 import org.jenkinsci.plugin.gitea.client.api.GiteaAuthToken;
 import org.jenkinsci.plugin.gitea.client.api.GiteaAuthUser;
 import org.jenkinsci.plugin.gitea.client.api.GiteaBranch;
+import org.jenkinsci.plugin.gitea.client.api.GiteaCommitDetail;
 import org.jenkinsci.plugin.gitea.client.api.GiteaCommitStatus;
 import org.jenkinsci.plugin.gitea.client.api.GiteaConnection;
 import org.jenkinsci.plugin.gitea.client.api.GiteaHook;
@@ -65,6 +67,7 @@ import org.jenkinsci.plugin.gitea.client.api.GiteaOrganization;
 import org.jenkinsci.plugin.gitea.client.api.GiteaOwner;
 import org.jenkinsci.plugin.gitea.client.api.GiteaPullRequest;
 import org.jenkinsci.plugin.gitea.client.api.GiteaRepository;
+import org.jenkinsci.plugin.gitea.client.api.GiteaTag;
 import org.jenkinsci.plugin.gitea.client.api.GiteaUser;
 import org.jenkinsci.plugin.gitea.client.api.GiteaVersion;
 import org.kohsuke.accmod.Restricted;
@@ -303,6 +306,73 @@ class DefaultGiteaConnection implements GiteaConnection {
     @Override
     public List<GiteaBranch> fetchBranches(GiteaRepository repository) throws IOException, InterruptedException {
         return fetchBranches(repository.getOwner().getUsername(), repository.getName());
+    }
+
+    @Override
+    public GiteaAnnotatedTag fetchAnnotatedTag(String username, String repository, String sha1)
+            throws IOException, InterruptedException {
+        return getObject(
+                api()
+                        .literal("/repos")
+                        .path(UriTemplateBuilder.var("username"))
+                        .path(UriTemplateBuilder.var("repository"))
+                        .literal("/git/tags")
+                        .path(UriTemplateBuilder.var("sha1"))
+                        .build()
+                        .set("username", username)
+                        .set("repository", repository)
+                        .set("sha1", sha1),
+                GiteaAnnotatedTag.class
+        );
+    }
+
+    @Override
+    public GiteaAnnotatedTag fetchAnnotatedTag(GiteaRepository repository, GiteaTag tag) throws IOException, InterruptedException {
+        return fetchAnnotatedTag(repository.getOwner().getUsername(), repository.getName(), tag.getId());
+    }
+
+    @Override
+    public List<GiteaTag> fetchTags(String username, String name) throws IOException, InterruptedException {
+        return getList(
+                api()
+                        .literal("/repos")
+                        .path(UriTemplateBuilder.var("username"))
+                        .path(UriTemplateBuilder.var("name"))
+                        .literal("/tags")
+                        .build()
+                        .set("username", username)
+                        .set("name", name),
+                GiteaTag.class
+        );
+    }
+
+    @Override
+    public List<GiteaTag> fetchTags(GiteaRepository repository) throws IOException, InterruptedException {
+        return fetchTags(repository.getOwner().getUsername(), repository.getName());
+    }
+
+    @Override
+    public GiteaCommitDetail fetchCommit(String username, String repository, String sha1)
+            throws IOException, InterruptedException {
+        return getObject(
+                api()
+                        .literal("/repos")
+                        .path(UriTemplateBuilder.var("username"))
+                        .path(UriTemplateBuilder.var("repository"))
+                        .literal("/git/commits")
+                        .path(UriTemplateBuilder.var("sha1"))
+                        .build()
+                        .set("username", username)
+                        .set("repository", repository)
+                        .set("sha1", sha1),
+                GiteaCommitDetail.class
+        );
+    }
+
+    @Override
+    public GiteaCommitDetail fetchCommit(GiteaRepository repository, String sha1)
+            throws IOException, InterruptedException {
+        return fetchCommit(repository.getOwner().getUsername(), repository.getName(), sha1);
     }
 
     @Override

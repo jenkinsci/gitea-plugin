@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2017, CloudBees, Inc.
+ * Copyright (c) 2017-2020, CloudBees, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -132,6 +132,10 @@ public class GiteaSCMFileSystem extends SCMFileSystem {
                 repository = ((PullRequestSCMHead) head).getOriginRepository();
                 ref = ((PullRequestSCMHead) head).getOriginName();
             } else if (head instanceof BranchSCMHead) {
+                repoOwner = src.getRepoOwner();
+                repository = src.getRepository();
+                ref = head.getName();
+            } else if (head instanceof TagSCMHead) {
                 repoOwner = src.getRepoOwner();
                 repository = src.getRepository();
                 ref = head.getName();
