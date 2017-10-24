@@ -10,9 +10,13 @@
 
 -->
 
-## Version 1.0.3 (unreleased)
+## Version 1.0.4 (unreleased)
 
 * ...
+
+## Version 1.0.3 (2017-10-24)
+
+* Update to new Gitea logo
 
 ## Version 1.0.2 (2017-08-08)
 
