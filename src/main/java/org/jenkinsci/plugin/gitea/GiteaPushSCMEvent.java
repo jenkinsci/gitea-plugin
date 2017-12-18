@@ -76,7 +76,6 @@ public class GiteaPushSCMEvent extends AbstractGiteaSCMHeadEvent<GiteaPushEvent>
         }
         if (StringUtils.isBlank(event.getAfter())
                 || "0000000000000000000000000000000000000000".equals(event.getAfter())) {
-            // TODO currently do not receive these ever: https://github.com/go-gitea/gitea/issues/2105
             return Type.REMOVED;
         }
         return Type.UPDATED;
