@@ -23,36 +23,34 @@
  */
 package org.jenkinsci.plugin.gitea.client.api;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Gitea event types.
+ * Gitea {@link GiteaEventType#REPOSITORY} event.
  */
-public enum GiteaEventType {
-    CREATE("create"),
-    PUSH("push"),
-    PULL_REQUEST("pull_request"),
-    REPOSITORY("repository");
+@JsonIgnoreProperties(ignoreUnknown = Gitea.IGNORE_UNKNOWN_PROPERTIES)
+public class GiteaRepositoryEvent extends GiteaEvent {
+    private String action;
 
-    private final String key;
-
-    GiteaEventType(String key) {
-        this.key = key;
+    @Override
+    public GiteaRepositoryEvent clone() {
+        return (GiteaRepositoryEvent) super.clone();
     }
 
-    @JsonCreator
-    public static GiteaEventType fromString(String key) {
-        for (GiteaEventType s : values()) {
-            if (key.equals(s.key)) {
-                return s;
-            }
-        }
-        return null;
+    @Override
+    public String toString() {
+        return "GiteaRepositoryEvent{" +
+                super.toString() +
+                ", action='" + action + '\'' +
+                '}';
     }
 
-    @JsonValue
-    public String getKey() {
-        return key;
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
     }
 }
