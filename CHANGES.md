@@ -10,9 +10,14 @@
 
 -->
 
-## Version 1.0.4 (unreleased)
+## Version 1.0.5 (unreleased)
 
 * ...
+
+## Version 1.0.4 (2017-12-18)
+
+* Added support for Webhook notification of repository creation / deletion now that Gitea 1.3 supports those events
+* Verified branch deletion events sent by Gitea 1.3 are parsed correctly
 
 ## Version 1.0.3 (2017-10-24)
 
