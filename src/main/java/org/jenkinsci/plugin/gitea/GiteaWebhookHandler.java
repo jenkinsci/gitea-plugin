@@ -138,7 +138,7 @@ public abstract class GiteaWebhookHandler<E extends SCMEvent<P>, P extends Gitea
 
     @Override
     public String toString() {
-        return "GiteaWebhookHandler{" +
+        return getClass().getSimpleName()+"{" +
                 "eventName='" + eventName + '\'' +
                 ", eventClass=" + eventClass +
                 ", payloadClass=" + payloadClass +
