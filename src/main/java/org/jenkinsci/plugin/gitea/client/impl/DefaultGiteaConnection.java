@@ -55,6 +55,7 @@ import org.jenkinsci.plugin.gitea.client.api.GiteaBranch;
 import org.jenkinsci.plugin.gitea.client.api.GiteaCommitStatus;
 import org.jenkinsci.plugin.gitea.client.api.GiteaConnection;
 import org.jenkinsci.plugin.gitea.client.api.GiteaHook;
+import org.jenkinsci.plugin.gitea.client.api.GiteaHttpStatusException;
 import org.jenkinsci.plugin.gitea.client.api.GiteaIssue;
 import org.jenkinsci.plugin.gitea.client.api.GiteaIssueState;
 import org.jenkinsci.plugin.gitea.client.api.GiteaOrganization;
@@ -865,7 +866,7 @@ class DefaultGiteaConnection implements GiteaConnection {
                     return mapper.readerFor(modelClass).readValue(is);
                 }
             }
-            throw new IOException("HTTP " + status + "/" + connection.getResponseMessage());
+            throw new GiteaHttpStatusException(status, connection.getResponseMessage());
         } finally {
             connection.disconnect();
         }
@@ -904,9 +905,11 @@ class DefaultGiteaConnection implements GiteaConnection {
                     return mapper.readerFor(modelClass).readValue(is);
                 }
             }
-            throw new IOException(
-                    "HTTP " + status + "/" + connection.getResponseMessage() + "\n" + (bytes != null ? new String(bytes,
-                            StandardCharsets.UTF_8) : ""));
+            throw new GiteaHttpStatusException(
+                    status,
+                    connection.getResponseMessage(),
+                    bytes != null ? new String(bytes, StandardCharsets.UTF_8) : null
+            );
         } finally {
             connection.disconnect();
         }
@@ -945,7 +948,11 @@ class DefaultGiteaConnection implements GiteaConnection {
                     return mapper.readerFor(modelClass).readValue(is);
                 }
             }
-            throw new IOException("HTTP " + status + "/" + connection.getResponseMessage());
+            throw new GiteaHttpStatusException(
+                    status,
+                    connection.getResponseMessage(),
+                    bytes != null ? new String(bytes, StandardCharsets.UTF_8) : null
+            );
         } finally {
             connection.disconnect();
         }
@@ -964,7 +971,7 @@ class DefaultGiteaConnection implements GiteaConnection {
                             .readValue(is);
                 }
             }
-            throw new IOException("HTTP " + status + "/" + connection.getResponseMessage());
+            throw new GiteaHttpStatusException(status,connection.getResponseMessage());
         } finally {
             connection.disconnect();
         }

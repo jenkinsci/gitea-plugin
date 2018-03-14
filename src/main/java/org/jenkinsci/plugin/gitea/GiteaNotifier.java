@@ -57,6 +57,7 @@ import org.acegisecurity.context.SecurityContextHolder;
 import org.jenkinsci.plugin.gitea.client.api.GiteaCommitState;
 import org.jenkinsci.plugin.gitea.client.api.GiteaCommitStatus;
 import org.jenkinsci.plugin.gitea.client.api.GiteaConnection;
+import org.jenkinsci.plugin.gitea.client.api.GiteaHttpStatusException;
 import org.jenkinsci.plugins.displayurlapi.DisplayURLProvider;
 
 /**
@@ -136,7 +137,20 @@ public class GiteaNotifier {
             }
         }
         try (GiteaConnection c = source.gitea().open()) {
-            c.createCommitStatus(source.getRepoOwner(), source.getRepository(), hash, status);
+            int tries = 3;
+            while (true){
+                tries--;
+                try {
+                    c.createCommitStatus(source.getRepoOwner(), source.getRepository(), hash, status);
+                    break;
+                } catch (GiteaHttpStatusException e) {
+                    if (e.getStatusCode() == 500 && tries > 0) {
+                        // server may be overloaded
+                        continue;
+                    }
+                    throw e;
+                }
+            }
             listener.getLogger().format("[Gitea] Notified%n");
         }
     }
