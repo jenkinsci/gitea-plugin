@@ -12,8 +12,7 @@
 
 ## Version 1.0.5 (unreleased)
 
-* ...
-
+* Fix parsing of clone URLs when Gitea is publishes scp style clone URLs ([JENKINS-49768](https://issues.jenkins-ci.org/browse/JENKINS-49768))
 ## Version 1.0.4 (2017-12-18)
 
 * Added support for Webhook notification of repository creation / deletion now that Gitea 1.3 supports those events
