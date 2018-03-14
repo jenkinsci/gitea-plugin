@@ -25,6 +25,8 @@ package org.jenkinsci.plugin.gitea.client.api;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.DoNotUse;
 
 @JsonIgnoreProperties(ignoreUnknown = Gitea.IGNORE_UNKNOWN_PROPERTIES)
 public final class GiteaVersion extends GiteaObject<GiteaVersion> {
@@ -41,9 +43,16 @@ public final class GiteaVersion extends GiteaObject<GiteaVersion> {
         return version;
     }
 
-    @JsonProperty("Version")
+    @JsonProperty("version")
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    @Deprecated
+    @Restricted(DoNotUse.class) // TODO switch to @JsonAlias once Jackson 2.9.0+
+    @JsonProperty("Version")
+    public void set_Version(String version) {
+        setVersion(version);
     }
 
     /**
