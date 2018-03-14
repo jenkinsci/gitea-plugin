@@ -29,6 +29,7 @@ import hudson.model.UnprotectedRootAction;
 import hudson.security.csrf.CrumbExclusion;
 import hudson.util.HttpResponses;
 import java.io.IOException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -70,28 +71,43 @@ public class GiteaWebhookAction extends CrumbExclusion implements UnprotectedRoo
     }
 
     public HttpResponse doPost(StaplerRequest request) throws IOException {
+        String origin = SCMEvent.originOf(request);
         if (!request.getMethod().equals("POST")) {
+            LOGGER.log(Level.FINE, "Received {0} request (expecting POST) from {1}",
+                    new Object[]{request.getMethod(), origin});
             return HttpResponses
                     .error(HttpServletResponse.SC_BAD_REQUEST,
                             "Only POST requests are supported, this was a " + request.getMethod() + " request");
         }
         if (!"application/json".equals(request.getContentType())) {
+            LOGGER.log(Level.FINE, "Received {0} body (expecting application/json) from {1}",
+                    new Object[]{request.getContentType(), origin});
             return HttpResponses
                     .error(HttpServletResponse.SC_BAD_REQUEST,
                             "Only application/json content is supported, this was " + request.getContentType());
         }
         String type = request.getHeader("X-Gitea-Event");
         if (StringUtils.isBlank(type)) {
+            LOGGER.log(Level.FINE, "Received request without X-Gitea-Event header from {1}",
+                    new Object[]{request.getContentType(), origin});
             return HttpResponses.error(HttpServletResponse.SC_BAD_REQUEST,
                     "Expecting a Gitea event, missing expected X-Gitea-Event header");
         }
-        String origin = SCMEvent.originOf(request);
+        LOGGER.log(Level.FINER, "Received {0} event from {1}", new Object[]{
+                request.getContentType(), origin
+        });
         boolean processed = false;
         for (GiteaWebhookHandler<?, ?> h : ExtensionList.lookup(GiteaWebhookHandler.class)) {
             if (h.matches(type)) {
+                LOGGER.log(Level.FINER, "Processing {0} event from {1} with {2}",
+                        new Object[]{type, origin, h});
                 h.process(request.getInputStream(), origin);
                 processed = true;
             }
+        }
+        if (!processed) {
+            LOGGER.log(Level.INFO, "Received hook payload with unknown type: {0} from {1}",
+                    new Object[]{type, origin});
         }
         return HttpResponses.plainText(processed ? "Processed" : "Ignored");
     }
