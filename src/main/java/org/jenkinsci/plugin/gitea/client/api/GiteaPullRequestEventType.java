@@ -29,7 +29,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public enum GiteaPullRequestEventType {
     OPENED("opened"),
     CLOSED("closed"),
-    REOPENED("reopened");
+    REOPENED("reopened"),
+    SYNCHRONIZED("synchronized");
 
     private final String key;
 
