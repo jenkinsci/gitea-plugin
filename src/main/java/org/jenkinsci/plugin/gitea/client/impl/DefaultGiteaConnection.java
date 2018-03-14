@@ -42,6 +42,7 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.EnumSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import javax.net.ssl.HttpsURLConnection;
@@ -967,8 +968,16 @@ class DefaultGiteaConnection implements GiteaConnection {
             int status = connection.getResponseCode();
             if (status / 100 == 2) {
                 try (InputStream is = connection.getInputStream()) {
-                    return mapper.readerFor(mapper.getTypeFactory().constructCollectionType(List.class, modelClass))
-                            .readValue(is);
+                    List<T> list = mapper.readerFor(mapper.getTypeFactory()
+                                    .constructCollectionType(List.class, modelClass))
+                                    .readValue(is);
+                    // strip null values from the list
+                    for (Iterator<T> iterator = list.iterator(); iterator.hasNext(); ) {
+                        if (iterator.next() == null) {
+                            iterator.remove();
+                        }
+                    }
+                    return list;
                 }
             }
             throw new GiteaHttpStatusException(status,connection.getResponseMessage());
