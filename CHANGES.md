@@ -10,7 +10,11 @@
 
 -->
 
-## Version 1.0.5 (unreleased)
+## Version 1.0.6 (unreleased)
+
+* ...
+
+## Version 1.0.5 (2018-03-14)
 
 * Fix receipt of `pull_request` webhooks.
 * Fix parsing of clone URLs when Gitea is publishes scp style clone URLs ([JENKINS-49768](https://issues.jenkins-ci.org/browse/JENKINS-49768))
