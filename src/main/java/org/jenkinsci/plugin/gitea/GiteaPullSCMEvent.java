@@ -202,6 +202,10 @@ public class GiteaPullSCMEvent extends AbstractGiteaSCMHeadEvent<GiteaPullReques
     @Extension
     public static class HandlerImpl extends GiteaWebhookHandler<GiteaPullSCMEvent, GiteaPullRequestEvent> {
 
+        public HandlerImpl() {
+            super("pull_request");
+        }
+
         /**
          * {@inheritDoc}
          */
