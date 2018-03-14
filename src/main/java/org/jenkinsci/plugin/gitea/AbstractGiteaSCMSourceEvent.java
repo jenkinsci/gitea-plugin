@@ -38,6 +38,8 @@ import jenkins.scm.api.SCMSource;
 import jenkins.scm.api.SCMSourceEvent;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugin.gitea.client.api.GiteaEvent;
+import org.jenkinsci.plugin.gitea.servers.GiteaServer;
+import org.jenkinsci.plugin.gitea.servers.GiteaServers;
 
 /**
  * Base class for {@link SCMHeadEvent} from Gitea.
@@ -62,57 +64,9 @@ public abstract class AbstractGiteaSCMSourceEvent<E extends GiteaEvent> extends 
     @Override
     public boolean isMatch(@NonNull SCMNavigator navigator) {
         if (navigator instanceof GiteaSCMNavigator) {
-            // check the owner, we don't care about the event if the owner isn't a match
-            if (!getPayload().getRepository().getOwner().getUsername()
-                    .equalsIgnoreCase(((GiteaSCMNavigator) navigator).getRepoOwner())) {
-                return false;
-            }
-
-            try {
-                URI serverUri = new URI(((GiteaSCMNavigator) navigator).getServerUrl());
-                URI eventUri = new URI(getPayload().getRepository().getHtmlUrl());
-                if (!serverUri.getHost().equalsIgnoreCase(eventUri.getHost())) {
-                    return false;
-                }
-                if ("http".equals(serverUri.getScheme())) {
-                    int serverPort = serverUri.getPort();
-                    if (serverPort == -1) {
-                        serverPort = 80;
-                    }
-                    if ("http".equals(eventUri.getScheme())) {
-                        int eventPort = eventUri.getPort();
-                        if (eventPort == -1) {
-                            eventPort = 80;
-                        }
-                        if (serverPort != eventPort) {
-                            return false;
-                        }
-                    } else if (!"https".equals(eventUri.getScheme())) {
-                        return false;
-                    }
-                } else if ("https".equals(serverUri.getScheme())) {
-                    int serverPort = serverUri.getPort();
-                    if (serverPort == -1) {
-                        serverPort = 443;
-                    }
-                    if ("https".equals(eventUri.getScheme())) {
-                        int eventPort = eventUri.getPort();
-                        if (eventPort == -1) {
-                            eventPort = 443;
-                        }
-                        if (serverPort != eventPort) {
-                            return false;
-                        }
-                    } else if (!"http".equals(eventUri.getScheme())) {
-                        return false;
-                    }
-                }
-                String serverPath = StringUtils.defaultIfBlank(serverUri.getPath(), "");
-                String eventPath = StringUtils.defaultIfBlank(eventUri.getPath(), "/");
-                return eventPath.startsWith(serverPath + "/");
-            } catch (URISyntaxException e) {
-                // ignore
-            }
+            GiteaSCMNavigator nav = (GiteaSCMNavigator) navigator;
+            return StringUtils.equalsIgnoreCase(getPayload().getRepository().getOwner().getUsername(), nav.getRepoOwner())
+                    && GiteaServers.isEventFor(nav.getServerUrl(), getPayload().getRepository().getHtmlUrl());
         }
         return false;
     }
@@ -135,7 +89,9 @@ public abstract class AbstractGiteaSCMSourceEvent<E extends GiteaEvent> extends 
             return false;
         }
         GiteaSCMSource src = (GiteaSCMSource) source;
-        return getPayload().getRepository().getOwner().getUsername().equalsIgnoreCase(src.getRepoOwner())
-                && getPayload().getRepository().getName().equalsIgnoreCase(src.getRepository());
+        return StringUtils.equalsIgnoreCase(getPayload().getRepository().getOwner().getUsername(), src.getRepoOwner())
+                && StringUtils.equalsIgnoreCase(getPayload().getRepository().getName(), src.getRepository())
+                && GiteaServers.isEventFor(src.getServerUrl(), getPayload().getRepository().getHtmlUrl());
+
     }
 }

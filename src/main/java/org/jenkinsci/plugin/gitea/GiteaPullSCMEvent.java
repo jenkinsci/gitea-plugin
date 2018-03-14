@@ -27,6 +27,7 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import java.io.IOException;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -39,6 +40,7 @@ import jenkins.scm.api.SCMNavigator;
 import jenkins.scm.api.SCMRevision;
 import jenkins.scm.api.SCMSource;
 import jenkins.scm.api.mixin.ChangeRequestCheckoutStrategy;
+import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugin.gitea.client.api.GiteaPullRequest;
 import org.jenkinsci.plugin.gitea.client.api.GiteaPullRequestEvent;
 import org.jenkinsci.plugin.gitea.client.api.GiteaPullRequestEventType;
@@ -155,40 +157,70 @@ public class GiteaPullSCMEvent extends AbstractGiteaSCMHeadEvent<GiteaPullReques
         try (GiteaSCMSourceRequest request = new GiteaSCMSourceContext(null, SCMHeadObserver.none())
                 .withTraits(source.getTraits())
                 .newRequest(source, null)) {
+            if (!request.isFetchPRs()) {
+                return result;
+            }
             final GiteaPullRequest p = getPayload().getPullRequest();
-            String originOwner = p.getHead().getRepo().getOwner().getUsername();
-            String originRepository = p.getHead().getRepo().getName();
-            Set<ChangeRequestCheckoutStrategy> strategies = request.getPRStrategies(
-                    source.getRepoOwner().equalsIgnoreCase(originOwner)
-                            && source.getRepository().equalsIgnoreCase(originRepository)
-            );
-            for (ChangeRequestCheckoutStrategy strategy : strategies) {
-                PullRequestSCMHead h = new PullRequestSCMHead(
-                        "PR-" + p.getNumber() + (strategies.size() > 1 ? "-" + strategy.name()
-                                .toLowerCase(Locale.ENGLISH) : ""),
-                        p.getNumber(),
-                        new BranchSCMHead(p.getBase().getRef()),
-                        ChangeRequestCheckoutStrategy.MERGE,
-                        originOwner.equalsIgnoreCase(source.getRepoOwner())
-                                && originRepository.equalsIgnoreCase(source.getRepository())
-                                ? SCMHeadOrigin.DEFAULT
-                                : new SCMHeadOrigin.Fork(originOwner + "/" + originRepository),
-                        originOwner,
-                        originRepository,
-                        p.getHead().getRef());
-                result.put(h, getPayload().getAction() == GiteaPullRequestEventType.CLOSED
-                        ? null
-                        : new PullRequestSCMRevision(
-                                h,
-                                new BranchSCMRevision(
-                                        h.getTarget(),
-                                        p.getBase().getSha()
-                                ),
-                                new BranchSCMRevision(
-                                        new BranchSCMHead(h.getOriginName()),
-                                        p.getHead().getSha()
-                                )
-                        ));
+            if (p == null) {
+                // the pull request has been deleted, sadly we have no way to determine where the PR was from
+                // so we just blast hit with all potential cases and using dummy values.
+                // the values are not important as the event consumers will be matching on SCMHead.getName()
+                // and so will see that there is a new "head" for the old name, reconfirm the revision
+                // and find that the head no longer exists... and our job is done!
+                Set<ChangeRequestCheckoutStrategy> strategies = EnumSet.noneOf(ChangeRequestCheckoutStrategy.class);
+                if (request.isFetchForkPRs()) {
+                    strategies.addAll(request.getForkPRStrategies());
+                }
+                if (request.isFetchOriginPRs()) {
+                    strategies.addAll(request.getOriginPRStrategies());
+                }
+                for (ChangeRequestCheckoutStrategy strategy : strategies) {
+                    result.put(new PullRequestSCMHead(
+                            "PR-" + getPayload().getNumber() + (strategies.size() > 1 ? "-" + strategy.name()
+                                    .toLowerCase(Locale.ENGLISH) : ""),
+                            getPayload().getNumber(),
+                            new BranchSCMHead("dummy-name"),
+                            ChangeRequestCheckoutStrategy.MERGE,
+                            SCMHeadOrigin.DEFAULT,
+                            source.getRepoOwner(),
+                            source.getRepository(),
+                            "dummy-name"), null);
+                }
+            } else {
+                String originOwner = p.getHead().getRepo().getOwner().getUsername();
+                String originRepository = p.getHead().getRepo().getName();
+                Set<ChangeRequestCheckoutStrategy> strategies = request.getPRStrategies(
+                        !StringUtils.equalsIgnoreCase(source.getRepoOwner(), originOwner)
+                                && StringUtils.equalsIgnoreCase(source.getRepository(), originRepository)
+                );
+                for (ChangeRequestCheckoutStrategy strategy : strategies) {
+                    PullRequestSCMHead h = new PullRequestSCMHead(
+                            "PR-" + p.getNumber() + (strategies.size() > 1 ? "-" + strategy.name()
+                                    .toLowerCase(Locale.ENGLISH) : ""),
+                            p.getNumber(),
+                            new BranchSCMHead(p.getBase().getRef()),
+                            strategy,
+                            StringUtils.equalsIgnoreCase(originOwner, source.getRepoOwner())
+                                    && StringUtils.equalsIgnoreCase(originRepository, source.getRepository())
+                                    ? SCMHeadOrigin.DEFAULT
+                                    : new SCMHeadOrigin.Fork(originOwner + "/" + originRepository),
+                            originOwner,
+                            originRepository,
+                            p.getHead().getRef());
+                    result.put(h, getPayload().getAction() == GiteaPullRequestEventType.CLOSED
+                            ? null
+                            : new PullRequestSCMRevision(
+                                    h,
+                                    new BranchSCMRevision(
+                                            h.getTarget(),
+                                            p.getBase().getSha()
+                                    ),
+                                    new BranchSCMRevision(
+                                            new BranchSCMHead(h.getOriginName()),
+                                            p.getHead().getSha()
+                                    )
+                            ));
+                }
             }
         } catch (IOException e) {
             // ignore

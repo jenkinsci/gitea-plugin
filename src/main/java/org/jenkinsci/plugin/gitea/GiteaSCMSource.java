@@ -288,6 +288,9 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
                     listener.getLogger().format("%n  Checking pull requests...%n");
                     for (final GiteaPullRequest p : c
                             .fetchPullRequests(giteaRepository, EnumSet.of(GiteaIssueState.OPEN))) {
+                        if (p == null) {
+                            continue;
+                        }
                         count++;
                         listener.getLogger().format("%n  Checking pull request %s%n",
                                 HyperlinkNote.encodeTo(
@@ -303,8 +306,8 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
                         String originOwner = p.getHead().getRepo().getOwner().getUsername();
                         String originRepository = p.getHead().getRepo().getName();
                         Set<ChangeRequestCheckoutStrategy> strategies = request.getPRStrategies(
-                                repoOwner.equalsIgnoreCase(originOwner)
-                                        && repository.equalsIgnoreCase(originRepository)
+                                !StringUtils.equalsIgnoreCase(repoOwner, originOwner)
+                                        && StringUtils.equalsIgnoreCase(repository, originRepository)
                         );
                         for (ChangeRequestCheckoutStrategy strategy : strategies) {
                             if (request.process(new PullRequestSCMHead(
@@ -312,9 +315,9 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
                                                     .toLowerCase(Locale.ENGLISH) : ""),
                                             p.getNumber(),
                                             new BranchSCMHead(p.getBase().getRef()),
-                                            ChangeRequestCheckoutStrategy.MERGE,
-                                            originOwner.equalsIgnoreCase(repoOwner) && originRepository
-                                                    .equalsIgnoreCase(repository)
+                                            strategy,
+                                            StringUtils.equalsIgnoreCase(originOwner, repoOwner)
+                                                    && StringUtils.equalsIgnoreCase(originRepository, repository)
                                                     ? SCMHeadOrigin.DEFAULT
                                                     : new SCMHeadOrigin.Fork(originOwner + "/" + originRepository),
                                             originOwner,

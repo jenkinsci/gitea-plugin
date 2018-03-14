@@ -1,0 +1,25 @@
+<div>
+    <strong>Leave this blank unless you are having issues with webhook events failing to trigger.</strong><br/>
+    In some rare cases, the URL that Gitea uses in webhook events may not be the same as the URL that Jenkins uses
+    to access Gitea. For example, if Jenkins needs to access the Gitea web interface through a reverse proxy but
+    regular users access Gitea directly.
+    <br/>
+    If this is the case, then provide the Server URL that Gitea publishes in the webhook events. To determine this URL
+    you can inspect an event in the Gitea Web UI. The event will look something like:
+    <pre>
+{
+  ...
+  "repository":{
+    ...
+    "full_name": "example/reponame",
+    ...
+    "html_url": "http://git.example.org:3000/example/reponame",
+    ...
+  },
+  ...
+}
+    </pre>
+    You are looking for the <code>repository/html_url</code> value and you should remove the
+    <code>repository/full_name</code> part at the end to determine the Alias URL to specify, i.e. using the example
+    payload above, the alias URL would be <code>http://git.example.org:3000/</code>
+</div>

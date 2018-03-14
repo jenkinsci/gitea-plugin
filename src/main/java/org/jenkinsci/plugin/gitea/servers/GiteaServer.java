@@ -29,7 +29,6 @@ import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.URIRequirementBuilder;
-import com.google.common.net.InternetDomainName;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
@@ -43,17 +42,17 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Locale;
 import javax.annotation.Nonnull;
 import jenkins.authentication.tokens.api.AuthenticationTokens;
 import jenkins.model.Jenkins;
 import jenkins.scm.api.SCMName;
 import org.apache.commons.lang.StringUtils;
+import org.jenkinsci.plugin.gitea.client.api.Gitea;
 import org.jenkinsci.plugin.gitea.client.api.GiteaAuth;
 import org.jenkinsci.plugin.gitea.client.api.GiteaConnection;
-import org.jenkinsci.plugin.gitea.client.api.Gitea;
 import org.jenkinsci.plugin.gitea.client.api.GiteaUser;
 import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.DoNotUse;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
@@ -97,21 +96,51 @@ public class GiteaServer extends AbstractDescribableImpl<GiteaServer> {
     private final String credentialsId;
 
     /**
+     * The {@link #serverUrl} that Gitea thinks it is served at, if different from the URL that Jenkins needs to use to
+     * access Gitea.
+     * 
+     * @since 1.0.5
+     */
+    @CheckForNull
+    private final String aliasUrl;
+
+    /**
+     * Constructor
+     *
      * @param displayName   Optional name to use to describe the end-point.
      * @param serverUrl     The URL of this Bitbucket Server
      * @param manageHooks   {@code true} if and only if Jenkins is supposed to auto-manage hooks for this end-point.
      * @param credentialsId The {@link StandardUsernamePasswordCredentials#getId()} of the credentials to use for
      *                      auto-management of hooks.
+     * @deprecated Use {@link #GiteaServer(String, String, boolean, String, String)}
+     */
+    @Deprecated
+    @Restricted(DoNotUse.class)
+    public GiteaServer(@CheckForNull String displayName, @NonNull String serverUrl, boolean manageHooks,
+                       @CheckForNull String credentialsId) {
+        this(displayName, serverUrl, manageHooks, credentialsId, null);
+    }
+
+    /**
+     * Constructor
+     *
+     * @param displayName   Optional name to use to describe the end-point.
+     * @param serverUrl     The URL of this Bitbucket Server
+     * @param manageHooks   {@code true} if and only if Jenkins is supposed to auto-manage hooks for this end-point.
+     * @param credentialsId The {@link StandardUsernamePasswordCredentials#getId()} of the credentials to use for
+     *                      auto-management of hooks.
+     * @since 1.0.5
      */
     @DataBoundConstructor
     public GiteaServer(@CheckForNull String displayName, @NonNull String serverUrl, boolean manageHooks,
-                       @CheckForNull String credentialsId) {
+                       @CheckForNull String credentialsId, @CheckForNull String aliasUrl) {
         this.manageHooks = manageHooks && StringUtils.isNotBlank(credentialsId);
         this.credentialsId = manageHooks ? credentialsId : null;
         this.serverUrl = GiteaServers.normalizeServerUrl(serverUrl);
         this.displayName = StringUtils.isBlank(displayName)
                 ? SCMName.fromUrl(this.serverUrl, COMMON_PREFIX_HOSTNAMES)
                 : displayName;
+        this.aliasUrl = StringUtils.trimToNull(GiteaServers.normalizeServerUrl(aliasUrl));
     }
 
     /**
@@ -149,6 +178,20 @@ public class GiteaServer extends AbstractDescribableImpl<GiteaServer> {
     @CheckForNull
     public final String getCredentialsId() {
         return credentialsId;
+    }
+
+    /**
+     * Returns the {@link #getServerUrl()} that the Gitea server believes it has when publishing webhook events or
+     * {@code null} if this is a normal environment and Gitea is accessed through one true URL and has been configured
+     * with that URL.
+     *
+     * @return the {@link #getServerUrl()} that the Gitea server believes it has when publishing webhook events or
+     * {@code null}
+     * @since 1.0.5
+     */
+    @CheckForNull
+    public String getAliasUrl() {
+        return aliasUrl;
     }
 
     /**
@@ -203,6 +246,23 @@ public class GiteaServer extends AbstractDescribableImpl<GiteaServer> {
             } catch (IOException e) {
                 return FormValidation
                         .errorWithMarkup(Messages.GiteaServer_cannotConnect(Util.escape(e.getMessage())));
+            }
+        }
+
+        /**
+         * Checks that the supplied URL is valid.
+         *
+         * @param value the URL to check.
+         * @return the validation results.
+         */
+        public static FormValidation doCheckAliasUrl(@QueryParameter String value) {
+            Jenkins.getActiveInstance().checkPermission(Jenkins.ADMINISTER);
+            if (StringUtils.isBlank(value)) return FormValidation.ok();
+            try {
+                new URI(value);
+                return FormValidation.ok();
+            } catch (URISyntaxException e) {
+                return FormValidation.errorWithMarkup(Messages.GiteaServer_invalidUrl(Util.escape(e.getMessage())));
             }
         }
 

@@ -12,4 +12,9 @@
       <c:select context="${app}"/>
     </f:entry>
   </f:optionalBlock>
+  <f:advanced>
+    <f:entry title="${%Alias URL}" field="aliasUrl">
+      <f:textbox/>
+    </f:entry>
+  </f:advanced>
 </j:jelly>

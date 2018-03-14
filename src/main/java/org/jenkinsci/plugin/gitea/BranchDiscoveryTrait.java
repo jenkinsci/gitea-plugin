@@ -39,6 +39,7 @@ import jenkins.scm.api.trait.SCMSourceRequest;
 import jenkins.scm.api.trait.SCMSourceTrait;
 import jenkins.scm.api.trait.SCMSourceTraitDescriptor;
 import jenkins.scm.impl.trait.Discovery;
+import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugin.gitea.client.api.GiteaPullRequest;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
@@ -207,7 +208,9 @@ public class BranchDiscoveryTrait extends SCMSourceTrait {
             @Override
             public boolean isApplicableToOrigin(@NonNull Class<? extends SCMHeadOrigin> originClass) {
                 return SCMHeadOrigin.Default.class.isAssignableFrom(originClass);
-            }            /**
+            }
+
+            /**
              * {@inheritDoc}
              */
             @Override
@@ -231,10 +234,13 @@ public class BranchDiscoveryTrait extends SCMSourceTrait {
             if (head instanceof BranchSCMHead && request instanceof GiteaSCMSourceRequest) {
                 for (GiteaPullRequest p : ((GiteaSCMSourceRequest) request).getPullRequests()) {
                     // only match if the pull request is an origin pull request
-                    if (p.getBase().getRepo().getOwner().getUsername()
-                            .equalsIgnoreCase(p.getHead().getRepo().getOwner().getUsername())
-                            && p.getBase().getRepo().getName().equalsIgnoreCase(p.getHead().getRepo().getName())
-                            && p.getHead().getRef().equals(head.getName())) {
+                    if (StringUtils.equalsIgnoreCase(
+                            p.getBase().getRepo().getOwner().getUsername(),
+                            p.getHead().getRepo().getOwner().getUsername())
+                            && StringUtils.equalsIgnoreCase(
+                            p.getBase().getRepo().getName(),
+                            p.getHead().getRepo().getName())
+                            && StringUtils.equals(p.getHead().getRef(), head.getName())) {
                         return true;
                     }
                 }
@@ -254,10 +260,13 @@ public class BranchDiscoveryTrait extends SCMSourceTrait {
         public boolean isExcluded(@NonNull SCMSourceRequest request, @NonNull SCMHead head) {
             if (head instanceof BranchSCMHead && request instanceof GiteaSCMSourceRequest) {
                 for (GiteaPullRequest p : ((GiteaSCMSourceRequest) request).getPullRequests()) {
-                    if (p.getBase().getRepo().getOwner().getUsername()
-                            .equalsIgnoreCase(p.getHead().getRepo().getOwner().getUsername())
-                            && p.getBase().getRepo().getName().equalsIgnoreCase(p.getHead().getRepo().getName())
-                            && !p.getHead().getRef().equals(head.getName())) {
+                    if (StringUtils.equalsIgnoreCase(
+                            p.getBase().getRepo().getOwner().getUsername(),
+                            p.getHead().getRepo().getOwner().getUsername())
+                            && StringUtils.equalsIgnoreCase(
+                                    p.getBase().getRepo().getName(),
+                            p.getHead().getRepo().getName())
+                            && StringUtils.equals(p.getHead().getRef(), head.getName())) {
                         return false;
                     }
                 }

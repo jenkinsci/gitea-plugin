@@ -154,7 +154,7 @@ public class GiteaSCMNavigator extends SCMNavigator {
                 } else {
                     seen.add(r.getId());
                 }
-                if (!r.getOwner().getUsername().equalsIgnoreCase(repoOwner)) {
+                if (!StringUtils.equalsIgnoreCase(r.getOwner().getUsername(), repoOwner)) {
                     // this is the user repos which includes all organizations that they are a member of
                     continue;
                 }

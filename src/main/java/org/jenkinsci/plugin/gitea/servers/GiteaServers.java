@@ -114,6 +114,79 @@ public class GiteaServers extends GlobalConfiguration {
     }
 
     /**
+     * Checks if the supplied event url is for the specified server url (after consulting
+     *
+     * @param serverUrl the {@link GiteaServer#getServerUrl()}
+     * @param eventUrl  the event url.
+     * @return {@code true} if the event is a match
+     * @link GiteaServer#getAliasUrl()} for registered {@link GiteaServer} instances)
+     * @since 1.0.5
+     */
+    public static boolean isEventFor(String serverUrl, String eventUrl) {
+        try {
+            for (boolean alias : new boolean[]{false, true}) {
+                URI serverUri;
+                if (alias) {
+                    GiteaServer server = GiteaServers.get().findServer(serverUrl);
+                    if (server != null && StringUtils.isNotBlank(server.getAliasUrl())) {
+                        serverUri = new URI(server.getAliasUrl());
+                    } else {
+                        continue;
+                    }
+                } else {
+                    serverUri = new URI(serverUrl);
+                }
+                URI eventUri = new URI(eventUrl);
+                if (!StringUtils.equalsIgnoreCase(serverUri.getHost(), eventUri.getHost())) {
+                    continue;
+                }
+                if ("http".equals(serverUri.getScheme())) {
+                    int serverPort = serverUri.getPort();
+                    if (serverPort == -1) {
+                        serverPort = 80;
+                    }
+                    if ("http".equals(eventUri.getScheme())) {
+                        int eventPort = eventUri.getPort();
+                        if (eventPort == -1) {
+                            eventPort = 80;
+                        }
+                        if (serverPort != eventPort) {
+                            continue;
+                        }
+                    } else if (!"https".equals(eventUri.getScheme())) {
+                        continue;
+                    }
+                } else if ("https".equals(serverUri.getScheme())) {
+                    int serverPort = serverUri.getPort();
+                    if (serverPort == -1) {
+                        serverPort = 443;
+                    }
+                    if ("https".equals(eventUri.getScheme())) {
+                        int eventPort = eventUri.getPort();
+                        if (eventPort == -1) {
+                            eventPort = 443;
+                        }
+                        if (serverPort != eventPort) {
+                            continue;
+                        }
+                    } else if (!"http".equals(eventUri.getScheme())) {
+                        // may be the same just over plain
+                        continue;
+                    }
+                }
+                String serverPath = StringUtils.defaultIfBlank(serverUri.getPath(), "");
+                String eventPath = StringUtils.defaultIfBlank(eventUri.getPath(), "/");
+                if (eventPath.startsWith(serverPath + "/")) {
+                    return true;
+                }
+            }
+        } catch (URISyntaxException e) {
+            return false;
+        }
+        return false;
+    }
+
+    /**
      * Returns {@code true} if and only if there is more than one configured endpoint.
      *
      * @return {@code true} if and only if there is more than one configured endpoint.
