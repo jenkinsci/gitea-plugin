@@ -118,8 +118,8 @@ public class GiteaServers extends GlobalConfiguration {
      *
      * @param serverUrl the {@link GiteaServer#getServerUrl()}
      * @param eventUrl  the event url.
-     * @return {@code true} if the event is a match
-     * @link GiteaServer#getAliasUrl()} for registered {@link GiteaServer} instances)
+     * @return {@code true} if the event is a matching
+     * {@link GiteaServer#getAliasUrl()} for registered {@link GiteaServer} instances)
      * @since 1.0.5
      */
     public static boolean isEventFor(String serverUrl, String eventUrl) {

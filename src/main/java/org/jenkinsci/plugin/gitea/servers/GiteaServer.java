@@ -108,7 +108,7 @@ public class GiteaServer extends AbstractDescribableImpl<GiteaServer> {
      * Constructor
      *
      * @param displayName   Optional name to use to describe the end-point.
-     * @param serverUrl     The URL of this Bitbucket Server
+     * @param serverUrl     The URL of this Gitea Server
      * @param manageHooks   {@code true} if and only if Jenkins is supposed to auto-manage hooks for this end-point.
      * @param credentialsId The {@link StandardUsernamePasswordCredentials#getId()} of the credentials to use for
      *                      auto-management of hooks.
@@ -125,10 +125,11 @@ public class GiteaServer extends AbstractDescribableImpl<GiteaServer> {
      * Constructor
      *
      * @param displayName   Optional name to use to describe the end-point.
-     * @param serverUrl     The URL of this Bitbucket Server
+     * @param serverUrl     The URL of this Gitea Server
      * @param manageHooks   {@code true} if and only if Jenkins is supposed to auto-manage hooks for this end-point.
      * @param credentialsId The {@link StandardUsernamePasswordCredentials#getId()} of the credentials to use for
      *                      auto-management of hooks.
+     * @param aliasUrl      The URL this Gitea Server thinks it is at.
      * @since 1.0.5
      */
     @DataBoundConstructor
