@@ -10,9 +10,13 @@
 
 -->
 
-## Version 1.0.6 (unreleased)
+## Version 1.0.7 (unreleased)
 
 * ...
+
+## Version 1.0.6 (2018-03-21)
+
+* Fix NPE during dynamic installation of the plugin ([JENKINS-50319](https://issues.jenkins-ci.org/browse/JENKINS-50319))
 
 ## Version 1.0.5 (2018-03-14)
 

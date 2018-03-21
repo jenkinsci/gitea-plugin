@@ -386,7 +386,8 @@ public class GiteaSCMNavigator extends SCMNavigator {
 
         @Override
         public SCMNavigator newInstance(String name) {
-            List<GiteaServer> servers = GiteaServers.get().getServers();
+            GiteaServers s = GiteaServers.get();
+            List<GiteaServer> servers = s == null ? Collections.<GiteaServer>emptyList() : s.getServers();
             GiteaSCMNavigator navigator =
                     new GiteaSCMNavigator(servers.isEmpty() ? null : servers.get(0).getServerUrl(), name);
             navigator.setTraits(getTraitsDefaults());
