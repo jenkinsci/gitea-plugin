@@ -432,11 +432,10 @@ public class GiteaSCMNavigator extends SCMNavigator {
         public List<SCMTrait<? extends SCMTrait<?>>> getTraitsDefaults() {
             GiteaSCMSource.DescriptorImpl descriptor =
                     ExtensionList.lookup(Descriptor.class).get(GiteaSCMSource.DescriptorImpl.class);
-            if (descriptor == null) {
-                throw new AssertionError();
-            }
             List<SCMTrait<? extends SCMTrait<?>>> result = new ArrayList<>();
-            result.addAll(descriptor.getTraitsDefaults());
+            if (descriptor != null) {
+                result.addAll(descriptor.getTraitsDefaults());
+            }
             return result;
         }
 
