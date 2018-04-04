@@ -46,6 +46,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import javax.net.ssl.HttpsURLConnection;
+import jenkins.model.Jenkins;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -747,21 +748,18 @@ class DefaultGiteaConnection implements GiteaConnection {
     @Override
     public byte[] fetchFile(GiteaRepository repository, String ref, String path)
             throws IOException, InterruptedException {
-        HttpURLConnection connection = (HttpURLConnection) new URL(
-                api()
-                        .literal("/repos")
-                        .path(UriTemplateBuilder.var("username"))
-                        .path(UriTemplateBuilder.var("name"))
-                        .literal("/raw")
-                        .path(UriTemplateBuilder.var("ref", true))
-                        .path(UriTemplateBuilder.var("path", true))
-                        .build()
-                        .set("username", repository.getOwner().getUsername())
-                        .set("name", repository.getName())
-                        .set("ref", StringUtils.split(ref, '/'))
-                        .set("path", StringUtils.split(path, "/"))
-                        .expand()
-        ).openConnection();
+        HttpURLConnection connection = openConnection(api()
+                .literal("/repos")
+                .path(UriTemplateBuilder.var("username"))
+                .path(UriTemplateBuilder.var("name"))
+                .literal("/raw")
+                .path(UriTemplateBuilder.var("ref", true))
+                .path(UriTemplateBuilder.var("path", true))
+                .build()
+                .set("username", repository.getOwner().getUsername())
+                .set("name", repository.getName())
+                .set("ref", StringUtils.split(ref, '/'))
+                .set("path", StringUtils.split(path, "/")));
         withAuthentication(connection);
         try {
             connection.connect();
@@ -783,21 +781,18 @@ class DefaultGiteaConnection implements GiteaConnection {
     @Override
     public boolean checkFile(GiteaRepository repository, String ref, String path)
             throws IOException, InterruptedException {
-        HttpURLConnection connection = (HttpURLConnection) new URL(
-                api()
-                        .literal("/repos")
-                        .path(UriTemplateBuilder.var("username"))
-                        .path(UriTemplateBuilder.var("name"))
-                        .literal("/raw")
-                        .path(UriTemplateBuilder.var("ref", true))
-                        .path(UriTemplateBuilder.var("path", true))
-                        .build()
-                        .set("username", repository.getOwner().getUsername())
-                        .set("name", repository.getName())
-                        .set("ref", StringUtils.split(ref, '/'))
-                        .set("path", StringUtils.split(path, "/"))
-                        .expand()
-        ).openConnection();
+        HttpURLConnection connection = openConnection(api()
+                .literal("/repos")
+                .path(UriTemplateBuilder.var("username"))
+                .path(UriTemplateBuilder.var("name"))
+                .literal("/raw")
+                .path(UriTemplateBuilder.var("ref", true))
+                .path(UriTemplateBuilder.var("path", true))
+                .build()
+                .set("username", repository.getOwner().getUsername())
+                .set("name", repository.getName())
+                .set("ref", StringUtils.split(ref, '/'))
+                .set("path", StringUtils.split(path, "/")));
         withAuthentication(connection);
         try {
             connection.connect();
@@ -834,7 +829,7 @@ class DefaultGiteaConnection implements GiteaConnection {
     }
 
     private int status(UriTemplate template) throws IOException, InterruptedException {
-        HttpURLConnection connection = (HttpURLConnection) new URL(template.expand()).openConnection();
+        HttpURLConnection connection = openConnection(template);
         withAuthentication(connection);
         try {
             connection.connect();
@@ -845,7 +840,7 @@ class DefaultGiteaConnection implements GiteaConnection {
     }
 
     private int delete(UriTemplate template) throws IOException, InterruptedException {
-        HttpURLConnection connection = (HttpURLConnection) new URL(template.expand()).openConnection();
+        HttpURLConnection connection = openConnection(template);
         withAuthentication(connection);
         connection.setRequestMethod("DELETE");
         try {
@@ -857,7 +852,7 @@ class DefaultGiteaConnection implements GiteaConnection {
     }
 
     private <T> T getObject(UriTemplate template, final Class<T> modelClass) throws IOException, InterruptedException {
-        HttpURLConnection connection = (HttpURLConnection) new URL(template.expand()).openConnection();
+        HttpURLConnection connection = openConnection(template);
         withAuthentication(connection);
         try {
             connection.connect();
@@ -875,7 +870,7 @@ class DefaultGiteaConnection implements GiteaConnection {
 
     private <T> T post(UriTemplate template, Object body, final Class<T> modelClass)
             throws IOException, InterruptedException {
-        HttpURLConnection connection = (HttpURLConnection) new URL(template.expand()).openConnection();
+        HttpURLConnection connection = openConnection(template);
         withAuthentication(connection);
         connection.setRequestMethod("POST");
         byte[] bytes;
@@ -918,7 +913,7 @@ class DefaultGiteaConnection implements GiteaConnection {
 
     private <T> T patch(UriTemplate template, Object body, final Class<T> modelClass)
             throws IOException, InterruptedException {
-        HttpURLConnection connection = (HttpURLConnection) new URL(template.expand()).openConnection();
+        HttpURLConnection connection = openConnection(template);
         withAuthentication(connection);
         setRequestMethodViaJreBugWorkaround(connection, "PATCH");
         byte[] bytes;
@@ -961,7 +956,7 @@ class DefaultGiteaConnection implements GiteaConnection {
 
     private <T> List<T> getList(UriTemplate template, final Class<T> modelClass)
             throws IOException, InterruptedException {
-        HttpURLConnection connection = (HttpURLConnection) new URL(template.expand()).openConnection();
+        HttpURLConnection connection = openConnection(template);
         withAuthentication(connection);
         try {
             connection.connect();
@@ -985,4 +980,14 @@ class DefaultGiteaConnection implements GiteaConnection {
             connection.disconnect();
         }
     }
+
+    private static HttpURLConnection openConnection(UriTemplate template) throws IOException {
+        URL url = new URL(template.expand());
+        Jenkins jenkins = Jenkins.getInstance();
+        if (jenkins == null || jenkins.proxy == null) {
+            return (HttpURLConnection) url.openConnection();
+        }
+        return (HttpURLConnection) url.openConnection(jenkins.proxy.createProxy(url.getHost()));
+    }
+
 }

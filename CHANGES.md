@@ -10,9 +10,13 @@
 
 -->
 
-## Version 1.0.8 (unreleased)
+## Version 1.0.9 (unreleased)
 
 * ...
+
+## Version 1.0.8 (2018-04-04)
+
+* Use Jenkins configured proxy settings to connect to Gitea ([JENKINS-50565](https://issues.jenkins-ci.org/browse/JENKINS-50565))
 
 ## Version 1.0.7 (2018-03-22)
 
