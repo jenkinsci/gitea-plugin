@@ -28,6 +28,13 @@ import com.damnhandy.uri.template.UriTemplateBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import jenkins.model.Jenkins;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+import org.jenkinsci.plugin.gitea.client.api.*;
+
+import javax.net.ssl.HttpsURLConnection;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,27 +52,6 @@ import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import javax.net.ssl.HttpsURLConnection;
-import jenkins.model.Jenkins;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
-import org.jenkinsci.plugin.gitea.client.api.GiteaAuth;
-import org.jenkinsci.plugin.gitea.client.api.GiteaAuthToken;
-import org.jenkinsci.plugin.gitea.client.api.GiteaAuthUser;
-import org.jenkinsci.plugin.gitea.client.api.GiteaBranch;
-import org.jenkinsci.plugin.gitea.client.api.GiteaCommitStatus;
-import org.jenkinsci.plugin.gitea.client.api.GiteaConnection;
-import org.jenkinsci.plugin.gitea.client.api.GiteaHook;
-import org.jenkinsci.plugin.gitea.client.api.GiteaHttpStatusException;
-import org.jenkinsci.plugin.gitea.client.api.GiteaIssue;
-import org.jenkinsci.plugin.gitea.client.api.GiteaIssueState;
-import org.jenkinsci.plugin.gitea.client.api.GiteaOrganization;
-import org.jenkinsci.plugin.gitea.client.api.GiteaOwner;
-import org.jenkinsci.plugin.gitea.client.api.GiteaPullRequest;
-import org.jenkinsci.plugin.gitea.client.api.GiteaRepository;
-import org.jenkinsci.plugin.gitea.client.api.GiteaUser;
-import org.jenkinsci.plugin.gitea.client.api.GiteaVersion;
 
 /**
  * Default implementation of {@link GiteaConnection} that uses the JVM native {@link URLConnection} to communicate
