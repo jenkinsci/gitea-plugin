@@ -10,9 +10,14 @@
 
 -->
 
-## Version 1.0.9 (unreleased)
+## Version 1.1.1 (unreleased)
 
-* ...
+
+## Version 1.1.0 (2019-01-17)
+
+* Fix PR and branch links ([JENKINS-54517](https://issues.jenkins-ci.org/browse/JENKINS-54517)) 
+* Switch to handy-uri Jenkins API plugin rather than bundle duplicate classes within plugin.
+
 
 ## Version 1.0.8 (2018-04-04)
 
