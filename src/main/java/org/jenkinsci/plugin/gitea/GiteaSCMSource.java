@@ -90,13 +90,7 @@ import jenkins.scm.impl.trait.Selection;
 import org.apache.commons.lang.StringUtils;
 import org.jenkins.ui.icon.Icon;
 import org.jenkins.ui.icon.IconSet;
-import org.jenkinsci.plugin.gitea.client.api.Gitea;
-import org.jenkinsci.plugin.gitea.client.api.GiteaAuth;
-import org.jenkinsci.plugin.gitea.client.api.GiteaBranch;
-import org.jenkinsci.plugin.gitea.client.api.GiteaConnection;
-import org.jenkinsci.plugin.gitea.client.api.GiteaIssueState;
-import org.jenkinsci.plugin.gitea.client.api.GiteaPullRequest;
-import org.jenkinsci.plugin.gitea.client.api.GiteaRepository;
+import org.jenkinsci.plugin.gitea.client.api.*;
 import org.jenkinsci.plugin.gitea.servers.GiteaServer;
 import org.jenkinsci.plugin.gitea.servers.GiteaServers;
 import org.kohsuke.stapler.AncestorInPath;
@@ -785,7 +779,9 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
             try (GiteaConnection c = Gitea.server(serverUrl)
                     .as(AuthenticationTokens.convert(GiteaAuth.class, credentials))
                     .open()) {
-                for (GiteaRepository r : c.fetchRepositories(repoOwner)) {
+                GiteaOwner owner = c.fetchOwner(repoOwner);
+                List<GiteaRepository> repositories = c.fetchRepositories(owner);
+                for (GiteaRepository r : repositories) {
                     result.add(r.getName());
                 }
                 return result;

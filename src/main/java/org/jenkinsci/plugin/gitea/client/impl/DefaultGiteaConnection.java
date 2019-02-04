@@ -146,6 +146,23 @@ class DefaultGiteaConnection implements GiteaConnection {
     }
 
     @Override
+    public GiteaOwner fetchOwner(String name) throws IOException, InterruptedException {
+        try {
+            GiteaOrganization giteaOrganization = fetchOrganization(name);
+            if (giteaOrganization != null) {
+                return giteaOrganization;
+            }
+        }
+        catch (GiteaHttpStatusException e) {
+            // When it's NotFound, owner might be a user, so only rethrow when 404
+            if(e.getStatusCode() != 404) {
+                throw e;
+            }
+        }
+        return fetchUser(name);
+    }
+
+    @Override
     public GiteaUser fetchUser(String name) throws IOException, InterruptedException {
         return getObject(
                 api()
@@ -214,7 +231,24 @@ class DefaultGiteaConnection implements GiteaConnection {
 
     @Override
     public List<GiteaRepository> fetchRepositories(GiteaOwner owner) throws IOException, InterruptedException {
+        if(owner instanceof GiteaOrganization) {
+            return fetchOrganizationRepositories(owner);
+        }
         return fetchRepositories(owner.getUsername());
+
+    }
+
+    @Override
+    public List<GiteaRepository> fetchOrganizationRepositories(GiteaOwner owner) throws IOException, InterruptedException {
+        return getList(
+                api()
+                .literal("/orgs")
+                        .path(UriTemplateBuilder.var("org"))
+                        .literal("/repos")
+                        .build()
+                        .set("org", owner.getUsername()),
+                GiteaRepository.class
+        );
     }
 
     @Override

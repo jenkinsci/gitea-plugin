@@ -41,6 +41,8 @@ public interface GiteaConnection extends AutoCloseable {
 
     GiteaUser fetchCurrentUser() throws IOException, InterruptedException;
 
+    GiteaOwner fetchOwner(String name) throws IOException, InterruptedException;
+
     GiteaUser fetchUser(String name) throws IOException, InterruptedException;
 
     GiteaOrganization fetchOrganization(String name) throws IOException, InterruptedException;
@@ -54,6 +56,8 @@ public interface GiteaConnection extends AutoCloseable {
     List<GiteaRepository> fetchRepositories(String username) throws IOException, InterruptedException;
 
     List<GiteaRepository> fetchRepositories(GiteaOwner owner) throws IOException, InterruptedException;
+
+    List<GiteaRepository> fetchOrganizationRepositories(GiteaOwner owner) throws IOException, InterruptedException;
 
     GiteaBranch fetchBranch(String username, String repository, String name) throws IOException, InterruptedException;
 

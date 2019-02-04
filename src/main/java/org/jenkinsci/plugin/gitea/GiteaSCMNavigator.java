@@ -139,11 +139,9 @@ public class GiteaSCMNavigator extends SCMNavigator {
                 .withTraits(traits)
                 .newRequest(this, observer);
              GiteaConnection c = gitea(observer.getContext()).open()) {
-            giteaOwner = c.fetchUser(repoOwner);
-            if (StringUtils.isBlank(giteaOwner.getEmail())) {
-                giteaOwner = c.fetchOrganization(repoOwner);
-            }
+            giteaOwner = c.fetchOwner(repoOwner);
             List<GiteaRepository> repositories = c.fetchRepositories(giteaOwner);
+
             int count = 0;
             observer.getListener().getLogger().format("%n  Checking repositories...%n");
             Set<Long> seen = new HashSet<>();
