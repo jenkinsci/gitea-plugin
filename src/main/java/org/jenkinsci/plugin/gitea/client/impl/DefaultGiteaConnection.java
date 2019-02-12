@@ -154,7 +154,8 @@ class DefaultGiteaConnection implements GiteaConnection {
             }
         }
         catch (GiteaHttpStatusException e) {
-            // When it's NotFound, owner might be a user, so only rethrow when 404
+            // When it's NotFound, owner might be a user, so only rethrow when not 404
+            // Every other non 200 status code should be thrown again by fetchUser()
             if(e.getStatusCode() != 404) {
                 throw e;
             }
