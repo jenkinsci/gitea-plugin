@@ -150,6 +150,12 @@ public class MockGiteaConnection implements GiteaConnection {
     }
 
     @Override
+    public GiteaOwner fetchOwner(String name) throws IOException, InterruptedException {
+        GiteaOrganization organization = organizations.get(name);
+        return organization != null ? organization : notFoundIfNull(users.get(name));
+    }
+
+    @Override
     public GiteaUser fetchUser(String name) throws IOException, InterruptedException {
         return notFoundIfNull(users.get(name)).clone();
     }
@@ -190,6 +196,11 @@ public class MockGiteaConnection implements GiteaConnection {
 
     @Override
     public List<GiteaRepository> fetchRepositories(GiteaOwner owner) throws IOException, InterruptedException {
+        return fetchRepositories(owner.getUsername());
+    }
+
+    @Override
+    public List<GiteaRepository> fetchOrganizationRepositories(GiteaOwner owner) throws IOException, InterruptedException {
         return fetchRepositories(owner.getUsername());
     }
 
