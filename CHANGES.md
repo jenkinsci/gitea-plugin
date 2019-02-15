@@ -10,8 +10,11 @@
 
 -->
 
-## Version 1.1.1 (unreleased)
+## Version 1.1.2 (unreleased)
 
+## Version 1.1.1 (2019-02-15)
+
+* Allow non-admins to fetch organizational repositories ([PR-11](https://github.com/jenkinsci/gitea-plugin/pull/11))
 
 ## Version 1.1.0 (2019-01-17)
 
