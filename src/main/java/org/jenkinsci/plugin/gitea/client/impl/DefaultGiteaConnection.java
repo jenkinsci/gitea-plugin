@@ -854,10 +854,15 @@ class DefaultGiteaConnection implements GiteaConnection {
 
     private void withAuthentication(HttpURLConnection connection) {
         if (authentication instanceof GiteaAuthUser) {
-            String auth = (((GiteaAuthUser) authentication).getUsername()) + ":" + (((GiteaAuthUser) authentication).
-                    getPassword());
-            connection.setRequestProperty("Authorization", "Basic " + Base64.encodeBase64String(auth.getBytes(
-                    StandardCharsets.UTF_8)));
+            String username = ((GiteaAuthUser) authentication).getUsername();
+            String password = ((GiteaAuthUser) authentication).getPassword();
+            if (password != null && password.length() == 40) {
+                connection.setRequestProperty("Authorization", "token " + password);
+            } else {
+                String auth = username + ":" + password;
+                connection.setRequestProperty("Authorization", "Basic " + Base64.encodeBase64String(auth.getBytes(
+                        StandardCharsets.UTF_8)));
+            }
         } else if (authentication instanceof GiteaAuthToken) {
             connection.setRequestProperty("Authorization", "token " + ((GiteaAuthToken) authentication).getToken());
         }
