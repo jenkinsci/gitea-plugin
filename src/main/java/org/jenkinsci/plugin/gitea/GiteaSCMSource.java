@@ -464,6 +464,35 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
 
     @NonNull
     @Override
+    public SCMRevision getTrustedRevision(@NonNull SCMRevision revision, @NonNull TaskListener listener)
+            throws IOException, InterruptedException {
+        if (revision instanceof PullRequestSCMRevision) {
+            PullRequestSCMHead head = (PullRequestSCMHead) revision.getHead();
+            try (GiteaConnection c = gitea().open()) {
+                try (GiteaSCMSourceRequest request = new GiteaSCMSourceContext(null, SCMHeadObserver.none())
+                        .withTraits(getTraits())
+                        .newRequest(this, listener)) {
+                    request.setConnection(c);
+                    Set<String> names = new HashSet<>();
+                    for (GiteaUser u: c.fetchCollaborators(giteaRepository)) {
+                        names.add(u.getUsername());
+                    }
+                    request.setCollaboratorNames(names);
+                    if (request.isTrusted(head)) {
+                        return revision;
+                    }
+                }
+                PullRequestSCMRevision rev = (PullRequestSCMRevision) revision;
+                listener.getLogger().format("Loading trusted files from base branch %s at %s rather than %s%n",
+                        head.getTarget().getName(), ((SCMRevisionImpl)rev.getTarget()).getHash(), rev.getOrigin().getHash());
+                return rev.getTarget();
+            }
+        }
+        return revision;
+    }
+
+    @NonNull
+    @Override
     public SCM build(@NonNull SCMHead head, SCMRevision revision) {
         return new GiteaSCMBuilder(this, head, revision).withTraits(traits).build();
     }

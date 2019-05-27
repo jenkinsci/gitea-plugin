@@ -25,6 +25,7 @@ package org.jenkinsci.plugin.gitea;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
+import hudson.Util;
 import hudson.util.ListBoxModel;
 import java.util.EnumSet;
 import java.util.List;
@@ -286,7 +287,7 @@ public class ForkPullRequestDiscoveryTrait extends SCMSourceTrait {
         @Override
         protected boolean checkTrusted(@NonNull GiteaSCMSourceRequest request, @NonNull PullRequestSCMHead head) {
             return !head.getOrigin().equals(SCMHeadOrigin.DEFAULT)
-                    && request.getCollaboratorNames().contains(head.getOriginOwner());
+                    && Util.fixNull(request.getCollaboratorNames()).contains(head.getOriginOwner());
         }
 
         /**
