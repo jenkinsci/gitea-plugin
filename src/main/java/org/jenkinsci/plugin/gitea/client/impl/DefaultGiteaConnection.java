@@ -28,6 +28,7 @@ import com.damnhandy.uri.template.UriTemplateBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import edu.umd.cs.findbugs.annotations.NonNull;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,11 +42,9 @@ import java.nio.charset.StandardCharsets;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
-import java.util.EnumSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import javax.net.ssl.HttpsURLConnection;
+
 import jenkins.model.Jenkins;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
@@ -125,6 +124,15 @@ class DefaultGiteaConnection implements GiteaConnection {
         }
     }
 
+    private static HttpURLConnection openConnection(UriTemplate template) throws IOException {
+        URL url = new URL(template.expand());
+        Jenkins jenkins = Jenkins.getInstance();
+        if (jenkins == null || jenkins.proxy == null) {
+            return (HttpURLConnection) url.openConnection();
+        }
+        return (HttpURLConnection) url.openConnection(jenkins.proxy.createProxy(url.getHost()));
+    }
+
     @Override
     public GiteaVersion fetchVersion() throws IOException, InterruptedException {
         return getObject(
@@ -152,11 +160,10 @@ class DefaultGiteaConnection implements GiteaConnection {
             if (giteaOrganization != null) {
                 return giteaOrganization;
             }
-        }
-        catch (GiteaHttpStatusException e) {
+        } catch (GiteaHttpStatusException e) {
             // When it's NotFound, owner might be a user, so only rethrow when not 404
             // Every other non 200 status code should be thrown again by fetchUser()
-            if(e.getStatusCode() != 404) {
+            if (e.getStatusCode() != 404) {
                 throw e;
             }
         }
@@ -243,7 +250,7 @@ class DefaultGiteaConnection implements GiteaConnection {
     public List<GiteaRepository> fetchOrganizationRepositories(GiteaOwner owner) throws IOException, InterruptedException {
         return getList(
                 api()
-                .literal("/orgs")
+                        .literal("/orgs")
                         .path(UriTemplateBuilder.var("org"))
                         .literal("/repos")
                         .build()
@@ -280,27 +287,7 @@ class DefaultGiteaConnection implements GiteaConnection {
 
     @Override
     public GiteaBranch fetchBranch(GiteaRepository repository, String name) throws IOException, InterruptedException {
-        if (name.indexOf('/') != -1) {
-            // TODO remove hack once https://github.com/go-gitea/gitea/issues/2088 is fixed
-            for (GiteaBranch b : fetchBranches(repository)) {
-                if (name.equals(b.getName())) {
-                    return b;
-                }
-            }
-        }
-        return getObject(
-                api()
-                        .literal("/repos")
-                        .path(UriTemplateBuilder.var("username"))
-                        .path(UriTemplateBuilder.var("repository"))
-                        .literal("/branches")
-                        .path(UriTemplateBuilder.var("name", true))
-                        .build()
-                        .set("username", repository.getOwner().getUsername())
-                        .set("repository", repository.getName())
-                        .set("name", StringUtils.split(name, '/')),
-                GiteaBranch.class
-        );
+        return fetchBranch(repository.getOwner().getUsername(), repository.getName(), name);
     }
 
     @Override
@@ -320,17 +307,7 @@ class DefaultGiteaConnection implements GiteaConnection {
 
     @Override
     public List<GiteaBranch> fetchBranches(GiteaRepository repository) throws IOException, InterruptedException {
-        return getList(
-                api()
-                        .literal("/repos")
-                        .path(UriTemplateBuilder.var("username"))
-                        .path(UriTemplateBuilder.var("name"))
-                        .literal("/branches")
-                        .build()
-                        .set("username", repository.getOwner().getUsername())
-                        .set("name", repository.getName()),
-                GiteaBranch.class
-        );
+        return fetchBranches(repository.getOwner().getUsername(), repository.getName());
     }
 
     @Override
@@ -350,17 +327,7 @@ class DefaultGiteaConnection implements GiteaConnection {
 
     @Override
     public List<GiteaUser> fetchCollaborators(GiteaRepository repository) throws IOException, InterruptedException {
-        return getList(
-                api()
-                        .literal("/repos")
-                        .path(UriTemplateBuilder.var("username"))
-                        .path(UriTemplateBuilder.var("name"))
-                        .literal("/collaborators")
-                        .build()
-                        .set("username", repository.getOwner().getUsername())
-                        .set("name", repository.getName()),
-                GiteaUser.class
-        );
+        return fetchCollaborators(repository.getOwner().getUsername(), repository.getName());
     }
 
     @Override
@@ -383,18 +350,7 @@ class DefaultGiteaConnection implements GiteaConnection {
     @Override
     public boolean checkCollaborator(GiteaRepository repository, String collaboratorName)
             throws IOException, InterruptedException {
-        return status(
-                api()
-                        .literal("/repos")
-                        .path(UriTemplateBuilder.var("username"))
-                        .path(UriTemplateBuilder.var("name"))
-                        .literal("/collaborators")
-                        .path(UriTemplateBuilder.var("collaboratorName"))
-                        .build()
-                        .set("username", repository.getOwner().getUsername())
-                        .set("name", repository.getName())
-                        .set("collaboratorName", collaboratorName)
-        ) / 100 == 2;
+        return checkCollaborator(repository.getOwner().getUsername(), repository.getName(), collaboratorName);
     }
 
     @Override
@@ -459,23 +415,6 @@ class DefaultGiteaConnection implements GiteaConnection {
     }
 
     @Override
-    public void updateHook(GiteaOrganization organization, GiteaHook hook) throws IOException, InterruptedException {
-        GiteaHook diff = new GiteaHook();
-        diff.setConfig(hook.getConfig());
-        diff.setActive(hook.isActive());
-        diff.setEvents(hook.getEvents());
-        patch(api()
-                        .literal("/orgs")
-                        .path(UriTemplateBuilder.var("name"))
-                        .literal("/hooks")
-                        .path(UriTemplateBuilder.var("id"))
-                        .build()
-                        .set("name", organization.getUsername())
-                        .set("id", hook.getId()),
-                diff, Void.class);
-    }
-
-    @Override
     public List<GiteaHook> fetchHooks(String username, String name) throws IOException, InterruptedException {
         return getList(
                 api()
@@ -492,17 +431,7 @@ class DefaultGiteaConnection implements GiteaConnection {
 
     @Override
     public List<GiteaHook> fetchHooks(GiteaRepository repository) throws IOException, InterruptedException {
-        return getList(
-                api()
-                        .literal("/repos")
-                        .path(UriTemplateBuilder.var("username"))
-                        .path(UriTemplateBuilder.var("name"))
-                        .literal("/hooks")
-                        .build()
-                        .set("username", repository.getOwner().getUsername())
-                        .set("name", repository.getName()),
-                GiteaHook.class
-        );
+        return fetchHooks(repository.getOwner().getUsername(), repository.getName());
     }
 
     @Override
@@ -541,6 +470,23 @@ class DefaultGiteaConnection implements GiteaConnection {
                     "Could not delete hook " + id + " for " + repository.getOwner().getUsername() + "/" + repository
                             .getName() + " HTTP/" + status);
         }
+    }
+
+    @Override
+    public void updateHook(GiteaOrganization organization, GiteaHook hook) throws IOException, InterruptedException {
+        GiteaHook diff = new GiteaHook();
+        diff.setConfig(hook.getConfig());
+        diff.setActive(hook.isActive());
+        diff.setEvents(hook.getEvents());
+        patch(api()
+                        .literal("/orgs")
+                        .path(UriTemplateBuilder.var("name"))
+                        .literal("/hooks")
+                        .path(UriTemplateBuilder.var("id"))
+                        .build()
+                        .set("name", organization.getUsername())
+                        .set("id", hook.getId()),
+                diff, Void.class);
     }
 
     @Override
@@ -599,17 +545,7 @@ class DefaultGiteaConnection implements GiteaConnection {
     @Override
     public GiteaCommitStatus createCommitStatus(GiteaRepository repository, String sha, GiteaCommitStatus status)
             throws IOException, InterruptedException {
-        return post(api()
-                        .literal("/repos")
-                        .path(UriTemplateBuilder.var("username"))
-                        .path(UriTemplateBuilder.var("name"))
-                        .literal("/statuses")
-                        .path(UriTemplateBuilder.var("sha"))
-                        .build()
-                        .set("username", repository.getOwner().getUsername())
-                        .set("name", repository.getName())
-                        .set("sha", sha),
-                status, GiteaCommitStatus.class);
+        return createCommitStatus(repository.getOwner().getUsername(), repository.getName(), sha, status);
     }
 
     @Override
@@ -633,19 +569,7 @@ class DefaultGiteaConnection implements GiteaConnection {
     @Override
     public GiteaPullRequest fetchPullRequest(GiteaRepository repository, long id)
             throws IOException, InterruptedException {
-        return getObject(
-                api()
-                        .literal("/repos")
-                        .path(UriTemplateBuilder.var("username"))
-                        .path(UriTemplateBuilder.var("name"))
-                        .literal("/pulls")
-                        .path(UriTemplateBuilder.var("id"))
-                        .build()
-                        .set("username", repository.getOwner().getUsername())
-                        .set("name", repository.getName())
-                        .set("id", Long.toString(id)),
-                GiteaPullRequest.class
-        );
+        return fetchPullRequest(repository.getOwner().getUsername(), repository.getName(), id);
     }
 
     @Override
@@ -690,28 +614,7 @@ class DefaultGiteaConnection implements GiteaConnection {
     @Override
     public List<GiteaPullRequest> fetchPullRequests(GiteaRepository repository, Set<GiteaIssueState> states)
             throws IOException, InterruptedException {
-        String state = null;
-        if (states != null && states.size() == 1) {
-            // state query only works if there is one state
-            for (GiteaIssueState s : GiteaIssueState.values()) {
-                if (states.contains(s)) {
-                    state = s.getKey();
-                }
-            }
-        }
-        return getList(
-                api()
-                        .literal("/repos")
-                        .path(UriTemplateBuilder.var("username"))
-                        .path(UriTemplateBuilder.var("name"))
-                        .literal("/pulls")
-                        .query(UriTemplateBuilder.var("state"))
-                        .build()
-                        .set("username", repository.getOwner().getUsername())
-                        .set("name", repository.getName())
-                        .set("state", state),
-                GiteaPullRequest.class
-        );
+        return fetchPullRequests(repository.getOwner().getUsername(), repository.getName(), states);
     }
 
     @Override
@@ -756,28 +659,7 @@ class DefaultGiteaConnection implements GiteaConnection {
     @Override
     public List<GiteaIssue> fetchIssues(GiteaRepository repository, Set<GiteaIssueState> states)
             throws IOException, InterruptedException {
-        String state = null;
-        if (states != null && states.size() == 1) {
-            // state query only works if there is one state
-            for (GiteaIssueState s : GiteaIssueState.values()) {
-                if (states.contains(s)) {
-                    state = s.getKey();
-                }
-            }
-        }
-        return getList(
-                api()
-                        .literal("/repos")
-                        .path(UriTemplateBuilder.var("username"))
-                        .path(UriTemplateBuilder.var("name"))
-                        .literal("/issues")
-                        .query(UriTemplateBuilder.var("state"))
-                        .build()
-                        .set("username", repository.getOwner().getUsername())
-                        .set("name", repository.getName())
-                        .set("state", state),
-                GiteaIssue.class
-        );
+        return fetchIssues(repository.getOwner().getUsername(), repository.getName(), states);
     }
 
     @Override
@@ -999,8 +881,8 @@ class DefaultGiteaConnection implements GiteaConnection {
             if (status / 100 == 2) {
                 try (InputStream is = connection.getInputStream()) {
                     List<T> list = mapper.readerFor(mapper.getTypeFactory()
-                                    .constructCollectionType(List.class, modelClass))
-                                    .readValue(is);
+                            .constructCollectionType(List.class, modelClass))
+                            .readValue(is);
                     // strip null values from the list
                     for (Iterator<T> iterator = list.iterator(); iterator.hasNext(); ) {
                         if (iterator.next() == null) {
@@ -1010,19 +892,10 @@ class DefaultGiteaConnection implements GiteaConnection {
                     return list;
                 }
             }
-            throw new GiteaHttpStatusException(status,connection.getResponseMessage());
+            throw new GiteaHttpStatusException(status, connection.getResponseMessage());
         } finally {
             connection.disconnect();
         }
-    }
-
-    private static HttpURLConnection openConnection(UriTemplate template) throws IOException {
-        URL url = new URL(template.expand());
-        Jenkins jenkins = Jenkins.getInstance();
-        if (jenkins == null || jenkins.proxy == null) {
-            return (HttpURLConnection) url.openConnection();
-        }
-        return (HttpURLConnection) url.openConnection(jenkins.proxy.createProxy(url.getHost()));
     }
 
 }
