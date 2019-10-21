@@ -275,7 +275,7 @@ public class GiteaNotifier {
                                SCMRevisionState pollingBaseline) throws Exception {
             try {
                 sendNotifications(build, listener);
-            } catch (IOException | InterruptedException e) {
+            } catch (IOException e) {
                 e.printStackTrace(listener.error("Could not send notifications"));
             }
         }
@@ -295,7 +295,7 @@ public class GiteaNotifier {
         public void onCompleted(Run<?, ?> build, TaskListener listener) {
             try {
                 sendNotifications(build, listener);
-            } catch (IOException | InterruptedException e) {
+            } catch (IOException e) {
                 e.printStackTrace(listener.error("Could not send notifications"));
             }
         }
@@ -307,7 +307,7 @@ public class GiteaNotifier {
         public void onStarted(Run<?, ?> run, TaskListener listener) {
             try {
                 sendNotifications(run, listener);
-            } catch (IOException | InterruptedException e) {
+            } catch (IOException e) {
                 e.printStackTrace(listener.error("Could not send notifications"));
             }
         }
