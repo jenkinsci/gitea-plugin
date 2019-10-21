@@ -672,19 +672,30 @@ class DefaultGiteaConnection implements GiteaConnection {
                 }
             }
         }
-        return getList(
-                api()
-                        .literal("/repos")
-                        .path(UriTemplateBuilder.var("username"))
-                        .path(UriTemplateBuilder.var("name"))
-                        .literal("/pulls")
-                        .query(UriTemplateBuilder.var("state"))
-                        .build()
-                        .set("username", username)
-                        .set("name", name)
-                        .set("state", state),
-                GiteaPullRequest.class
-        );
+        try {
+            return getList(
+                    api()
+                            .literal("/repos")
+                            .path(UriTemplateBuilder.var("username"))
+                            .path(UriTemplateBuilder.var("name"))
+                            .literal("/pulls")
+                            .query(UriTemplateBuilder.var("state"))
+                            .build()
+                            .set("username", username)
+                            .set("name", name)
+                            .set("state", state),
+                    GiteaPullRequest.class
+            );
+        } catch (GiteaHttpStatusException e) {
+            // Gitea REST API returns HTTP Code 404 when pull requests or issues are disabled
+            // Therefore we need to handle this case and return a empty List
+            if (e.getStatusCode() == 404) {
+                return Collections.emptyList();
+            } else {
+                // Else other cause... throw exception again
+                throw e;
+            }
+        }
     }
 
     @Override
@@ -738,19 +749,31 @@ class DefaultGiteaConnection implements GiteaConnection {
                 }
             }
         }
-        return getList(
-                api()
-                        .literal("/repos")
-                        .path(UriTemplateBuilder.var("username"))
-                        .path(UriTemplateBuilder.var("name"))
-                        .literal("/issues")
-                        .query(UriTemplateBuilder.var("state"))
-                        .build()
-                        .set("username", username)
-                        .set("name", name)
-                        .set("state", state),
-                GiteaIssue.class
-        );
+
+        try {
+            return getList(
+                    api()
+                            .literal("/repos")
+                            .path(UriTemplateBuilder.var("username"))
+                            .path(UriTemplateBuilder.var("name"))
+                            .literal("/issues")
+                            .query(UriTemplateBuilder.var("state"))
+                            .build()
+                            .set("username", username)
+                            .set("name", name)
+                            .set("state", state),
+                    GiteaIssue.class
+            );
+        } catch (GiteaHttpStatusException e) {
+            // Gitea REST API returns HTTP Code 404 when pull requests or issues are disabled
+            // Therefore we need to handle this case and return a empty List
+            if (e.getStatusCode() == 404) {
+                return Collections.emptyList();
+            } else {
+                // Else other cause... throw exception again
+                throw e;
+            }
+        }
     }
 
     @Override
