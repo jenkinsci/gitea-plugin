@@ -44,6 +44,6 @@ public class MergeWithGitSCMExtension extends jenkins.plugins.git.MergeWithGitSC
     }
 
     private Object readResolve() throws ObjectStreamException {
-        return new jenkins.plugins.git.MergeWithGitSCMExtension(getBaseName(), getBaseHash());
+        return new jenkins.plugins.git.MergeWithGitSCMExtension(super.getBaseName(), super.getBaseHash());
     }
 }

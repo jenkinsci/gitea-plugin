@@ -205,7 +205,7 @@ public class GiteaServer extends AbstractDescribableImpl<GiteaServer> {
         return StringUtils.isBlank(credentialsId) ? null : CredentialsMatchers.firstOrNull(
                 CredentialsProvider.lookupCredentials(
                         StandardCredentials.class,
-                        Jenkins.getActiveInstance(),
+                        Jenkins.get(),
                         ACL.SYSTEM,
                         URIRequirementBuilder.fromUri(serverUrl).build()
                 ),
@@ -236,7 +236,7 @@ public class GiteaServer extends AbstractDescribableImpl<GiteaServer> {
          * @return the validation results.
          */
         public static FormValidation doCheckServerUrl(@QueryParameter String value) {
-            Jenkins.getActiveInstance().checkPermission(Jenkins.ADMINISTER);
+            Jenkins.get().checkPermission(Jenkins.ADMINISTER);
             try (GiteaConnection c = Gitea.server(GiteaServers.normalizeServerUrl(value)).open()) {
                 return FormValidation
                         .okWithMarkup(Messages.GiteaServer_serverVersion(Util.escape(c.fetchVersion().getVersion())));
@@ -257,7 +257,7 @@ public class GiteaServer extends AbstractDescribableImpl<GiteaServer> {
          * @return the validation results.
          */
         public static FormValidation doCheckAliasUrl(@QueryParameter String value) {
-            Jenkins.getActiveInstance().checkPermission(Jenkins.ADMINISTER);
+            Jenkins.get().checkPermission(Jenkins.ADMINISTER);
             if (StringUtils.isBlank(value)) return FormValidation.ok();
             try {
                 new URI(value);
@@ -285,12 +285,12 @@ public class GiteaServer extends AbstractDescribableImpl<GiteaServer> {
         @Restricted(NoExternalUse.class) // stapler
         @SuppressWarnings("unused")
         public ListBoxModel doFillCredentialsIdItems(@QueryParameter String serverUrl) {
-            Jenkins.getActiveInstance().checkPermission(Jenkins.ADMINISTER);
+            Jenkins.get().checkPermission(Jenkins.ADMINISTER);
             StandardListBoxModel result = new StandardListBoxModel();
             serverUrl = GiteaServers.normalizeServerUrl(serverUrl);
             result.includeMatchingAs(
                     ACL.SYSTEM,
-                    Jenkins.getActiveInstance(),
+                    Jenkins.get(),
                     StandardCredentials.class,
                     URIRequirementBuilder.fromUri(serverUrl).build(),
                     AuthenticationTokens.matcher(GiteaAuth.class)
@@ -299,12 +299,12 @@ public class GiteaServer extends AbstractDescribableImpl<GiteaServer> {
         }
 
         public FormValidation doCheckCredentialsId(@QueryParameter String serverUrl, @QueryParameter String value) {
-            Jenkins.getActiveInstance().checkPermission(Jenkins.ADMINISTER);
+            Jenkins.get().checkPermission(Jenkins.ADMINISTER);
             serverUrl = GiteaServers.normalizeServerUrl(serverUrl);
             StandardCredentials credentials = CredentialsMatchers.firstOrNull(
                     CredentialsProvider.lookupCredentials(
                             StandardCredentials.class,
-                            Jenkins.getActiveInstance(),
+                            Jenkins.get(),
                             ACL.SYSTEM,
                             URIRequirementBuilder.fromUri(serverUrl).build()
                     ),

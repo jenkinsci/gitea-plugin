@@ -368,25 +368,6 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
         }
     }
 
-    @Override
-    protected SCMRevision retrieve(@NonNull String thingName, @NonNull TaskListener listener)
-            throws IOException, InterruptedException {
-        SCMHeadObserver.Named baptist = SCMHeadObserver.named(thingName);
-        retrieve(null, baptist, null, listener);
-        return baptist.result();
-    }
-
-    @NonNull
-    @Override
-    protected Set<String> retrieveRevisions(@NonNull TaskListener listener) throws IOException, InterruptedException {
-        // don't pass through to git, instead use the super.super behaviour
-        Set<String> revisions = new HashSet<String>();
-        for (SCMHead head : retrieve(listener)) {
-            revisions.add(head.getName());
-        }
-        return revisions;
-    }
-
     @NonNull
     @Override
     protected List<Action> retrieveActions(SCMSourceEvent event, @NonNull TaskListener listener)
@@ -674,7 +655,7 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
         public ListBoxModel doFillServerUrlItems(@AncestorInPath SCMSourceOwner context,
                                                  @QueryParameter String serverUrl) {
             if (context == null) {
-                if (!Jenkins.getActiveInstance().hasPermission(Jenkins.ADMINISTER)) {
+                if (!Jenkins.get().hasPermission(Jenkins.ADMINISTER)) {
                     // must have admin if you want the list without a context
                     ListBoxModel result = new ListBoxModel();
                     result.add(serverUrl);
@@ -696,7 +677,7 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
                                                      @QueryParameter String credentialsId) {
             StandardListBoxModel result = new StandardListBoxModel();
             if (context == null) {
-                if (!Jenkins.getActiveInstance().hasPermission(Jenkins.ADMINISTER)) {
+                if (!Jenkins.get().hasPermission(Jenkins.ADMINISTER)) {
                     // must have admin if you want the list without a context
                     result.includeCurrentValue(credentialsId);
                     return result;
@@ -712,7 +693,7 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
             result.includeEmptyValue();
             result.includeMatchingAs(
                     context instanceof Queue.Task ?
-                            Tasks.getDefaultAuthenticationOf((Queue.Task) context)
+                            ((Queue.Task) context).getDefaultAuthentication()
                             : ACL.SYSTEM,
                     context,
                     StandardCredentials.class,
@@ -727,7 +708,7 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
                                                    @QueryParameter String value)
                 throws IOException, InterruptedException{
             if (context == null) {
-                if (!Jenkins.getActiveInstance().hasPermission(Jenkins.ADMINISTER)) {
+                if (!Jenkins.get().hasPermission(Jenkins.ADMINISTER)) {
                     return FormValidation.ok();
                 }
             } else {
@@ -747,7 +728,7 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
                     StandardCredentials.class,
                     context,
                     context instanceof Queue.Task ?
-                            Tasks.getDefaultAuthenticationOf((Queue.Task) context)
+                            ((Queue.Task) context).getDefaultAuthentication()
                             : ACL.SYSTEM,
                     URIRequirementBuilder.fromUri(serverUrl).build(),
                     CredentialsMatchers.allOf(
@@ -768,7 +749,7 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
                 InterruptedException {
             ListBoxModel result = new ListBoxModel();
             if (context == null) {
-                if (!Jenkins.getActiveInstance().hasPermission(Jenkins.ADMINISTER)) {
+                if (!Jenkins.get().hasPermission(Jenkins.ADMINISTER)) {
                     // must have admin if you want the list without a context
                     result.add(repository);
                     return result;
@@ -796,7 +777,7 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
                             StandardCredentials.class,
                             context,
                             context instanceof Queue.Task ?
-                                    Tasks.getDefaultAuthenticationOf((Queue.Task) context)
+                                    ((Queue.Task) context).getDefaultAuthentication()
                                     : ACL.SYSTEM,
                             URIRequirementBuilder.fromUri(serverUrl).build()
                     ),

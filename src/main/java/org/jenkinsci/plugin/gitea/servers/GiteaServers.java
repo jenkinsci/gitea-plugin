@@ -237,7 +237,7 @@ public class GiteaServers extends GlobalConfiguration {
      * @param servers the list of endpoints.
      */
     public synchronized void setServers(@CheckForNull List<? extends GiteaServer> servers) {
-        Jenkins.getActiveInstance().checkPermission(Jenkins.ADMINISTER);
+        Jenkins.get().checkPermission(Jenkins.ADMINISTER);
         List<GiteaServer> eps = new ArrayList<>(Util.fixNull(servers));
         // remove duplicates and empty urls
         Set<String> serverUrls = new HashSet<String>();

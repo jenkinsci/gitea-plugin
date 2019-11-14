@@ -29,6 +29,7 @@ import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
 import com.cloudbees.plugins.credentials.domains.URIRequirementBuilder;
 import com.damnhandy.uri.template.UriTemplate;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.AbortException;
 import hudson.Extension;
@@ -121,11 +122,11 @@ public class GiteaSCMNavigator extends SCMNavigator {
         return Collections.unmodifiableList(traits);
     }
 
+    @Override
     @DataBoundSetter
-    public void setTraits(List<SCMTrait<?>> traits) {
+    public void setTraits(List<SCMTrait<? extends SCMTrait<?>>> traits) {
         this.traits = new ArrayList<>(Util.fixNull(traits));
     }
-
 
     @NonNull
     @Override
@@ -280,7 +281,7 @@ public class GiteaSCMNavigator extends SCMNavigator {
         public ListBoxModel doFillServerUrlItems(@AncestorInPath SCMSourceOwner context,
                                                  @QueryParameter String serverUrl) {
             if (context == null) {
-                if (!Jenkins.getActiveInstance().hasPermission(Jenkins.ADMINISTER)) {
+                if (!Jenkins.get().hasPermission(Jenkins.ADMINISTER)) {
                     // must have admin if you want the list without a context
                     ListBoxModel result = new ListBoxModel();
                     result.add(serverUrl);
@@ -302,7 +303,7 @@ public class GiteaSCMNavigator extends SCMNavigator {
                                                      @QueryParameter String credentialsId) {
             StandardListBoxModel result = new StandardListBoxModel();
             if (context == null) {
-                if (!Jenkins.getActiveInstance().hasPermission(Jenkins.ADMINISTER)) {
+                if (!Jenkins.get().hasPermission(Jenkins.ADMINISTER)) {
                     // must have admin if you want the list without a context
                     result.includeCurrentValue(credentialsId);
                     return result;
@@ -318,7 +319,7 @@ public class GiteaSCMNavigator extends SCMNavigator {
             result.includeEmptyValue();
             result.includeMatchingAs(
                     context instanceof Queue.Task ?
-                            Tasks.getDefaultAuthenticationOf((Queue.Task) context)
+                            ((Queue.Task) context).getDefaultAuthentication()
                             : ACL.SYSTEM,
                     context,
                     StandardCredentials.class,
@@ -333,7 +334,7 @@ public class GiteaSCMNavigator extends SCMNavigator {
                                                    @QueryParameter String value)
                 throws IOException, InterruptedException {
             if (context == null) {
-                if (!Jenkins.getActiveInstance().hasPermission(Jenkins.ADMINISTER)) {
+                if (!Jenkins.get().hasPermission(Jenkins.ADMINISTER)) {
                     return FormValidation.ok();
                 }
             } else {
@@ -353,7 +354,7 @@ public class GiteaSCMNavigator extends SCMNavigator {
                     StandardCredentials.class,
                     context,
                     context instanceof Queue.Task ?
-                            Tasks.getDefaultAuthenticationOf((Queue.Task) context)
+                            ((Queue.Task) context).getDefaultAuthentication()
                             : ACL.SYSTEM,
                     URIRequirementBuilder.fromUri(serverUrl).build(),
                     CredentialsMatchers.allOf(
@@ -395,7 +396,7 @@ public class GiteaSCMNavigator extends SCMNavigator {
         @SuppressWarnings("unused") // jelly
         public List<NamedArrayList<? extends SCMTraitDescriptor<?>>> getTraitsDescriptorLists() {
             GiteaSCMSource.DescriptorImpl sourceDescriptor =
-                    Jenkins.getActiveInstance().getDescriptorByType(GiteaSCMSource.DescriptorImpl.class);
+                    Jenkins.get().getDescriptorByType(GiteaSCMSource.DescriptorImpl.class);
             List<SCMTraitDescriptor<?>> all = new ArrayList<>();
             all.addAll(SCMNavigatorTrait._for(this, GiteaSCMNavigatorContext.class, GiteaSCMSourceBuilder.class));
             all.addAll(SCMSourceTrait._for(sourceDescriptor, GiteaSCMSourceContext.class, null));
@@ -427,6 +428,8 @@ public class GiteaSCMNavigator extends SCMNavigator {
             return result;
         }
 
+        @NonNull
+        @Override
         public List<SCMTrait<? extends SCMTrait<?>>> getTraitsDefaults() {
             GiteaSCMSource.DescriptorImpl descriptor =
                     ExtensionList.lookup(Descriptor.class).get(GiteaSCMSource.DescriptorImpl.class);
