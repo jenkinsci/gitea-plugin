@@ -15,7 +15,7 @@
 
     <name>Gitea Plugin</name>
     <description>SCM API implementation for Gitea</description>
-    <url>https://wiki.jenkins.io/display/JENKINS/Gitea+Plugin</url>
+    <url>https://github.com/jenkinsci/gitea-plugin/blob/master/docs/README.md</url>
     <licenses>
         <license>
             <name>MIT</name>
