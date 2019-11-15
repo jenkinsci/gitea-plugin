@@ -10,7 +10,11 @@
 
 -->
 
-## Version 1.1.2 (unreleased)
+## Version 1.1.3 (unreleased)
+
+## Version 1.1.2 (2019-05-27)
+
+* Fix improper handling of untrusted branches ([SECURITY-1046](https://issues.jenkins-ci.org/browse/SECURITY-1046))
 
 ## Version 1.1.1 (2019-02-15)
 
