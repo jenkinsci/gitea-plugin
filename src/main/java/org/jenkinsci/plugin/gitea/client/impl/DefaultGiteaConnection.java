@@ -702,28 +702,7 @@ class DefaultGiteaConnection implements GiteaConnection {
     @Override
     public List<GiteaPullRequest> fetchPullRequests(GiteaRepository repository, Set<GiteaIssueState> states)
             throws IOException, InterruptedException {
-        String state = null;
-        if (states != null && states.size() == 1) {
-            // state query only works if there is one state
-            for (GiteaIssueState s : GiteaIssueState.values()) {
-                if (states.contains(s)) {
-                    state = s.getKey();
-                }
-            }
-        }
-        return getList(
-                api()
-                        .literal("/repos")
-                        .path(UriTemplateBuilder.var("username"))
-                        .path(UriTemplateBuilder.var("name"))
-                        .literal("/pulls")
-                        .query(UriTemplateBuilder.var("state"))
-                        .build()
-                        .set("username", repository.getOwner().getUsername())
-                        .set("name", repository.getName())
-                        .set("state", state),
-                GiteaPullRequest.class
-        );
+        return fetchPullRequests(repository.getOwner().getUsername(), repository.getName(), states);
     }
 
     @Override
@@ -780,28 +759,7 @@ class DefaultGiteaConnection implements GiteaConnection {
     @Override
     public List<GiteaIssue> fetchIssues(GiteaRepository repository, Set<GiteaIssueState> states)
             throws IOException, InterruptedException {
-        String state = null;
-        if (states != null && states.size() == 1) {
-            // state query only works if there is one state
-            for (GiteaIssueState s : GiteaIssueState.values()) {
-                if (states.contains(s)) {
-                    state = s.getKey();
-                }
-            }
-        }
-        return getList(
-                api()
-                        .literal("/repos")
-                        .path(UriTemplateBuilder.var("username"))
-                        .path(UriTemplateBuilder.var("name"))
-                        .literal("/issues")
-                        .query(UriTemplateBuilder.var("state"))
-                        .build()
-                        .set("username", repository.getOwner().getUsername())
-                        .set("name", repository.getName())
-                        .set("state", state),
-                GiteaIssue.class
-        );
+        return fetchIssues(repository.getOwner().getUsername(), repository.getName(), states);
     }
 
     @Override
