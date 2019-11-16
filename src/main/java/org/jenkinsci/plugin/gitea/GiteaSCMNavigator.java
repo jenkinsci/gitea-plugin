@@ -227,8 +227,9 @@ public class GiteaSCMNavigator extends SCMNavigator {
         if (giteaOwner instanceof GiteaOrganization) {
             String website = ((GiteaOrganization) giteaOwner).getWebsite();
             if (StringUtils.isBlank(website)) {
-                listener.getLogger().println("Organization URL: unspecified");
-                listener.getLogger().printf("Organization URL: %s%n",
+                listener.getLogger().println("Organization website: unspecified");
+            } else {
+                listener.getLogger().printf("Organization website: %s%n",
                         HyperlinkNote.encodeTo(website, StringUtils.defaultIfBlank(giteaOwner.getFullName(), website)));
             }
         }
