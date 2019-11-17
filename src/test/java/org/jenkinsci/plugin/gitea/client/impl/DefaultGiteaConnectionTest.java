@@ -40,9 +40,13 @@ public class DefaultGiteaConnectionTest {
         // This is needed because openConnection is a static method
         mockStatic(DefaultGiteaConnection.class);
 
-        // Set matcher for the argument of openConnection when to mock
-        // We can't use this inside the when clause because the method gets called once with this argument causing a exception
-        // Therefore call it here to inform the mockito framework but pass some valid arguments to the method to be mocked
+        /*
+         Set matcher for the argument of openConnection which decides when mocking takes place
+         We can't use this inside the when(...).withArguments() clause because it returns null causing a exception
+         (the method gets called once for setup)
+         Therefore we set the matcher outside to inform the mockito framework
+         and pass some valid arguments to the method to be mocked
+        */
         ArgumentMatchers.notNull();
 
         // Create mock
