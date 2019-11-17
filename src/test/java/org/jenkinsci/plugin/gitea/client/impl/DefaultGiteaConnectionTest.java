@@ -53,12 +53,14 @@ public class DefaultGiteaConnectionTest {
                 // simulating the response of the API if issues or PRs are disabled
                 .thenThrow(new GiteaHttpStatusException(404, "TEST CASE FAILED!"));
 
-        giteaRepository = new GiteaRepository(new GiteaOwner("", "", "", ""),
+        giteaRepository = new GiteaRepository(
+                new GiteaOwner("", "", "", ""),
                 null, "", "", "",
                 true, false, false, false,
                 "", "", "", "",
                 0L, 0L, 0L, 0L, "",
-                null);
+                null
+        );
     }
 
     @Test
