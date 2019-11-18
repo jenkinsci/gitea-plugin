@@ -68,7 +68,7 @@ public class DefaultGiteaConnectionTest {
     }
 
     @Test
-    public void fetchPullRequests() throws Exception {
+    public void test_fetchPullRequests_with_disabled_prs__given_username_repoName_state() throws Exception {
         List<GiteaPullRequest> pr = mockedDefaultGiteaConnection.fetchPullRequests("", "", Collections.singleton(GiteaIssueState.OPEN));
         assertNotNull(pr);
         assertTrue(pr.isEmpty());
@@ -78,21 +78,21 @@ public class DefaultGiteaConnectionTest {
     }
 
     @Test
-    public void testFetchPullRequests() throws IOException, InterruptedException {
+    public void test_fetchPullRequests_with_disabled_prs__given_username_repoName() throws IOException, InterruptedException {
         List<GiteaPullRequest> pr = mockedDefaultGiteaConnection.fetchPullRequests("", "");
         assertNotNull(pr);
         assertTrue(pr.isEmpty());
     }
 
     @Test
-    public void testFetchPullRequests1() throws IOException, InterruptedException {
+    public void test_fetchPullRequests_with_disabled_prs__given_repo() throws IOException, InterruptedException {
         List<GiteaPullRequest> pr = mockedDefaultGiteaConnection.fetchPullRequests(giteaRepository);
         assertNotNull(pr);
         assertTrue(pr.isEmpty());
     }
 
     @Test
-    public void testFetchPullRequests2() throws IOException, InterruptedException {
+    public void test_fetchPullRequests_with_disabled_prs__given_repo_state() throws IOException, InterruptedException {
         List<GiteaPullRequest> pr = mockedDefaultGiteaConnection.fetchPullRequests(giteaRepository, Collections.singleton(GiteaIssueState.OPEN));
         assertNotNull(pr);
         assertTrue(pr.isEmpty());
@@ -102,7 +102,7 @@ public class DefaultGiteaConnectionTest {
     }
 
     @Test
-    public void fetchIssues() throws IOException, InterruptedException {
+    public void test_fetchIssues_with_disabled_issues__given_username_repoName_state() throws IOException, InterruptedException {
         List<GiteaIssue> issues = mockedDefaultGiteaConnection.fetchIssues("", "", Collections.singleton(GiteaIssueState.OPEN));
         assertNotNull(issues);
         assertTrue(issues.isEmpty());
@@ -112,7 +112,7 @@ public class DefaultGiteaConnectionTest {
     }
 
     @Test
-    public void testFetchIssues() throws IOException, InterruptedException {
+    public void test_fetchIssues_with_disabled_issues__given_repo_state() throws IOException, InterruptedException {
         List<GiteaIssue> issues = mockedDefaultGiteaConnection.fetchIssues(giteaRepository, Collections.singleton(GiteaIssueState.OPEN));
         assertNotNull(issues);
         assertTrue(issues.isEmpty());
@@ -122,14 +122,14 @@ public class DefaultGiteaConnectionTest {
     }
 
     @Test
-    public void testFetchIssues1() throws IOException, InterruptedException {
+    public void test_fetchIssues_with_disabled_issues__given_repo() throws IOException, InterruptedException {
         List<GiteaIssue> issues = mockedDefaultGiteaConnection.fetchIssues(giteaRepository);
         assertNotNull(issues);
         assertTrue(issues.isEmpty());
     }
 
     @Test
-    public void testFetchIssues2() throws IOException, InterruptedException {
+    public void test_fetchIssues_with_disabled_issues__given_username_repoName() throws IOException, InterruptedException {
         List<GiteaIssue> issues = mockedDefaultGiteaConnection.fetchIssues("", "");
         assertNotNull(issues);
         assertTrue(issues.isEmpty());
