@@ -12,6 +12,10 @@
 
 ## Version 1.1.2 (unreleased)
 
+* Added basic setup documentation ([PR-13](https://github.com/jenkinsci/gitea-plugin/pull/13))
+* Fixed plugin URLs from `http:` to `https` ([PR-14](https://github.com/jenkinsci/gitea-plugin/pull/14))
+* Fixed display of organization website ([PR-18](https://github.com/jenkinsci/gitea-plugin/pull/18))
+
 ## Version 1.1.1 (2019-02-15)
 
 * Allow non-admins to fetch organizational repositories ([PR-11](https://github.com/jenkinsci/gitea-plugin/pull/11))
