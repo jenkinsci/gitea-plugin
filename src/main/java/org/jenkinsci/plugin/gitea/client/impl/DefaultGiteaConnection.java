@@ -998,7 +998,7 @@ class DefaultGiteaConnection implements GiteaConnection {
         }
     }
 
-    private static HttpURLConnection openConnection(UriTemplate template) throws IOException {
+    protected HttpURLConnection openConnection(UriTemplate template) throws IOException {
         URL url = new URL(template.expand());
         Jenkins jenkins = Jenkins.getInstance();
         if (jenkins == null || jenkins.proxy == null) {
