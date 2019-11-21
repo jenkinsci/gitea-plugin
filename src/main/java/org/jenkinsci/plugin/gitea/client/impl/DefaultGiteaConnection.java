@@ -998,6 +998,7 @@ class DefaultGiteaConnection implements GiteaConnection {
         }
     }
 
+    @Restricted(NoExternalUse.class)
     protected HttpURLConnection openConnection(UriTemplate template) throws IOException {
         URL url = new URL(template.expand());
         Jenkins jenkins = Jenkins.get();
