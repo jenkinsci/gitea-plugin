@@ -67,6 +67,8 @@ import org.jenkinsci.plugin.gitea.client.api.GiteaPullRequest;
 import org.jenkinsci.plugin.gitea.client.api.GiteaRepository;
 import org.jenkinsci.plugin.gitea.client.api.GiteaUser;
 import org.jenkinsci.plugin.gitea.client.api.GiteaVersion;
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 /**
  * Default implementation of {@link GiteaConnection} that uses the JVM native {@link URLConnection} to communicate
