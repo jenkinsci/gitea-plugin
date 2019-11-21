@@ -41,6 +41,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
@@ -66,6 +67,8 @@ import org.jenkinsci.plugin.gitea.client.api.GiteaPullRequest;
 import org.jenkinsci.plugin.gitea.client.api.GiteaRepository;
 import org.jenkinsci.plugin.gitea.client.api.GiteaUser;
 import org.jenkinsci.plugin.gitea.client.api.GiteaVersion;
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 /**
  * Default implementation of {@link GiteaConnection} that uses the JVM native {@link URLConnection} to communicate
@@ -588,19 +591,30 @@ class DefaultGiteaConnection implements GiteaConnection {
                 }
             }
         }
-        return getList(
-                api()
-                        .literal("/repos")
-                        .path(UriTemplateBuilder.var("username"))
-                        .path(UriTemplateBuilder.var("name"))
-                        .literal("/pulls")
-                        .query(UriTemplateBuilder.var("state"))
-                        .build()
-                        .set("username", username)
-                        .set("name", name)
-                        .set("state", state),
-                GiteaPullRequest.class
-        );
+        try {
+            return getList(
+                    api()
+                            .literal("/repos")
+                            .path(UriTemplateBuilder.var("username"))
+                            .path(UriTemplateBuilder.var("name"))
+                            .literal("/pulls")
+                            .query(UriTemplateBuilder.var("state"))
+                            .build()
+                            .set("username", username)
+                            .set("name", name)
+                            .set("state", state),
+                    GiteaPullRequest.class
+            );
+        } catch (GiteaHttpStatusException e) {
+            // Gitea REST API returns HTTP Code 404 when pull requests or issues are disabled
+            // Therefore we need to handle this case and return a empty List
+            if (e.getStatusCode() == 404) {
+                return Collections.emptyList();
+            } else {
+                // Else other cause... throw exception again
+                throw e;
+            }
+        }
     }
 
     @Override
@@ -633,19 +647,31 @@ class DefaultGiteaConnection implements GiteaConnection {
                 }
             }
         }
-        return getList(
-                api()
-                        .literal("/repos")
-                        .path(UriTemplateBuilder.var("username"))
-                        .path(UriTemplateBuilder.var("name"))
-                        .literal("/issues")
-                        .query(UriTemplateBuilder.var("state"))
-                        .build()
-                        .set("username", username)
-                        .set("name", name)
-                        .set("state", state),
-                GiteaIssue.class
-        );
+
+        try {
+            return getList(
+                    api()
+                            .literal("/repos")
+                            .path(UriTemplateBuilder.var("username"))
+                            .path(UriTemplateBuilder.var("name"))
+                            .literal("/issues")
+                            .query(UriTemplateBuilder.var("state"))
+                            .build()
+                            .set("username", username)
+                            .set("name", name)
+                            .set("state", state),
+                    GiteaIssue.class
+            );
+        } catch (GiteaHttpStatusException e) {
+            // Gitea REST API returns HTTP Code 404 when pull requests or issues are disabled
+            // Therefore we need to handle this case and return a empty List
+            if (e.getStatusCode() == 404) {
+                return Collections.emptyList();
+            } else {
+                // Else other cause... throw exception again
+                throw e;
+            }
+        }
     }
 
     @Override
@@ -890,7 +916,8 @@ class DefaultGiteaConnection implements GiteaConnection {
         }
     }
 
-    private static HttpURLConnection openConnection(UriTemplate template) throws IOException {
+    @Restricted(NoExternalUse.class)
+    protected HttpURLConnection openConnection(UriTemplate template) throws IOException {
         URL url = new URL(template.expand());
         Jenkins jenkins = Jenkins.get();
         if (jenkins.proxy == null) {
