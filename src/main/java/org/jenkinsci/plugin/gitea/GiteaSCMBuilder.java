@@ -142,7 +142,7 @@ public class GiteaSCMBuilder extends GitSCMBuilder<GiteaSCMBuilder> {
                             StandardCredentials.class,
                             context,
                             context instanceof Queue.Task
-                                    ? Tasks.getDefaultAuthenticationOf((Queue.Task) context)
+                                    ? ((Queue.Task) context).getDefaultAuthentication()
                                     : ACL.SYSTEM,
                             builder.build()
                     ),

@@ -26,7 +26,7 @@ package org.jenkinsci.plugin.gitea.client.impl;
 import com.damnhandy.uri.template.UriTemplate;
 import com.damnhandy.uri.template.UriTemplateBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
+import com.fasterxml.jackson.databind.util.StdDateFormat;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -892,7 +892,7 @@ class DefaultGiteaConnection implements GiteaConnection {
         connection.setRequestMethod("POST");
         byte[] bytes;
         if (body != null) {
-            bytes = mapper.writer(new ISO8601DateFormat()).writeValueAsBytes(body);
+            bytes = mapper.writer(new StdDateFormat()).writeValueAsBytes(body);
             connection.setRequestProperty("Content-Type", "application/json");
             connection.setRequestProperty("Content-Length", Integer.toString(bytes.length));
             connection.setDoOutput(true);
@@ -935,7 +935,7 @@ class DefaultGiteaConnection implements GiteaConnection {
         setRequestMethodViaJreBugWorkaround(connection, "PATCH");
         byte[] bytes;
         if (body != null) {
-            bytes = mapper.writer(new ISO8601DateFormat()).writeValueAsBytes(body);
+            bytes = mapper.writer(new StdDateFormat()).writeValueAsBytes(body);
             connection.setRequestProperty("Content-Type", "application/json");
             connection.setRequestProperty("Content-Length", Integer.toString(bytes.length));
             connection.setDoOutput(true);
@@ -1000,8 +1000,8 @@ class DefaultGiteaConnection implements GiteaConnection {
 
     protected HttpURLConnection openConnection(UriTemplate template) throws IOException {
         URL url = new URL(template.expand());
-        Jenkins jenkins = Jenkins.getInstance();
-        if (jenkins == null || jenkins.proxy == null) {
+        Jenkins jenkins = Jenkins.get();
+        if (jenkins.proxy == null) {
             return (HttpURLConnection) url.openConnection();
         }
         return (HttpURLConnection) url.openConnection(jenkins.proxy.createProxy(url.getHost()));

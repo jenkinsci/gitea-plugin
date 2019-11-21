@@ -96,10 +96,10 @@ public class PersonalAccessTokenImpl extends BaseStandardCredentials implements 
         @Restricted(NoExternalUse.class) // stapler
         @SuppressWarnings("unused") // stapler
         public FormValidation doCheckToken(@QueryParameter String value) {
-            Secret secret = Secret.fromString(value);
-            if (secret == null) {
+            if (value == null || value.isEmpty()) {
                 return FormValidation.error(Messages.PersonalAccessTokenImpl_tokenRequired());
             }
+            Secret secret = Secret.fromString(value);
             if (StringUtils.equals(value, secret.getPlainText())) {
                 if (value.length() != 40) {
                     return FormValidation.error(Messages.PersonalAccessTokenImpl_tokenWrongLength());
