@@ -515,47 +515,53 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
     @NonNull
     @Override
     protected SCMProbe createProbe(@NonNull final SCMHead head, SCMRevision revision) throws IOException {
-        GiteaSCMFileSystem.BuilderImpl builder =
-                ExtensionList.lookup(SCMFileSystem.Builder.class).get(GiteaSCMFileSystem.BuilderImpl.class);
-        if (builder == null) {
-            throw new AssertionError();
+        try {
+            GiteaSCMFileSystem.BuilderImpl builder =
+                    ExtensionList.lookup(SCMFileSystem.Builder.class).get(GiteaSCMFileSystem.BuilderImpl.class);
+            if (builder == null) {
+                throw new AssertionError();
+            }
+            final SCMFileSystem fs = builder.build(this, head, revision);
+            return new SCMProbe() {
+                @NonNull
+                @Override
+                public SCMProbeStat stat(@NonNull String path) throws IOException {
+                    try {
+                        return SCMProbeStat.fromType(fs.child(path).getType());
+                    } catch (InterruptedException e) {
+                        throw new IOException("Interrupted", e);
+                    }
+                }
+
+                @Override
+                public void close() throws IOException {
+                    fs.close();
+                }
+
+                @Override
+                public String name() {
+                    return head.getName();
+                }
+
+                @Override
+                public long lastModified() {
+                    try {
+                        return fs.lastModified();
+                    } catch (IOException e) {
+                        return 0L;
+                    } catch (InterruptedException e) {
+                        return 0L;
+                    }
+                }
+
+                @Override
+                public SCMFile getRoot() {
+                    return fs.getRoot();
+                }
+            };
+        } catch (InterruptedException e) {
+            throw new IOException(e);
         }
-        final SCMFileSystem fs = builder.build(this, head, revision);
-        return new SCMProbe() {
-            @NonNull
-            @Override
-            public SCMProbeStat stat(@NonNull String path) throws IOException {
-                try {
-                    return SCMProbeStat.fromType(fs.child(path).getType());
-                } catch (InterruptedException e) {
-                    throw new IOException("Interrupted", e);
-                }
-            }
-
-            @Override
-            public void close() throws IOException {
-                fs.close();
-            }
-
-            @Override
-            public String name() {
-                return head.getName();
-            }
-
-            @Override
-            public long lastModified() {
-                try {
-                    return fs.lastModified();
-                } catch (IOException | InterruptedException e) {
-                    return 0L;
-                }
-            }
-
-            @Override
-            public SCMFile getRoot() {
-                return fs.getRoot();
-            }
-        };
     }
 
     @Override

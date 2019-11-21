@@ -138,7 +138,7 @@ public class GiteaWebhookListener {
                 hook.setActive(true);
                 c.createHook(org, hook);
             }
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             LOGGER.log(Level.WARNING,
                     "Could not manage organization hooks for " + navigator.getRepoOwner() + " on " + serverUrl, e);
         }
@@ -214,7 +214,7 @@ public class GiteaWebhookListener {
                 hook.setActive(true);
                 c.createHook(repo, hook);
             }
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             LOGGER.log(Level.WARNING,
                     "Could not manage repository hooks for " + source.getRepoOwner() + "/" + source.getRepository()
                             + " on " + serverUrl, e);
@@ -331,7 +331,7 @@ public class GiteaWebhookListener {
                             hook.setActive(true);
                             c.createHook(repo, hook);
                         }
-                    } catch (IOException e) {
+                    } catch (IOException | InterruptedException e) {
                         LOGGER.log(Level.WARNING,
                                 "Could not manage repository hooks for " + repoOwner + "/" + repoName
                                         + " on " + server.getServerUrl(), e);

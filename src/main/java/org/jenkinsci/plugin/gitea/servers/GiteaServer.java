@@ -242,6 +242,8 @@ public class GiteaServer extends AbstractDescribableImpl<GiteaServer> {
                         .okWithMarkup(Messages.GiteaServer_serverVersion(Util.escape(c.fetchVersion().getVersion())));
             } catch (MalformedURLException e) {
                 return FormValidation.errorWithMarkup(Messages.GiteaServer_invalidUrl(Util.escape(e.getMessage())));
+            } catch (InterruptedException e) {
+                return FormValidation.warning(Messages.GiteaServer_versionInterrupted());
             } catch (IOException e) {
                 return FormValidation
                         .errorWithMarkup(Messages.GiteaServer_cannotConnect(Util.escape(e.getMessage())));
@@ -321,6 +323,8 @@ public class GiteaServer extends AbstractDescribableImpl<GiteaServer> {
                 return FormValidation.okWithMarkup(
                         Messages.GiteaServer_hookManagementAs(Util.escape(user.getUsername()))
                 );
+            } catch (InterruptedException e) {
+                return FormValidation.warning(Messages.GiteaServer_validateInterrupted());
             } catch (IOException e) {
                 return FormValidation.errorWithMarkup(Messages.GiteaServer_cannotConnect(Util.escape(e.getMessage())));
             }

@@ -149,8 +149,12 @@ public class GiteaSCMFileSystem extends SCMFileSystem {
                     .open();
             try {
                 return new GiteaSCMFileSystem(connection, connection.fetchRepository(repoOwner, repository), ref, rev);
-            } catch (IOException e) {
-                connection.close();
+            } catch (IOException | InterruptedException e) {
+                try {
+                    connection.close();
+                } catch (IOException ioe) {
+                    e.addSuppressed(ioe);
+                }
                 throw e;
             }
         }
