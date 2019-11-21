@@ -39,6 +39,7 @@ import hudson.model.queue.Tasks;
 import hudson.scm.SCM;
 import hudson.scm.SCMRevisionState;
 import hudson.security.ACL;
+import hudson.security.ACLContext;
 import hudson.util.LogTaskListener;
 import java.io.File;
 import java.io.IOException;
@@ -200,8 +201,7 @@ public class GiteaNotifier {
             Computer.threadPoolForRemoting.submit(new Runnable() {
                 @Override
                 public void run() {
-                    SecurityContext context = ACL.impersonate(Tasks.getAuthenticationOf(wi.task));
-                    try {
+                    try(ACLContext context = ACL.as(Tasks.getAuthenticationOf(wi.task))) {
                         // we need to determine the revision that *should* be built so that we can tag that as pending
                         SCMRevision revision = source.fetch(head, new LogTaskListener(LOGGER, Level.INFO));
                         String hash;
@@ -259,8 +259,6 @@ public class GiteaNotifier {
                         LOGGER.log(Level.INFO,
                                 "Could not send commit status notification for " + job.getFullName() + " to " + source
                                         .getServerUrl(), e);
-                    } finally {
-                        SecurityContextHolder.setContext(context);
                     }
                 }
             });

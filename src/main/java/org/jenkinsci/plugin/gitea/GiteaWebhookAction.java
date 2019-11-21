@@ -109,6 +109,6 @@ public class GiteaWebhookAction extends CrumbExclusion implements UnprotectedRoo
             LOGGER.log(Level.INFO, "Received hook payload with unknown type: {0} from {1}",
                     new Object[]{type, origin});
         }
-        return HttpResponses.plainText(processed ? "Processed" : "Ignored");
+        return HttpResponses.text(processed ? "Processed" : "Ignored");
     }
 }

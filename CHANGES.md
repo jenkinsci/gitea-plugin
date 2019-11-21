@@ -10,7 +10,11 @@
 
 -->
 
-## Version 1.1.2 (unreleased)
+## Version 1.1.3 (unreleased)
+
+## Version 1.1.2 (2019-05-27)
+
+* Fix improper handling of untrusted branches ([SECURITY-1046](https://issues.jenkins-ci.org/browse/SECURITY-1046))
 
 * Added basic setup documentation ([PR-13](https://github.com/jenkinsci/gitea-plugin/pull/13))
 * Fixed plugin URLs from `http:` to `https` ([PR-14](https://github.com/jenkinsci/gitea-plugin/pull/14))
