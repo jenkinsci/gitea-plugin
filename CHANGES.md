@@ -15,6 +15,8 @@
 * Added basic setup documentation ([PR-13](https://github.com/jenkinsci/gitea-plugin/pull/13))
 * Fixed plugin URLs from `http:` to `https` ([PR-14](https://github.com/jenkinsci/gitea-plugin/pull/14))
 * Fixed display of organization website ([PR-18](https://github.com/jenkinsci/gitea-plugin/pull/18))
+* Fixed repository polling with disabled issues or pull requests ([PR-17](https://github.com/jenkinsci/gitea-plugin/pull/17))
+                                                                 ([JENKINS-54516](https://issues.jenkins-ci.org/browse/JENKINS-54516))
 
 ## Version 1.1.2 (2019-05-27)
 
