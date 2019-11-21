@@ -30,9 +30,7 @@ import hudson.XmlFile;
 import hudson.model.Item;
 import hudson.model.Saveable;
 import hudson.model.listeners.SaveableListener;
-import hudson.plugins.git.BranchSpec;
 import hudson.plugins.git.GitSCM;
-import hudson.plugins.git.GitStatus;
 import hudson.plugins.git.extensions.impl.IgnoreNotifyCommit;
 import hudson.scm.SCM;
 import hudson.triggers.SCMTrigger;
@@ -40,17 +38,14 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jenkins.authentication.tokens.api.AuthenticationTokens;
 import jenkins.model.JenkinsLocationConfiguration;
-import jenkins.scm.api.SCM2;
 import jenkins.scm.api.SCMNavigatorOwner;
 import jenkins.scm.api.SCMSourceOwner;
 import jenkins.triggers.SCMTriggerItem;
@@ -80,8 +75,6 @@ public class GiteaWebhookListener {
         StandardCredentials credentials;
         String serverUrl = navigator.getServerUrl();
         switch (mode) {
-            case DISABLE:
-                return;
             case SYSTEM:
                 GiteaServer server = GiteaServers.get().findServer(serverUrl);
                 if (server == null || !server.isManageHooks()) {
@@ -92,6 +85,7 @@ public class GiteaWebhookListener {
             case ITEM:
                 credentials = navigator.credentials(owner);
                 break;
+            case DISABLE:
             default:
                 return;
         }
@@ -162,8 +156,6 @@ public class GiteaWebhookListener {
         StandardCredentials credentials;
         String serverUrl = source.getServerUrl();
         switch (mode) {
-            case DISABLE:
-                return;
             case SYSTEM:
                 GiteaServer server = GiteaServers.get().findServer(serverUrl);
                 if (server == null || !server.isManageHooks()) {
@@ -174,6 +166,7 @@ public class GiteaWebhookListener {
             case ITEM:
                 credentials = source.credentials();
                 break;
+            case DISABLE:
             default:
                 return;
         }

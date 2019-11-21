@@ -101,7 +101,7 @@ public final class GiteaMilestone extends GiteaObject<GiteaMilestone> {
     }
 
     public Date getDueOn() {
-        return dueOn == null ? dueOn : (Date) dueOn.clone();
+        return dueOn == null ? null : (Date) dueOn.clone();
     }
 
     @JsonProperty("due_on")

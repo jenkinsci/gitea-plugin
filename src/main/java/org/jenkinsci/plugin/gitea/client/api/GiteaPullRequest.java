@@ -136,11 +136,11 @@ public final class GiteaPullRequest extends GiteaObject<GiteaPullRequest> {
     }
 
     public List<GiteaLabel> getLabels() {
-        return labels == null ? new ArrayList<GiteaLabel>() : new ArrayList<GiteaLabel>(labels);
+        return labels == null ? new ArrayList<GiteaLabel>() : new ArrayList<>(labels);
     }
 
     public void setLabels(List<GiteaLabel> labels) {
-        this.labels = labels == null ? new ArrayList<GiteaLabel>() : new ArrayList<GiteaLabel>(labels);
+        this.labels = labels == null ? new ArrayList<GiteaLabel>() : new ArrayList<>(labels);
     }
 
     public GiteaMilestone getMilestone() {

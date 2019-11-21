@@ -121,7 +121,7 @@ public class GiteaBrowser extends GitRepositoryBrowser {
                         .fragment(UriTemplateBuilder.var("diff"))
                         .build()
                         .set("changeSet", path.getChangeSet().getId())
-                        .set("diff", "diff-" + Integer.toString(getIndexOfPath(path) + 1))
+                        .set("diff", "diff-" + (getIndexOfPath(path) + 1))
                         .expand()
         );
     }

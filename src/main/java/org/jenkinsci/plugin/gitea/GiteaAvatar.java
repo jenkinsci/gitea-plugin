@@ -68,7 +68,7 @@ public class GiteaAvatar extends AvatarMetadataAction {
 
         GiteaAvatar that = (GiteaAvatar) o;
 
-        return avatar != null ? avatar.equals(that.avatar) : that.avatar == null;
+        return Objects.equals(avatar, that.avatar);
     }
 
     /**

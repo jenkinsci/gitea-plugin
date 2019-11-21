@@ -36,7 +36,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 
 public class PersonalAccessTokenImplTest {
     @ClassRule
-    public static JenkinsRule j = new JenkinsRule();
+    public static final JenkinsRule j = new JenkinsRule();
 
     @Test
     public void configRoundtrip() throws Exception {

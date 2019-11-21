@@ -28,7 +28,6 @@ import com.damnhandy.uri.template.UriTemplateBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import edu.umd.cs.findbugs.annotations.NonNull;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,13 +41,11 @@ import java.nio.charset.StandardCharsets;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import javax.net.ssl.HttpsURLConnection;
-
 import jenkins.model.Jenkins;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
@@ -80,7 +77,7 @@ class DefaultGiteaConnection implements GiteaConnection {
     private final String serverUrl;
 
     private final GiteaAuth authentication;
-    private ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
 
     DefaultGiteaConnection(@NonNull String serverUrl,
                            @NonNull GiteaAuth authentication) {
