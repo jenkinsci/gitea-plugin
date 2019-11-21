@@ -93,11 +93,10 @@ public class GiteaWebhookListener {
             return;
         }
         JenkinsLocationConfiguration locationConfiguration = JenkinsLocationConfiguration.get();
-        if (locationConfiguration == null) {
-            return;
-        }
         String rootUrl = locationConfiguration.getUrl();
         if (StringUtils.isBlank(rootUrl) || rootUrl.startsWith("http://localhost:")) {
+            // Jenkins URL not configured, can't register hooks
+            LOGGER.log(Level.FINE, "JENKINS_URL is not defined. Cannot register a WebHook.");
             return;
         }
         String hookUrl =
@@ -174,11 +173,10 @@ public class GiteaWebhookListener {
             return;
         }
         JenkinsLocationConfiguration locationConfiguration = JenkinsLocationConfiguration.get();
-        if (locationConfiguration == null) {
-            return;
-        }
         String rootUrl = locationConfiguration.getUrl();
         if (StringUtils.isBlank(rootUrl) || rootUrl.startsWith("http://localhost:")) {
+            // Jenkins URL not configured, can't register hooks
+            LOGGER.log(Level.FINE, "JENKINS_URL is not defined. Cannot register a WebHook.");
             return;
         }
         String hookUrl =
@@ -224,13 +222,10 @@ public class GiteaWebhookListener {
 
     public static void register(SCMTriggerItem item, GitSCM scm) {
         JenkinsLocationConfiguration locationConfiguration = JenkinsLocationConfiguration.get();
-        if (locationConfiguration == null) {
-            // Jenkins URL not configured, can't register hooks
-            return;
-        }
         String rootUrl = locationConfiguration.getUrl();
         if (StringUtils.isBlank(rootUrl) || rootUrl.startsWith("http://localhost:")) {
             // Jenkins URL not configured, can't register hooks
+            LOGGER.log(Level.FINE, "JENKINS_URL is not defined. Cannot register a WebHook.");
             return;
         }
         if (scm.getExtensions().get(IgnoreNotifyCommit.class) != null) {

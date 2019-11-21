@@ -148,7 +148,7 @@ public final class Gitea {
         // HACK for Jenkins
         // by rights this should be the context classloader, but Jenkins does not expose plugins on that
         // so we need instead to use the uberClassLoader as that will have the implementations
-        Jenkins instance = Jenkins.getInstance();
+        Jenkins instance = Jenkins.getInstanceOrNull();
         classLoader = instance == null ? getClass().getClassLoader() : instance.getPluginManager().uberClassLoader;
         // END HACK
         return this;
