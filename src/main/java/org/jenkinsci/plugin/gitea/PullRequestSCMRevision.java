@@ -30,7 +30,7 @@ import org.kohsuke.stapler.export.Exported;
 
 public class PullRequestSCMRevision extends ChangeRequestSCMRevision<PullRequestSCMHead> {
 
-    private BranchSCMRevision origin;
+    private final BranchSCMRevision origin;
 
     /**
      * Constructor.

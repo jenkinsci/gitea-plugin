@@ -24,6 +24,7 @@
 package org.jenkinsci.plugin.gitea;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
+import java.util.Objects;
 import jenkins.scm.api.metadata.AvatarMetadataAction;
 import org.apache.commons.lang.StringUtils;
 
@@ -67,7 +68,7 @@ public class GiteaAvatar extends AvatarMetadataAction {
 
         GiteaAvatar that = (GiteaAvatar) o;
 
-        return avatar != null ? avatar.equals(that.avatar) : that.avatar == null;
+        return Objects.equals(avatar, that.avatar);
     }
 
     /**

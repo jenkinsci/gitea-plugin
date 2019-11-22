@@ -41,9 +41,9 @@ public class GiteaSCMSourceContext
     private boolean wantOriginPRs;
     private boolean wantForkPRs;
     @NonNull
-    private Set<ChangeRequestCheckoutStrategy> originPRStrategies = EnumSet.noneOf(ChangeRequestCheckoutStrategy.class);
+    private final Set<ChangeRequestCheckoutStrategy> originPRStrategies = EnumSet.noneOf(ChangeRequestCheckoutStrategy.class);
     @NonNull
-    private Set<ChangeRequestCheckoutStrategy> forkPRStrategies = EnumSet.noneOf(ChangeRequestCheckoutStrategy.class);
+    private final Set<ChangeRequestCheckoutStrategy> forkPRStrategies = EnumSet.noneOf(ChangeRequestCheckoutStrategy.class);
     @NonNull
     private WebhookRegistration webhookRegistration = WebhookRegistration.SYSTEM;
     private boolean notificationsDisabled;

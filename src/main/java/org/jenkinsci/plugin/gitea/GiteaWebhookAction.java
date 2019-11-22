@@ -42,7 +42,7 @@ import org.kohsuke.stapler.StaplerRequest;
 
 @Extension
 public class GiteaWebhookAction extends CrumbExclusion implements UnprotectedRootAction {
-    private Logger LOGGER = Logger.getLogger(GiteaWebhookAction.class.getName());
+    private final Logger LOGGER = Logger.getLogger(GiteaWebhookAction.class.getName());
 
     @Override
     public String getIconFileName() {

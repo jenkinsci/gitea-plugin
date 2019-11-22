@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 public class GiteaConnectionBuilderTest {
     @Test

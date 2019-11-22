@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -22,8 +21,6 @@ import org.jenkinsci.plugin.gitea.client.api.GiteaConnection;
 import org.jenkinsci.plugin.gitea.client.api.GiteaHook;
 import org.jenkinsci.plugin.gitea.client.api.GiteaIssue;
 import org.jenkinsci.plugin.gitea.client.api.GiteaIssueState;
-import org.jenkinsci.plugin.gitea.client.api.GiteaLabel;
-import org.jenkinsci.plugin.gitea.client.api.GiteaMilestone;
 import org.jenkinsci.plugin.gitea.client.api.GiteaObject;
 import org.jenkinsci.plugin.gitea.client.api.GiteaOrganization;
 import org.jenkinsci.plugin.gitea.client.api.GiteaOwner;
@@ -299,9 +296,7 @@ public class MockGiteaConnection implements GiteaConnection {
     @Override
     public void updateHook(GiteaOrganization organization, GiteaHook hook) throws IOException, InterruptedException {
         GiteaHook target = null;
-        for (Iterator<GiteaHook> iterator = notFoundIfNull(orgHooks.get(organization)).iterator();
-             iterator.hasNext(); ) {
-            GiteaHook h = iterator.next();
+        for (GiteaHook h : notFoundIfNull(orgHooks.get(organization))) {
             if (h.getId() == hook.getId()) {
                 target = h;
                 break;
@@ -361,10 +356,8 @@ public class MockGiteaConnection implements GiteaConnection {
     @Override
     public void updateHook(GiteaRepository repository, GiteaHook hook) throws IOException, InterruptedException {
         GiteaHook target = null;
-        for (Iterator<GiteaHook> iterator = notFoundIfNull(
-                repoHooks.get(keyOf(repository))).iterator();
-             iterator.hasNext(); ) {
-            GiteaHook h = iterator.next();
+        for (GiteaHook h : notFoundIfNull(
+                repoHooks.get(keyOf(repository)))) {
             if (h.getId() == hook.getId()) {
                 target = h;
                 break;

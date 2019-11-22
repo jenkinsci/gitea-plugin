@@ -52,7 +52,7 @@ public class BranchDiscoveryTrait extends SCMSourceTrait {
     /**
      * The strategy encoded as a bit-field.
      */
-    private int strategyId;
+    private final int strategyId;
 
     /**
      * Constructor for stapler.

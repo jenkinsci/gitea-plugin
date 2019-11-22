@@ -240,7 +240,7 @@ public class GiteaServers extends GlobalConfiguration {
         Jenkins.get().checkPermission(Jenkins.ADMINISTER);
         List<GiteaServer> eps = new ArrayList<>(Util.fixNull(servers));
         // remove duplicates and empty urls
-        Set<String> serverUrls = new HashSet<String>();
+        Set<String> serverUrls = new HashSet<>();
         for (ListIterator<GiteaServer> iterator = eps.listIterator(); iterator.hasNext(); ) {
             GiteaServer endpoint = iterator.next();
             String serverUrl = endpoint.getServerUrl();

@@ -17,6 +17,7 @@
 * Fixed display of organization website ([PR-18](https://github.com/jenkinsci/gitea-plugin/pull/18))
 * Fixed repository polling with disabled issues or pull requests ([PR-17](https://github.com/jenkinsci/gitea-plugin/pull/17))
                                                                  ([JENKINS-54516](https://issues.jenkins-ci.org/browse/JENKINS-54516))
+* Optimized imports, less redundant code and other cleanups ([PR-15](https://github.com/jenkinsci/gitea-plugin/pull/15/files))
 
 ## Version 1.1.2 (2019-05-27)
 

@@ -90,7 +90,15 @@ import jenkins.scm.impl.trait.Selection;
 import org.apache.commons.lang.StringUtils;
 import org.jenkins.ui.icon.Icon;
 import org.jenkins.ui.icon.IconSet;
-import org.jenkinsci.plugin.gitea.client.api.*;
+import org.jenkinsci.plugin.gitea.client.api.Gitea;
+import org.jenkinsci.plugin.gitea.client.api.GiteaAuth;
+import org.jenkinsci.plugin.gitea.client.api.GiteaBranch;
+import org.jenkinsci.plugin.gitea.client.api.GiteaConnection;
+import org.jenkinsci.plugin.gitea.client.api.GiteaIssueState;
+import org.jenkinsci.plugin.gitea.client.api.GiteaOwner;
+import org.jenkinsci.plugin.gitea.client.api.GiteaPullRequest;
+import org.jenkinsci.plugin.gitea.client.api.GiteaRepository;
+import org.jenkinsci.plugin.gitea.client.api.GiteaUser;
 import org.jenkinsci.plugin.gitea.servers.GiteaServer;
 import org.jenkinsci.plugin.gitea.servers.GiteaServers;
 import org.kohsuke.stapler.AncestorInPath;
@@ -830,7 +838,7 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
         }
 
         public List<SCMSourceTrait> getTraitsDefaults() {
-            return Arrays.<SCMSourceTrait>asList( // TODO finalize
+            return Arrays.asList( // TODO finalize
                     new BranchDiscoveryTrait(true, false),
                     new OriginPullRequestDiscoveryTrait(EnumSet.of(ChangeRequestCheckoutStrategy.MERGE)),
                     new ForkPullRequestDiscoveryTrait(EnumSet.of(ChangeRequestCheckoutStrategy.MERGE),
