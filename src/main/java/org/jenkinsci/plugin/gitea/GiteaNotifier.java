@@ -98,7 +98,7 @@ public class GiteaNotifier {
         Result result = build.getResult();
         GiteaCommitStatus status = new GiteaCommitStatus();
         status.setTargetUrl(url);
-        status.setContext(build.getParent().getFullName());
+
         if (Result.SUCCESS.equals(result)) {
             status.setDescription("This commit looks good");
             status.setState(GiteaCommitState.SUCCESS);
@@ -117,22 +117,27 @@ public class GiteaNotifier {
         }
 
         SCMRevision revision = SCMRevisionAction.getRevision(source, build);
+        String statusContext = stripBranchName(build.getParent()) + "/pipeline/";
         String hash;
         if (revision instanceof BranchSCMRevision) {
             listener.getLogger().format("[Gitea] Notifying branch build status: %s %s%n",
                     status.getState().name(), status.getDescription());
             hash = ((BranchSCMRevision) revision).getHash();
+            statusContext += "head";
         } else if (revision instanceof PullRequestSCMRevision) {
             listener.getLogger().format("[Gitea] Notifying pull request build status: %s %s%n",
                     status.getState().name(), status.getDescription());
             hash = ((PullRequestSCMRevision) revision).getOrigin().getHash();
+            statusContext += getPrContextTarget(((PullRequestSCMRevision) revision).getTarget().getHead().getName());
         } else if (revision instanceof TagSCMRevision) {
             listener.getLogger().format("[Gitea] Notifying tag build status: %s %s%n",
                     status.getState().name(), status.getDescription());
             hash = ((TagSCMRevision) revision).getHash();
+            statusContext += "tag";
         } else {
             return;
         }
+        status.setContext(statusContext);
         JobScheduledListener jsl = ExtensionList.lookup(QueueListener.class).get(JobScheduledListener.class);
         if (jsl != null) {
             // we are setting the status, so don't let the queue listener background thread change it to pending
@@ -157,6 +162,19 @@ public class GiteaNotifier {
             }
             listener.getLogger().format("[Gitea] Notified%n");
         }
+    }
+
+    /**
+     * Strips the name of the job the remove either the name of the branch or e.g. PR-1
+     * @param job Job with a full name in form of Organisation/Repository/Branch
+     * @return Stripped name in form of Organisation/Repository
+     */
+    private static String stripBranchName(Job job) {
+        return job.getFullName().substring(0, job.getFullName().lastIndexOf('/'));
+    }
+
+    private static String getPrContextTarget(String targetbranch) {
+        return "pr-" + targetbranch;
     }
 
     /**
@@ -208,14 +226,18 @@ public class GiteaNotifier {
                         // we need to determine the revision that *should* be built so that we can tag that as pending
                         SCMRevision revision = source.fetch(head, new LogTaskListener(LOGGER, Level.INFO));
                         String hash;
+                        String statusContext = stripBranchName(job) + "/pipeline/";
                         if (revision instanceof BranchSCMRevision) {
                             LOGGER.log(Level.INFO, "Notifying branch pending build {0}", job.getFullName());
                             hash = ((BranchSCMRevision) revision).getHash();
+                            statusContext += "head";
                         } else if (revision instanceof PullRequestSCMRevision) {
                             LOGGER.log(Level.INFO, "Notifying pull request pending build {0}", job.getFullName());
                             hash = ((PullRequestSCMRevision) revision).getOrigin().getHash();
+                            statusContext += getPrContextTarget(((PullRequestSCMRevision) revision).getTarget().getHead().getName());
                         } else if (revision instanceof TagSCMRevision) {
                             LOGGER.log(Level.INFO, "Notifying tag pending build {0}", job.getFullName());
+                            statusContext += "tag";
                             hash = ((TagSCMRevision) revision).getHash();
                         } else {
                             return;
@@ -229,7 +251,7 @@ public class GiteaNotifier {
                         }
                         GiteaCommitStatus status = new GiteaCommitStatus();
                         status.setTargetUrl(url);
-                        status.setContext(job.getFullName());
+                        status.setContext(statusContext);
                         status.setDescription("Build queued...");
                         status.setState(GiteaCommitState.PENDING);
 
