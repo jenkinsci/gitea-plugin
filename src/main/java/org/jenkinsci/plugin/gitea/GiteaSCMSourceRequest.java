@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2017, CloudBees, Inc.
+ * Copyright (c) 2017-2020, CloudBees, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,6 +29,7 @@ import hudson.Util;
 import hudson.model.TaskListener;
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -39,11 +40,11 @@ import jenkins.scm.api.SCMHead;
 import jenkins.scm.api.SCMHeadOrigin;
 import jenkins.scm.api.SCMSource;
 import jenkins.scm.api.mixin.ChangeRequestCheckoutStrategy;
-import jenkins.scm.api.mixin.TagSCMHead;
 import jenkins.scm.api.trait.SCMSourceRequest;
 import org.jenkinsci.plugin.gitea.client.api.GiteaBranch;
 import org.jenkinsci.plugin.gitea.client.api.GiteaConnection;
 import org.jenkinsci.plugin.gitea.client.api.GiteaPullRequest;
+import org.jenkinsci.plugin.gitea.client.api.GiteaTag;
 
 public class GiteaSCMSourceRequest extends SCMSourceRequest {
     private final boolean fetchBranches;
@@ -64,7 +65,8 @@ public class GiteaSCMSourceRequest extends SCMSourceRequest {
     private Iterable<GiteaPullRequest> pullRequests;
     @CheckForNull
     private Iterable<GiteaBranch> branches;
-    // TODO private Iterable<GiteaTag> tags;
+    @CheckForNull
+    private Iterable<GiteaTag> tags;
     /**
      * The repository collaborator names or {@code null} if not provided.
      */
@@ -105,7 +107,7 @@ public class GiteaSCMSourceRequest extends SCMSourceRequest {
                     if (SCMHeadOrigin.DEFAULT.equals(h.getOrigin())) {
                         branchNames.add(((PullRequestSCMHead) h).getOriginName());
                     }
-                } else if (h instanceof TagSCMHead) { // TODO replace with concrete class when tag support added
+                } else if (h instanceof TagSCMHead) {
                     tagNames.add(h.getName());
                 }
             }
@@ -284,7 +286,25 @@ public class GiteaSCMSourceRequest extends SCMSourceRequest {
         this.branches = branches;
     }
 
-    // TODO Iterable<GiteaTag> getTags() and setTags(...)
+    /**
+     * Returns the branch details or an empty list if either the request did not specify to {@link #isFetchBranches()}
+     * or if the branch details have not been provided by {@link #setBranches(Iterable)} yet.
+     *
+     * @return the branch details (may be empty)
+     */
+    @NonNull
+    public final Iterable<GiteaTag> getTags() {
+        return Util.fixNull(tags);
+    }
+
+    /**
+     * Provides the requests with the branch details.
+     *
+     * @param tags the branch details.
+     */
+    public final void setTags(@CheckForNull Iterable<GiteaTag> tags) {
+        this.tags = tags;
+    }
 
     /**
      * Returns the names of the repository collaborators or {@code null} if those details have not been provided yet.
@@ -329,12 +349,30 @@ public class GiteaSCMSourceRequest extends SCMSourceRequest {
      */
     @Override
     public void close() throws IOException {
-        if (pullRequests instanceof Closeable) {
-            ((Closeable) pullRequests).close();
+        IOException exception = null;
+        for (Object o : Arrays.asList(pullRequests, branches, tags)) {
+            if (o instanceof Closeable) {
+                try {
+                    ((Closeable) o).close();
+                } catch (IOException e) {
+                    if (exception == null) {
+                        exception = e;
+                    } else {
+                        exception.addSuppressed(e);
+                    }
+                }
+            }
         }
-        if (branches instanceof Closeable) {
-            ((Closeable) branches).close();
+        try {
+            super.close();
+        } catch (IOException e) {
+            if (exception == null) {
+                throw e;
+            }
+            exception.addSuppressed(e);
         }
-        super.close();
+        if (exception != null) {
+            throw exception;
+        }
     }
 }

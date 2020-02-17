@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2017, CloudBees, Inc.
+ * Copyright (c) 2017-2020, CloudBees, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -66,6 +66,18 @@ public interface GiteaConnection extends AutoCloseable {
     List<GiteaBranch> fetchBranches(String username, String name) throws IOException, InterruptedException;
 
     List<GiteaBranch> fetchBranches(GiteaRepository repository) throws IOException, InterruptedException;
+
+    GiteaAnnotatedTag fetchAnnotatedTag(String username, String repository, String sha1) throws IOException, InterruptedException;
+
+    GiteaAnnotatedTag fetchAnnotatedTag(GiteaRepository repository, GiteaTag tag) throws IOException, InterruptedException;
+
+    List<GiteaTag> fetchTags(String username, String name) throws IOException, InterruptedException;
+
+    List<GiteaTag> fetchTags(GiteaRepository repository) throws IOException, InterruptedException;
+
+    GiteaCommitDetail fetchCommit(String username, String repository, String sha1) throws IOException, InterruptedException;
+
+    GiteaCommitDetail fetchCommit(GiteaRepository repository, String sha1) throws IOException, InterruptedException;
 
     List<GiteaUser> fetchCollaborators(String username, String name) throws IOException, InterruptedException;
 
