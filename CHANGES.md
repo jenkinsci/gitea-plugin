@@ -20,6 +20,7 @@
 * Optimized imports, less redundant code and other cleanups ([PR-15](https://github.com/jenkinsci/gitea-plugin/pull/15))
 * Added support for tag discovery ([PR-6](https://github.com/jenkinsci/gitea-plugin/pull/6))
 * Updated documentation with details of how to setup ([PR-20](https://github.com/jenkinsci/gitea-plugin/pull/20))
+* Tweak commit status checkf for pull requests so that they are consistently named based on the target branch ([PR-19](https://github.com/jenkinsci/gitea-plugin/pull/19))
 
 ## Version 1.1.2 (2019-05-27)
 
