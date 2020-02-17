@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2017, CloudBees, Inc.
+ * Copyright (c) 2017-2020, CloudBees, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -128,8 +128,11 @@ public class GiteaNotifier {
             listener.getLogger().format("[Gitea] Notifying pull request build status: %s %s%n",
                     status.getState().name(), status.getDescription());
             hash = ((PullRequestSCMRevision) revision).getOrigin().getHash();
+        } else if (revision instanceof TagSCMRevision) {
+            listener.getLogger().format("[Gitea] Notifying tag build status: %s %s%n",
+                    status.getState().name(), status.getDescription());
+            hash = ((TagSCMRevision) revision).getHash();
         } else {
-            // TODO tags
             return;
         }
         JobScheduledListener jsl = ExtensionList.lookup(QueueListener.class).get(JobScheduledListener.class);
@@ -241,8 +244,11 @@ public class GiteaNotifier {
                             LOGGER.log(Level.INFO, "Notifying pull request pending build {0}", job.getFullName());
                             hash = ((PullRequestSCMRevision) revision).getOrigin().getHash();
                             statusContext += getPrContextTarget(((PullRequestSCMRevision) revision).getTarget().getHead().getName());
+                        } else if (revision instanceof TagSCMRevision) {
+                            LOGGER.log(Level.INFO, "Notifying tag pending build {0}", job.getFullName());
+                            statusContext += "tag";
+                            hash = ((TagSCMRevision) revision).getHash();
                         } else {
-                            // TODO tags
                             return;
                         }
                         String url;
