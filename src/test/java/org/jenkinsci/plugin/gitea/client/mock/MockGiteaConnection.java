@@ -15,7 +15,9 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicLong;
+import org.jenkinsci.plugin.gitea.client.api.GiteaAnnotatedTag;
 import org.jenkinsci.plugin.gitea.client.api.GiteaBranch;
+import org.jenkinsci.plugin.gitea.client.api.GiteaCommitDetail;
 import org.jenkinsci.plugin.gitea.client.api.GiteaCommitStatus;
 import org.jenkinsci.plugin.gitea.client.api.GiteaConnection;
 import org.jenkinsci.plugin.gitea.client.api.GiteaHook;
@@ -26,6 +28,7 @@ import org.jenkinsci.plugin.gitea.client.api.GiteaOrganization;
 import org.jenkinsci.plugin.gitea.client.api.GiteaOwner;
 import org.jenkinsci.plugin.gitea.client.api.GiteaPullRequest;
 import org.jenkinsci.plugin.gitea.client.api.GiteaRepository;
+import org.jenkinsci.plugin.gitea.client.api.GiteaTag;
 import org.jenkinsci.plugin.gitea.client.api.GiteaUser;
 import org.jenkinsci.plugin.gitea.client.api.GiteaVersion;
 
@@ -386,6 +389,46 @@ public class MockGiteaConnection implements GiteaConnection {
 
     @Override
     public GiteaCommitStatus createCommitStatus(GiteaRepository repository, String sha, GiteaCommitStatus status)
+            throws IOException, InterruptedException {
+        // TODO
+        return null;
+    }
+
+    @Override
+    public GiteaAnnotatedTag fetchAnnotatedTag(String username, String repository, String sha1)
+            throws IOException, InterruptedException {
+        // TODO
+        return null;
+    }
+
+    @Override
+    public GiteaAnnotatedTag fetchAnnotatedTag(GiteaRepository repository, GiteaTag tag)
+            throws IOException, InterruptedException {
+        // TODO
+        return null;
+    }
+
+    @Override
+    public List<GiteaTag> fetchTags(String username, String name) throws IOException, InterruptedException {
+        // TODO
+        return null;
+    }
+
+    @Override
+    public List<GiteaTag> fetchTags(GiteaRepository repository) throws IOException, InterruptedException {
+        // TODO
+        return null;
+    }
+
+    @Override
+    public GiteaCommitDetail fetchCommit(String username, String repository, String sha1)
+            throws IOException, InterruptedException {
+        // TODO
+        return null;
+    }
+
+    @Override
+    public GiteaCommitDetail fetchCommit(GiteaRepository repository, String sha1)
             throws IOException, InterruptedException {
         // TODO
         return null;
