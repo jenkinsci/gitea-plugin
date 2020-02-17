@@ -65,6 +65,8 @@ public class GiteaSCMFileSystem extends SCMFileSystem {
                 this.ref = ((PullRequestSCMRevision) rev).getOrigin().getHash();
             } else if (rev instanceof BranchSCMRevision) {
                 this.ref = ((BranchSCMRevision) rev).getHash();
+            } else if (rev instanceof TagSCMRevision) {
+                this.ref = ((TagSCMRevision) rev).getHash();
             } else {
                 this.ref = ref;
             }

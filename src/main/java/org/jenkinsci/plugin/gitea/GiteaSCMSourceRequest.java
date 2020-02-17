@@ -40,7 +40,6 @@ import jenkins.scm.api.SCMHead;
 import jenkins.scm.api.SCMHeadOrigin;
 import jenkins.scm.api.SCMSource;
 import jenkins.scm.api.mixin.ChangeRequestCheckoutStrategy;
-import jenkins.scm.api.mixin.TagSCMHead;
 import jenkins.scm.api.trait.SCMSourceRequest;
 import org.jenkinsci.plugin.gitea.client.api.GiteaBranch;
 import org.jenkinsci.plugin.gitea.client.api.GiteaConnection;
@@ -108,7 +107,7 @@ public class GiteaSCMSourceRequest extends SCMSourceRequest {
                     if (SCMHeadOrigin.DEFAULT.equals(h.getOrigin())) {
                         branchNames.add(((PullRequestSCMHead) h).getOriginName());
                     }
-                } else if (h instanceof TagSCMHead) { // TODO replace with concrete class when tag support added
+                } else if (h instanceof TagSCMHead) {
                     tagNames.add(h.getName());
                 }
             }

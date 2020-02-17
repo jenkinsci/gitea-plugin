@@ -286,7 +286,7 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
                     if (giteaRepository.isMirror()) {
                         listener.getLogger().format("%n  Ignoring pull requests as repository is a mirror...%n");
                     } else {
-                        request.setPullRequests(c.fetchPullRequests(giteaRepository));
+                        request.setPullRequests(c.fetchPullRequests(giteaRepository, EnumSet.of(GiteaIssueState.OPEN)));
                     }
                 }
                 if (request.isFetchTags()) {
@@ -333,8 +333,7 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
                         && request.getOriginPRStrategies().isEmpty())) {
                     int count = 0;
                     listener.getLogger().format("%n  Checking pull requests...%n");
-                    for (final GiteaPullRequest p : c
-                            .fetchPullRequests(giteaRepository, EnumSet.of(GiteaIssueState.OPEN))) {
+                    for (final GiteaPullRequest p : request.getPullRequests()) {
                         if (p == null) {
                             continue;
                         }
@@ -490,7 +489,7 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
             String branchUrl = UriTemplate.buildFromTemplate(serverUrl)
                     .path(UriTemplateBuilder.var("owner"))
                     .path(UriTemplateBuilder.var("repository"))
-                    .literal("/src")
+                    .literal("/src/branch")
                     .path(UriTemplateBuilder.var("branch"))
                     .build()
                     .set("owner", repoOwner)
@@ -503,6 +502,26 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
                     branchUrl
             ));
             result.add(new GiteaLink("icon-gitea-branch", branchUrl));
+            if (head.getName().equals(giteaRepository.getDefaultBranch())) {
+                result.add(new PrimaryInstanceMetadataAction());
+            }
+        } else if (head instanceof TagSCMHead) {
+            String tagUrl = UriTemplate.buildFromTemplate(serverUrl)
+                    .path(UriTemplateBuilder.var("owner"))
+                    .path(UriTemplateBuilder.var("repository"))
+                    .literal("/src/tag")
+                    .path(UriTemplateBuilder.var("tag"))
+                    .build()
+                    .set("owner", repoOwner)
+                    .set("repository", repository)
+                    .set("tag", head.getName())
+                    .expand();
+            result.add(new ObjectMetadataAction(
+                    null,
+                    null,
+                    tagUrl
+            ));
+            result.add(new GiteaLink("icon-gitea-branch", tagUrl));
             if (head.getName().equals(giteaRepository.getDefaultBranch())) {
                 result.add(new PrimaryInstanceMetadataAction());
             }
