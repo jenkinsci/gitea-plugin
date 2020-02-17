@@ -10,7 +10,9 @@
 
 -->
 
-## Version 1.2.0 (unreleased)
+## Version 1.2.1 (unreleased)
+
+## Version 1.2.0 (2020-02-17)
 
 * Added basic setup documentation ([PR-13](https://github.com/jenkinsci/gitea-plugin/pull/13))
 * Fixed plugin URLs from `http:` to `https` ([PR-14](https://github.com/jenkinsci/gitea-plugin/pull/14))
