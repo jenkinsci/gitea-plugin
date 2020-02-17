@@ -208,7 +208,7 @@ public final class GiteaCommitDetail extends GiteaObject<GiteaCommitDetail> impl
         }
 
         public GitActor(Date date, String name, String email) {
-            this.date = date;
+            this.date = date == null ? null : (Date) date.clone();
             this.name = name;
             this.email = email;
         }
