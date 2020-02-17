@@ -19,6 +19,7 @@
                                                                  ([JENKINS-54516](https://issues.jenkins-ci.org/browse/JENKINS-54516))
 * Optimized imports, less redundant code and other cleanups ([PR-15](https://github.com/jenkinsci/gitea-plugin/pull/15))
 * Added support for tag discovery ([PR-6](https://github.com/jenkinsci/gitea-plugin/pull/6))
+* Updated documentation with details of how to setup ([PR-20](https://github.com/jenkinsci/gitea-plugin/pull/20))
 
 ## Version 1.1.2 (2019-05-27)
 
