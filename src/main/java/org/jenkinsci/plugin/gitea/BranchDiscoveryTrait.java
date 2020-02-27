@@ -41,6 +41,7 @@ import jenkins.scm.api.trait.SCMSourceTraitDescriptor;
 import jenkins.scm.impl.trait.Discovery;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugin.gitea.client.api.GiteaPullRequest;
+import org.jenkinsci.plugin.gitea.client.api.GiteaPullRequest.Reference;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -223,6 +224,42 @@ public class BranchDiscoveryTrait extends SCMSourceTrait {
     }
 
     /**
+     * Small helper class to get information about a reference object
+     * keeping in mind that properties could be null 
+     * 
+     */
+    public static class ReferenceInfoHelper {
+
+        /**
+         * Get the username of given references owner
+         *
+         * @param ref The reference to get information for
+         * @return The username of the given reference
+         */
+        public static String getOwnerUsername(Reference ref) {
+            String username = null;
+            if(ref != null && ref.getRepo() != null && ref.getRepo().getOwner() != null) {
+                username = ref.getRepo().getOwner().getUsername();
+            }
+            return username;
+        }
+
+        /**
+         * Get the repo name for given reference
+         * @param ref The reference to get information for
+         * @return the name of the repo this reference belongs to
+         */
+        public static String getRepoName(Reference ref) {
+            String repoName = null;
+            if(ref != null && ref.getRepo() != null) {
+                repoName = ref.getRepo().getName();
+            }
+            return repoName;
+        }
+
+    }
+
+    /**
      * Filter that excludes branches that are also filed as a pull request.
      */
     public static class ExcludeOriginPRBranchesSCMHeadFilter extends SCMHeadFilter {
@@ -235,12 +272,12 @@ public class BranchDiscoveryTrait extends SCMSourceTrait {
                 for (GiteaPullRequest p : ((GiteaSCMSourceRequest) request).getPullRequests()) {
                     // only match if the pull request is an origin pull request
                     if (StringUtils.equalsIgnoreCase(
-                            p.getBase().getRepo().getOwner().getUsername(),
-                            p.getHead().getRepo().getOwner().getUsername())
-                            && StringUtils.equalsIgnoreCase(
-                            p.getBase().getRepo().getName(),
-                            p.getHead().getRepo().getName())
-                            && StringUtils.equals(p.getHead().getRef(), head.getName())) {
+                            ReferenceInfoHelper.getOwnerUsername(p.getBase()),
+                            ReferenceInfoHelper.getOwnerUsername(p.getHead())
+                    ) && StringUtils.equalsIgnoreCase(
+                            ReferenceInfoHelper.getRepoName(p.getBase()),
+                            ReferenceInfoHelper.getRepoName(p.getHead())
+                    ) && StringUtils.equals(p.getHead() != null ? p.getHead().getRef() : null, head.getName())) {
                         return true;
                     }
                 }
@@ -261,12 +298,12 @@ public class BranchDiscoveryTrait extends SCMSourceTrait {
             if (head instanceof BranchSCMHead && request instanceof GiteaSCMSourceRequest) {
                 for (GiteaPullRequest p : ((GiteaSCMSourceRequest) request).getPullRequests()) {
                     if (StringUtils.equalsIgnoreCase(
-                            p.getBase().getRepo().getOwner().getUsername(),
-                            p.getHead().getRepo().getOwner().getUsername())
-                            && StringUtils.equalsIgnoreCase(
-                                    p.getBase().getRepo().getName(),
-                            p.getHead().getRepo().getName())
-                            && StringUtils.equals(p.getHead().getRef(), head.getName())) {
+                            ReferenceInfoHelper.getOwnerUsername(p.getBase()),
+                            ReferenceInfoHelper.getOwnerUsername(p.getHead())
+                    ) && StringUtils.equalsIgnoreCase(
+                            ReferenceInfoHelper.getRepoName(p.getBase()),
+                            ReferenceInfoHelper.getRepoName(p.getHead())
+                    ) && StringUtils.equals(p.getHead() != null ? p.getHead().getRef() : null, head.getName())) {
                         return false;
                     }
                 }
