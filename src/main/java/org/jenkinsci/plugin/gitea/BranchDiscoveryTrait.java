@@ -235,6 +235,15 @@ public class BranchDiscoveryTrait extends SCMSourceTrait {
         public boolean isExcluded(@NonNull SCMSourceRequest request, @NonNull SCMHead head) {
             if (head instanceof BranchSCMHead && request instanceof GiteaSCMSourceRequest) {
                 for (GiteaPullRequest p : ((GiteaSCMSourceRequest) request).getPullRequests()) {
+                    if (p.getHead() == null || p.getHead().getRepo() == null
+                            || p.getHead().getRepo().getOwner() == null
+                            || p.getHead().getRepo().getName() == null
+                            || p.getHead().getRef() == null
+                    ) {
+                        // the head has already been deleted, so ignore as we cannot build yet JENKINS-60825
+                        // TODO figure out if we can build a PR who's head has been deleted as it should be possible
+                        return true;
+                    }
                     // only match if the pull request is an origin pull request
                     if (StringUtils.equalsIgnoreCase(
                             p.getBase().getRepo().getOwner().getUsername(),
@@ -262,6 +271,15 @@ public class BranchDiscoveryTrait extends SCMSourceTrait {
         public boolean isExcluded(@NonNull SCMSourceRequest request, @NonNull SCMHead head) {
             if (head instanceof BranchSCMHead && request instanceof GiteaSCMSourceRequest) {
                 for (GiteaPullRequest p : ((GiteaSCMSourceRequest) request).getPullRequests()) {
+                    if (p.getHead() == null || p.getHead().getRepo() == null
+                            || p.getHead().getRepo().getOwner() == null
+                            || p.getHead().getRepo().getName() == null
+                            || p.getHead().getRef() == null
+                    ) {
+                        // the head has already been deleted, so ignore as we cannot build yet JENKINS-60825
+                        // TODO figure out if we can build a PR who's head has been deleted as it should be possible
+                        return true;
+                    }
                     if (StringUtils.equalsIgnoreCase(
                             p.getBase().getRepo().getOwner().getUsername(),
                             p.getHead().getRepo().getOwner().getUsername())
