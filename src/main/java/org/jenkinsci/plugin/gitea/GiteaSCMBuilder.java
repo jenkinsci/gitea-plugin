@@ -164,7 +164,7 @@ public class GiteaSCMBuilder extends GitSCMBuilder<GiteaSCMBuilder> {
                 }
                 URI sshUri = URI.create(sshRemote);
                 return UriTemplate.buildFromTemplate(
-                        "ssh://git@" + sshUri.getHost() + (sshUri.getPort() != 22 ? ":" + sshUri.getPort() : "")
+                        "ssh://git@" + sshUri.getHost() + (sshUri.getPort() != 22 && sshUri.getPort() != -1 ? ":" + sshUri.getPort() : "")
                 )
                         .path(UriTemplateBuilder.var("owner"))
                         .path(UriTemplateBuilder.var("repository"))
