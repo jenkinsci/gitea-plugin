@@ -12,6 +12,9 @@
 
 ## Version 1.2.1 (unreleased)
 
+* Fix the case where the SSH URI port was not specified ([JENKINS-61996](https://issues.jenkins-ci.org/browse/JENKINS-61996))
+* Propertly fetch tags ([JENKINS-61258](https://issues.jenkins-ci.org/browse/JENKINS-61258)) 
+
 ## Version 1.2.0 (2020-02-17)
 
 * Added basic setup documentation ([PR-13](https://github.com/jenkinsci/gitea-plugin/pull/13))
