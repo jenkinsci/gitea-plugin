@@ -15,6 +15,7 @@
 * Fix the case where the SSH URI port was not specified ([JENKINS-61996](https://issues.jenkins-ci.org/browse/JENKINS-61996))
 * Propertly fetch tags ([JENKINS-61258](https://issues.jenkins-ci.org/browse/JENKINS-61258)) 
 * Handle unknown pull request event payload actions ([JENKINS-61753](https://issues.jenkins-ci.org/browse/JENKINS-61753)) 
+* Reluctantly adding `@Symbol` to the branch discovery traits ([JENKINS-60885](https://issues.jenkins-ci.org/browse/JENKINS-60885)). For anyone wondering why reluctantly... the idea behind `@Symbol` is that it is supposed to use type information to determine the set of possible candidates for a specific injection point. The current implementation of `@Symbol` support, however, decides to ignore type information from generics - even though that information is used elseweher in Jenkins and thus for the `@Symbol` case it gets confused and thinks that e.g. GitHub's `BranchDiscoveryTrait` is a viable candidate for injection into the Gitea SCM classes. As a result we cannot use default naming and thus have to add an explicit name. Even worse each SCM plugin has to prefix with their own names leading to an excess of `gitea` in configuration snippets. The final insult to injury is the naming conventions that have been followed. It pains me no end to have to add this workaround just because the symbol api maintainers refuse to add the type info filtering.
 
 ## Version 1.2.0 (2020-02-17)
 

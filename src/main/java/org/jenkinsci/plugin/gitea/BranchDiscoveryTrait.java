@@ -40,6 +40,7 @@ import jenkins.scm.api.trait.SCMSourceTrait;
 import jenkins.scm.api.trait.SCMSourceTraitDescriptor;
 import jenkins.scm.impl.trait.Discovery;
 import org.apache.commons.lang.StringUtils;
+import org.jenkinsci.Symbol;
 import org.jenkinsci.plugin.gitea.client.api.GiteaPullRequest;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
@@ -140,6 +141,7 @@ public class BranchDiscoveryTrait extends SCMSourceTrait {
     /**
      * Our descriptor.
      */
+    @Symbol("giteaBranchDiscovery") // I am a sad panda that we cannot use just 'branchDiscovery' and have type inferred
     @Extension
     @Discovery
     public static class DescriptorImpl extends SCMSourceTraitDescriptor {

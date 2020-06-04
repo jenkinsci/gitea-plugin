@@ -44,6 +44,7 @@ import jenkins.scm.api.trait.SCMSourceTrait;
 import jenkins.scm.api.trait.SCMSourceTraitDescriptor;
 import jenkins.scm.impl.ChangeRequestSCMHeadCategory;
 import jenkins.scm.impl.trait.Discovery;
+import org.jenkinsci.Symbol;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -152,6 +153,7 @@ public class ForkPullRequestDiscoveryTrait extends SCMSourceTrait {
     /**
      * Our descriptor.
      */
+    @Symbol("giteaForkDiscovery") // I am a double sad panda with both the forkDiscovery name and the gitea prefix
     @Extension
     @Discovery
     public static class DescriptorImpl extends SCMSourceTraitDescriptor {
@@ -248,6 +250,7 @@ public class ForkPullRequestDiscoveryTrait extends SCMSourceTrait {
         /**
          * Our descriptor.
          */
+        @Symbol("giteaTrustNobody") // words fail me that we are reduced to gitea prefix as symbol cannot use type info!
         @Extension
         public static class DescriptorImpl extends SCMHeadAuthorityDescriptor {
 
@@ -293,6 +296,7 @@ public class ForkPullRequestDiscoveryTrait extends SCMSourceTrait {
         /**
          * Our descriptor.
          */
+        @Symbol("giteaTrustContributors") // sad panda
         @Extension
         public static class DescriptorImpl extends SCMHeadAuthorityDescriptor {
 
@@ -337,6 +341,7 @@ public class ForkPullRequestDiscoveryTrait extends SCMSourceTrait {
         /**
          * Our descriptor.
          */
+        @Symbol("giteaTrustEveryone")
         @Extension
         public static class DescriptorImpl extends SCMHeadAuthorityDescriptor {
 
