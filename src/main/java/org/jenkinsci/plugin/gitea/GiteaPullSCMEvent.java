@@ -67,15 +67,19 @@ public class GiteaPullSCMEvent extends AbstractGiteaSCMHeadEvent<GiteaPullReques
      */
     @NonNull
     private static Type typeOf(@NonNull GiteaPullRequestEvent event) {
-        switch (event.getAction()) {
-            case OPENED:
-                return Type.CREATED;
-            case CLOSED:
-                return Type.REMOVED;
-            case REOPENED:
-            default:
-                return Type.UPDATED;
+        final GiteaPullRequestEventType action = event.getAction();
+        if (action != null) {
+            switch (action) {
+                case OPENED:
+                    return Type.CREATED;
+                case CLOSED:
+                    return Type.REMOVED;
+                case REOPENED:
+                default:
+                    return Type.UPDATED;
+            }
         }
+        return Type.UPDATED;
     }
 
     /**
