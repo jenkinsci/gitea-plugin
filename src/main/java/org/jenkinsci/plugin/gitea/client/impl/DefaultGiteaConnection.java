@@ -43,8 +43,8 @@ import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import javax.net.ssl.HttpsURLConnection;
 import jenkins.model.Jenkins;
@@ -972,11 +972,7 @@ class DefaultGiteaConnection implements GiteaConnection {
                             .constructCollectionType(List.class, modelClass))
                             .readValue(is);
                     // strip null values from the list
-                    for (Iterator<T> iterator = list.iterator(); iterator.hasNext(); ) {
-                        if (iterator.next() == null) {
-                            iterator.remove();
-                        }
-                    }
+                    list.removeIf(Objects::isNull);
                     return list;
                 }
             }

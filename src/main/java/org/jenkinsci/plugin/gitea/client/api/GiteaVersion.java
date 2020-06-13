@@ -25,6 +25,7 @@ package org.jenkinsci.plugin.gitea.client.api;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import hudson.util.VersionNumber;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.DoNotUse;
 
@@ -53,6 +54,11 @@ public final class GiteaVersion extends GiteaObject<GiteaVersion> {
     @JsonProperty("Version")
     public void set_Version(String version) {
         setVersion(version);
+    }
+
+    public VersionNumber getVersionNumber() {
+        int index = version.indexOf('+');
+        return new VersionNumber(index == -1 ? version : version.substring(0, index));
     }
 
     /**
