@@ -41,10 +41,11 @@ import java.nio.charset.StandardCharsets;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import javax.net.ssl.HttpsURLConnection;
 import jenkins.model.Jenkins;
@@ -70,6 +71,7 @@ import org.jenkinsci.plugin.gitea.client.api.GiteaRepository;
 import org.jenkinsci.plugin.gitea.client.api.GiteaTag;
 import org.jenkinsci.plugin.gitea.client.api.GiteaUser;
 import org.jenkinsci.plugin.gitea.client.api.GiteaVersion;
+import org.jenkinsci.plugin.gitea.client.http.PageLinkHeader;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
@@ -237,7 +239,7 @@ class DefaultGiteaConnection implements GiteaConnection {
 
     @Override
     public List<GiteaRepository> fetchRepositories(GiteaOwner owner) throws IOException, InterruptedException {
-        if(owner instanceof GiteaOrganization) {
+        if (owner instanceof GiteaOrganization) {
             return fetchOrganizationRepositories(owner);
         }
         return fetchRepositories(owner.getUsername());
@@ -245,7 +247,8 @@ class DefaultGiteaConnection implements GiteaConnection {
     }
 
     @Override
-    public List<GiteaRepository> fetchOrganizationRepositories(GiteaOwner owner) throws IOException, InterruptedException {
+    public List<GiteaRepository> fetchOrganizationRepositories(GiteaOwner owner)
+            throws IOException, InterruptedException {
         return getList(
                 api()
                         .literal("/orgs")
@@ -327,7 +330,8 @@ class DefaultGiteaConnection implements GiteaConnection {
     }
 
     @Override
-    public GiteaAnnotatedTag fetchAnnotatedTag(GiteaRepository repository, GiteaTag tag) throws IOException, InterruptedException {
+    public GiteaAnnotatedTag fetchAnnotatedTag(GiteaRepository repository, GiteaTag tag)
+            throws IOException, InterruptedException {
         return fetchAnnotatedTag(repository.getOwner().getUsername(), repository.getName(), tag.getId());
     }
 
@@ -961,34 +965,45 @@ class DefaultGiteaConnection implements GiteaConnection {
 
     private <T> List<T> getList(UriTemplate template, final Class<T> modelClass)
             throws IOException, InterruptedException {
-        HttpURLConnection connection = openConnection(template);
-        withAuthentication(connection);
-        try {
-            connection.connect();
-            int status = connection.getResponseCode();
-            if (status / 100 == 2) {
-                try (InputStream is = connection.getInputStream()) {
-                    List<T> list = mapper.readerFor(mapper.getTypeFactory()
-                            .constructCollectionType(List.class, modelClass))
-                            .readValue(is);
-                    // strip null values from the list
-                    for (Iterator<T> iterator = list.iterator(); iterator.hasNext(); ) {
-                        if (iterator.next() == null) {
-                            iterator.remove();
-                        }
+
+        String uri = template.expand();
+
+        List<T> result = new ArrayList<>();
+        while (uri != null) {
+            HttpURLConnection connection = openConnection(uri);
+            withAuthentication(connection);
+            try {
+                connection.connect();
+                int status = connection.getResponseCode();
+                if (status / 100 == 2) {
+                    uri = PageLinkHeader.from(connection).getNext();
+                    try (InputStream is = connection.getInputStream()) {
+                        result.addAll(mapper.readerFor(mapper.getTypeFactory()
+                                .constructCollectionType(List.class, modelClass))
+                                .readValue(is));
+
+                        // strip null values from the list
+                        result.removeIf(Objects::isNull);
                     }
-                    return list;
+                } else {
+                    throw new GiteaHttpStatusException(status, connection.getResponseMessage());
                 }
+            } finally {
+                connection.disconnect();
             }
-            throw new GiteaHttpStatusException(status, connection.getResponseMessage());
-        } finally {
-            connection.disconnect();
         }
+
+        return result;
     }
 
     @Restricted(NoExternalUse.class)
     protected HttpURLConnection openConnection(UriTemplate template) throws IOException {
-        URL url = new URL(template.expand());
+        return openConnection(template.expand());
+    }
+
+    @Restricted(NoExternalUse.class)
+    protected HttpURLConnection openConnection(String uri) throws IOException {
+        URL url = new URL(uri);
         Jenkins jenkins = Jenkins.get();
         if (jenkins.proxy == null) {
             return (HttpURLConnection) url.openConnection();
