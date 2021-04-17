@@ -3,10 +3,10 @@
 Truths which we believe to be self-evident (adapted from [TextSecure's](https://github.com/WhisperSystems/TextSecure/blob/master/contributing.md))
 
 1. **The answer is not more options.** If you feel compelled to add a preference that's exposed to the user, it's very possible you've made a wrong turn somewhere.
-2. **There are no power users.** The idea that some users "understand" concepts better than others has proven to be, for the post part, false. If anything, "power users" are more dangerous than the test, and we should avoid exposing dangerous functionality to them.
+2. **There are no power users.** The idea that some users "understand" concepts better than others has proven to be, for the most part, false. If anything, "power users" are more dangerous than the rest, and we should avoid exposing dangerous functionality to them.
 3. **If it's "like PGP," it's wrong.** PGP is our guide for what not to do.
-4. **It's an asynchronous world.** We wary of anything that is anti-asynchronous: ACKs, protocol confirmations, or anly protocol-level "advisory" message.
-5. **There is no such thing as time**. Protocol ideas that require synchonized clocks are doomed to failure.
+4. **It's an asynchronous world.** We wary of anything that is anti-asynchronous: ACKs, protocol confirmations, or any protocol-level "advisory" message.
+5. **There is no such thing as time**. Protocol ideas that require synchronized clocks are doomed to failure.
 
 # Code Style Guidelines
 
@@ -26,7 +26,7 @@ Truths which we believe to be self-evident (adapted from [TextSecure's](https://
 1. "hungarian"-style notation is banned (i.e. instance variable names preceded by an 'm', etc)
 2. If the field is `static final` then it shall be named in `ALL_CAPS_WITH_UNDERSCORES`.
 3. Start variable names with a lowercase letter and use camelCase rather than under_scores.
-4. Spelling and abreviations: If the word is widely used in the JVM runtime, stick with the spelling/abreviation in the JVM runtime, e.g. `color` over `colour`, `sync` over `synch`, `async` over `asynch`, etc.
+4. Spelling and abbreviations: If the word is widely used in the JVM runtime, stick with the spelling/abbreviation in the JVM runtime, e.g. `color` over `colour`, `sync` over `synch`, `async` over `asynch`, etc.
 5. It is acceptable to use `i`, `j`, `k` for loop indices and iterators. If you need more than three, you are likely doing something wrong and as such you shall either use full descriptive names or refactor.
 6. It is acceptable to use `e` for the exception in a `try...catch` block.
 7. You shall never use `l` (i.e. lower case `L`) as a variable name.
@@ -95,7 +95,7 @@ To the greatest extent possible, please wrap lines to ensure that they do not ex
      */
     @Override
     ```
-* Getters and Setters shall have a Javadoc comment. The following is prefered
+* Getters and Setters shall have a Javadoc comment. The following is preferred
     ```
     /**
      * The count of widgets
