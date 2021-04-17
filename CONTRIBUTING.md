@@ -1,6 +1,6 @@
 # Development Ideology
 
-Truths which we believe to be self-evident (adapted from [TextSecure's](https://github.com/WhisperSystems/TextSecure/blob/master/contributing.md))
+Truths which we believe to be self-evident (adapted from [TextSecure's](https://github.com/WhisperSystems/TextSecure/blob/master/CONTRIBUTING.md))
 
 1. **The answer is not more options.** If you feel compelled to add a preference that's exposed to the user, it's very possible you've made a wrong turn somewhere.
 2. **There are no power users.** The idea that some users "understand" concepts better than others has proven to be, for the most part, false. If anything, "power users" are more dangerous than the rest, and we should avoid exposing dangerous functionality to them.
