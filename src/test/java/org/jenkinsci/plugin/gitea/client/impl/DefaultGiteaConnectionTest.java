@@ -29,7 +29,7 @@ public class DefaultGiteaConnectionTest {
         giteaRepository = new GiteaRepository(
                 new GiteaOwner("", "", "", ""),
                 null, "", "", "",
-                true, false, false, false,
+                true, false, false, false, false,
                 "", "", "", "",
                 0L, 0L, 0L, 0L, "",
                 null

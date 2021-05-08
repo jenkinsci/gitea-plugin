@@ -42,6 +42,7 @@ public class GiteaRepository extends GiteaObject<GiteaRepository> {
     private boolean fork;
     private boolean empty;
     private boolean mirror;
+    private boolean archived;    
     private String htmlUrl;
     private String sshUrl;
     private String cloneUrl;
@@ -59,7 +60,7 @@ public class GiteaRepository extends GiteaObject<GiteaRepository> {
     }
 
     public GiteaRepository(GiteaOwner owner, GiteaRepository parent, String name, String fullName,
-                           String description, boolean _private, boolean fork, boolean empty, boolean mirror,
+                           String description, boolean _private, boolean fork, boolean empty, boolean mirror, boolean archived,
                            String htmlUrl, String sshUrl, String cloneUrl, String website, long starsCount,
                            long forksCount,
                            long watchersCount, long openIssuesCount, String defaultBranch,
@@ -73,6 +74,7 @@ public class GiteaRepository extends GiteaObject<GiteaRepository> {
         this.fork = fork;
         this.empty = empty;
         this.mirror = mirror;
+        this.archived = archived;
         this.htmlUrl = htmlUrl;
         this.sshUrl = sshUrl;
         this.cloneUrl = cloneUrl;
@@ -164,6 +166,14 @@ public class GiteaRepository extends GiteaObject<GiteaRepository> {
 
     public void setMirror(boolean mirror) {
         this.mirror = mirror;
+    }
+
+    public boolean isArchived() {
+        return archived;
+    }
+
+    public void setArchived(boolean archived) {
+        this.archived = archived;
     }
 
     public String getHtmlUrl() {
