@@ -213,26 +213,44 @@ class DefaultGiteaConnection implements GiteaConnection {
 
     @Override
     public List<GiteaRepository> fetchCurrentUserRepositories() throws IOException, InterruptedException {
-        return getList(
-                api()
-                        .literal("/user")
-                        .literal("/repos")
-                        .build(),
-                GiteaRepository.class
-        );
+        List<GiteaRepository> repos = new List<GiteaRepository>();
+        for (int page = 1; page++; ){
+            List<GiteaRepository> temp = getList(
+                    api()
+                            .literal("/users")
+                            .literal("/repos")
+                            .query(UriTemplateBuilder.var("page"))
+                            .build()
+                            .set("page", page),
+                    GiteaRepository.class
+            );
+            if(temp.size()>0){
+                repos.addAll(temp);
+            }
+        }
+        return repos;
     }
 
     @Override
     public List<GiteaRepository> fetchRepositories(String username) throws IOException, InterruptedException {
-        return getList(
-                api()
-                        .literal("/users")
-                        .path(UriTemplateBuilder.var("username"))
-                        .literal("/repos")
-                        .build()
-                        .set("username", username),
-                GiteaRepository.class
-        );
+        List<GiteaRepository> repos = new List<GiteaRepository>();
+        for (int page = 1; page++; ){
+            List<GiteaRepository> temp = getList(
+                    api()
+                            .literal("/users")
+                            .path(UriTemplateBuilder.var("username"))
+                            .literal("/repos")
+                            .query(UriTemplateBuilder.var("page"))
+                            .build()
+                            .set("username", username)
+                            .set("page", page),
+                    GiteaRepository.class
+            );
+            if(temp.size()>0){
+                repos.addAll(temp);
+            }
+        }
+        return repos;
     }
 
     @Override
@@ -246,15 +264,24 @@ class DefaultGiteaConnection implements GiteaConnection {
 
     @Override
     public List<GiteaRepository> fetchOrganizationRepositories(GiteaOwner owner) throws IOException, InterruptedException {
-        return getList(
-                api()
-                        .literal("/orgs")
-                        .path(UriTemplateBuilder.var("org"))
-                        .literal("/repos")
-                        .build()
-                        .set("org", owner.getUsername()),
-                GiteaRepository.class
-        );
+        List<GiteaRepository> repos = new List<GiteaRepository>();
+        for (int page = 1; page++; ){
+            List<GiteaRepository> temp = getList(
+                    api()
+                            .literal("/orgs")
+                            .path(UriTemplateBuilder.var("org"))
+                            .literal("/repos")
+                            .query(UriTemplateBuilder.var("page"))
+                            .build()
+                            .set("org", owner.getUsername())
+                            .set("page", page),
+                    GiteaRepository.class
+            );
+            if(temp.size()>0){
+                repos.addAll(temp);
+            }
+        }
+        return repos;
     }
 
     @Override
@@ -290,17 +317,26 @@ class DefaultGiteaConnection implements GiteaConnection {
 
     @Override
     public List<GiteaBranch> fetchBranches(String username, String name) throws IOException, InterruptedException {
-        return getList(
-                api()
-                        .literal("/repos")
-                        .path(UriTemplateBuilder.var("username"))
-                        .path(UriTemplateBuilder.var("name"))
-                        .literal("/branches")
-                        .build()
-                        .set("username", username)
-                        .set("name", name),
-                GiteaBranch.class
-        );
+        List<GiteaRepository> branches = new List<GiteaRepository>();
+        for (int page = 1; page++; ){
+            List<GiteaRepository> temp = getList(
+                    api()
+                            .literal("/repos")
+                            .path(UriTemplateBuilder.var("username"))
+                            .path(UriTemplateBuilder.var("name"))
+                            .literal("/branches")
+                            .query(UriTemplateBuilder.var("page"))
+                            .build()
+                            .set("username", username)
+                            .set("name", name)
+                            .set("page", page),
+                    GiteaRepository.class
+            );
+            if(temp.size()>0){
+                branches.addAll(temp);
+            }
+        }
+        return branches;
     }
 
     @Override

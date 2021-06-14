@@ -53,6 +53,7 @@ public class GiteaRepository extends GiteaObject<GiteaRepository> {
     private String defaultBranch;
     private Date createdAt;
     private Date updatedAt;
+    private String avatarUrl;
     private Permissions permissions;
 
     public GiteaRepository() {
@@ -62,7 +63,7 @@ public class GiteaRepository extends GiteaObject<GiteaRepository> {
                            String description, boolean _private, boolean fork, boolean empty, boolean mirror,
                            String htmlUrl, String sshUrl, String cloneUrl, String website, long starsCount,
                            long forksCount,
-                           long watchersCount, long openIssuesCount, String defaultBranch,
+                           long watchersCount, long openIssuesCount, String defaultBranch, String avatarUrl,
                            Permissions permissions) {
         this.owner = owner;
         this.parent = parent;
@@ -82,6 +83,7 @@ public class GiteaRepository extends GiteaObject<GiteaRepository> {
         this.watchersCount = watchersCount;
         this.openIssuesCount = openIssuesCount;
         this.defaultBranch = defaultBranch;
+        this.avatarUrl = avatarUrl;
         this.permissions = permissions;
     }
 
@@ -124,6 +126,10 @@ public class GiteaRepository extends GiteaObject<GiteaRepository> {
     @JsonProperty("full_name")
     public void setFullName(String fullName) {
         this.fullName = fullName;
+    }
+
+    public String getDisplayName(){
+        return this.getName().replace('_', ' ');
     }
 
     public String getDescription() {
@@ -264,6 +270,15 @@ public class GiteaRepository extends GiteaObject<GiteaRepository> {
         this.updatedAt = updatedAt == null ? null : (Date) updatedAt.clone();
     }
 
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    @JsonProperty("avatar_url")
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
+    }
+
     public Permissions getPermissions() {
         return permissions == null ? null : permissions.clone();
     }
@@ -293,6 +308,7 @@ public class GiteaRepository extends GiteaObject<GiteaRepository> {
                 ", watchersCount=" + watchersCount +
                 ", openIssuesCount=" + openIssuesCount +
                 ", defaultBranch='" + defaultBranch + '\'' +
+                ", avatarUrl='" + avatarUrl + '\'' +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 ", permissions=" + permissions +
