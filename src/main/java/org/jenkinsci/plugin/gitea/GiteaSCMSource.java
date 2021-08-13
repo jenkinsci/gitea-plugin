@@ -662,11 +662,14 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
     }
 
     public StandardCredentials credentials() {
+        SCMSourceOwner owner = getOwner();
         return CredentialsMatchers.firstOrNull(
                 CredentialsProvider.lookupCredentials(
                         StandardCredentials.class,
-                        getOwner(),
-                        Jenkins.getAuthentication(),
+                        owner,
+                        owner instanceof Queue.Task ?
+                                ((Queue.Task) owner).getDefaultAuthentication()
+                                : ACL.SYSTEM,
                         URIRequirementBuilder.fromUri(serverUrl).build()
                 ),
                 CredentialsMatchers.allOf(
