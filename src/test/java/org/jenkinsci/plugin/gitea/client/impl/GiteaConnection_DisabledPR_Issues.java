@@ -17,8 +17,4 @@ public class GiteaConnection_DisabledPR_Issues extends DefaultGiteaConnection {
     protected HttpURLConnection openConnection(String spec) throws IOException {
         throw new GiteaHttpStatusException(404, "TEST Case");
     }
-    @Override
-    protected HttpURLConnection openConnection(UriTemplate template) throws IOException {
-        throw new GiteaHttpStatusException(404, "TEST Case");
-    }
 }

@@ -963,7 +963,7 @@ class DefaultGiteaConnection implements GiteaConnection {
         }
     }
 
-    private Pattern nextPagePattern = Pattern.compile("<(.*)>;\s*rel=\"next\"");
+    private Pattern nextPagePattern = Pattern.compile("<(.*)>;\\s*rel=\"next\"");
 
     private <T> List<T> getList(UriTemplate template, final Class<T> modelClass)
             throws IOException, InterruptedException {
@@ -979,7 +979,9 @@ class DefaultGiteaConnection implements GiteaConnection {
 
             if (status / 100 == 2) {
                 Optional<String> next = Optional.ofNullable(connection.getHeaderField("Link"))
-                        .map(nextPagePattern::matcher).filter(Matcher::find).map(matcher -> matcher.group(1));
+                        .map(nextPagePattern::matcher)
+                        .filter(Matcher::find)
+                        .map(matcher -> matcher.group(1));
 
                 try (InputStream is = connection.getInputStream()) {
                     List<T> list = mapper
