@@ -1,0 +1,50 @@
+[
+    {
+      "commit": {
+        "added": [
+          "string"
+        ],
+        "author": {
+          "email": "user@example.com",
+          "name": "string",
+          "username": "string"
+        },
+        "committer": {
+          "email": "user@example.com",
+          "name": "string",
+          "username": "string"
+        },
+        "id": "string",
+        "message": "string",
+        "modified": [
+          "string"
+        ],
+        "removed": [
+          "string"
+        ],
+        "timestamp": "2021-09-17T08:25:50.169Z",
+        "url": "string",
+        "verification": {
+          "payload": "string",
+          "reason": "string",
+          "signature": "string",
+          "signer": {
+            "email": "user@example.com",
+            "name": "string",
+            "username": "string"
+          },
+          "verified": true
+        }
+      },
+      "effective_branch_protection_name": "string",
+      "enable_status_check": true,
+      "name": "string",
+      "protected": true,
+      "required_approvals": 0,
+      "status_check_contexts": [
+        "string"
+      ],
+      "user_can_merge": true,
+      "user_can_push": true
+    }
+  ]

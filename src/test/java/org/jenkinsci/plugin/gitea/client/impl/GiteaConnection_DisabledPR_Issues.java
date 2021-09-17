@@ -1,6 +1,5 @@
 package org.jenkinsci.plugin.gitea.client.impl;
 
-import com.damnhandy.uri.template.UriTemplate;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import org.jenkinsci.plugin.gitea.client.api.GiteaAuth;
 import org.jenkinsci.plugin.gitea.client.api.GiteaHttpStatusException;
