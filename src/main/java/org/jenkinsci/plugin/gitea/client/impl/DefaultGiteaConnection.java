@@ -45,7 +45,11 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javax.net.ssl.HttpsURLConnection;
 import jenkins.model.Jenkins;
 import org.apache.commons.codec.binary.Base64;
@@ -260,25 +264,17 @@ class DefaultGiteaConnection implements GiteaConnection {
     @Override
     public GiteaBranch fetchBranch(String username, String repository, String name)
             throws IOException, InterruptedException {
-        if (name.indexOf('/') != -1) {
-            // TODO remove hack once https://github.com/go-gitea/gitea/issues/2088 is fixed
-            for (GiteaBranch b : fetchBranches(username, repository)) {
-                if (name.equals(b.getName())) {
-                    return b;
-                }
-            }
-        }
         return getObject(
                 api()
                         .literal("/repos")
                         .path(UriTemplateBuilder.var("username"))
                         .path(UriTemplateBuilder.var("repository"))
                         .literal("/branches")
-                        .path(UriTemplateBuilder.var("name", true))
+                        .path(UriTemplateBuilder.var("name"))
                         .build()
                         .set("username", username)
                         .set("repository", repository)
-                        .set("name", StringUtils.split(name, '/')),
+                        .set("name", name),
                 GiteaBranch.class
         );
     }
@@ -959,20 +955,35 @@ class DefaultGiteaConnection implements GiteaConnection {
         }
     }
 
+    private Pattern nextPagePattern = Pattern.compile("<(.*)>;\\s*rel=\"next\"");
+
     private <T> List<T> getList(UriTemplate template, final Class<T> modelClass)
             throws IOException, InterruptedException {
-        HttpURLConnection connection = openConnection(template);
+        return getList(template.expand(), modelClass);
+    }
+
+    private <T> List<T> getList(String url, final Class<T> modelClass) throws IOException, InterruptedException {
+        HttpURLConnection connection = openConnection(url);
         withAuthentication(connection);
         try {
             connection.connect();
             int status = connection.getResponseCode();
+
             if (status / 100 == 2) {
+                Optional<String> next = Optional.ofNullable(connection.getHeaderField("Link"))
+                        .map(nextPagePattern::matcher)
+                        .filter(Matcher::find)
+                        .map(matcher -> matcher.group(1));
+
                 try (InputStream is = connection.getInputStream()) {
-                    List<T> list = mapper.readerFor(mapper.getTypeFactory()
-                            .constructCollectionType(List.class, modelClass))
+                    List<T> list = mapper
+                            .readerFor(mapper.getTypeFactory().constructCollectionType(List.class, modelClass))
                             .readValue(is);
+                    if (next.isPresent()) {
+                        list.addAll(getList(next.get(), modelClass));
+                    }
                     // strip null values from the list
-                    for (Iterator<T> iterator = list.iterator(); iterator.hasNext(); ) {
+                    for (Iterator<T> iterator = list.iterator(); iterator.hasNext();) {
                         if (iterator.next() == null) {
                             iterator.remove();
                         }
@@ -986,9 +997,13 @@ class DefaultGiteaConnection implements GiteaConnection {
         }
     }
 
+    private HttpURLConnection openConnection(UriTemplate template) throws IOException {
+       return openConnection(template.expand());
+    }
+
     @Restricted(NoExternalUse.class)
-    protected HttpURLConnection openConnection(UriTemplate template) throws IOException {
-        URL url = new URL(template.expand());
+    protected HttpURLConnection openConnection(String spec) throws IOException {
+        URL url = new URL(spec);
         Jenkins jenkins = Jenkins.get();
         if (jenkins.proxy == null) {
             return (HttpURLConnection) url.openConnection();
