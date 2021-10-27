@@ -1,6 +1,5 @@
 package org.jenkinsci.plugin.gitea.client.impl;
 
-import com.damnhandy.uri.template.UriTemplate;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import org.jenkinsci.plugin.gitea.client.api.GiteaAuth;
 import org.jenkinsci.plugin.gitea.client.api.GiteaHttpStatusException;
@@ -14,7 +13,7 @@ public class GiteaConnection_DisabledPR_Issues extends DefaultGiteaConnection {
     }
 
     @Override
-    protected HttpURLConnection openConnection(UriTemplate template) throws IOException {
+    protected HttpURLConnection openConnection(String spec) throws IOException {
         throw new GiteaHttpStatusException(404, "TEST Case");
     }
 }
