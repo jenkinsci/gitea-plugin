@@ -264,25 +264,17 @@ class DefaultGiteaConnection implements GiteaConnection {
     @Override
     public GiteaBranch fetchBranch(String username, String repository, String name)
             throws IOException, InterruptedException {
-        if (name.indexOf('/') != -1) {
-            // TODO remove hack once https://github.com/go-gitea/gitea/issues/2088 is fixed
-            for (GiteaBranch b : fetchBranches(username, repository)) {
-                if (name.equals(b.getName())) {
-                    return b;
-                }
-            }
-        }
         return getObject(
                 api()
                         .literal("/repos")
                         .path(UriTemplateBuilder.var("username"))
                         .path(UriTemplateBuilder.var("repository"))
                         .literal("/branches")
-                        .path(UriTemplateBuilder.var("name", true))
+                        .path(UriTemplateBuilder.var("name"))
                         .build()
                         .set("username", username)
                         .set("repository", repository)
-                        .set("name", StringUtils.split(name, '/')),
+                        .set("name", name),
                 GiteaBranch.class
         );
     }
