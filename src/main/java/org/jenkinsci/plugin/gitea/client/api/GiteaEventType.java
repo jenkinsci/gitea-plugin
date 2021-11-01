@@ -33,7 +33,8 @@ public enum GiteaEventType {
     CREATE("create"),
     PUSH("push"),
     PULL_REQUEST("pull_request"),
-    REPOSITORY("repository");
+    REPOSITORY("repository"),
+    DELETE("delete");
 
     private final String key;
 
