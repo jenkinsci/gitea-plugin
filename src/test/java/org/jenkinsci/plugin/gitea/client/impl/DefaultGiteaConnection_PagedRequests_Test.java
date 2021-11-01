@@ -32,7 +32,7 @@ public class DefaultGiteaConnection_PagedRequests_Test {
         giteaRepository = new GiteaRepository(
                 new GiteaOwner("", "", "", ""),
                 null, "", "", "",
-                true, false, false, false,
+                true, false, false, false, false,
                 "", "", "", "",
                 0L, 0L, 0L, 0L, "",
                 null

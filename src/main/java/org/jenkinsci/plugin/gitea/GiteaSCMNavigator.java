@@ -136,9 +136,8 @@ public class GiteaSCMNavigator extends SCMNavigator {
 
     @Override
     public void visitSources(@NonNull final SCMSourceObserver observer) throws IOException, InterruptedException {
-        try (GiteaSCMNavigatorRequest request = new GiteaSCMNavigatorContext()
-                .withTraits(traits)
-                .newRequest(this, observer);
+        GiteaSCMNavigatorContext context = new GiteaSCMNavigatorContext().withTraits(traits);
+        try (GiteaSCMNavigatorRequest request = context.newRequest(this, observer);
              GiteaConnection c = gitea(observer.getContext()).open()) {
             giteaOwner = c.fetchOwner(repoOwner);
             List<GiteaRepository> repositories = c.fetchRepositories(giteaOwner);
@@ -162,7 +161,11 @@ public class GiteaSCMNavigator extends SCMNavigator {
                     observer.getListener().getLogger().format("%n    Ignoring empty repository %s%n",
                             HyperlinkNote.encodeTo(r.getHtmlUrl(), r.getName()));
                     continue;
-                }
+                } else if (r.isArchived() && context.isExcludeArchivedRepositories()) {
+                    observer.getListener().getLogger().format("%n    Skipping repository %s because it is archived", r.getName());
+                    continue;
+
+                } 
                 observer.getListener().getLogger().format("%n    Checking repository %s%n",
                         HyperlinkNote.encodeTo(r.getHtmlUrl(), r.getName()));
                 if (request.process(r.getName(), new SCMNavigatorRequest.SourceLambda() {

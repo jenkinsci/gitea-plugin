@@ -13,4 +13,8 @@ work*/
 .project
 build/
 
+# vscode
+bin/
+/.factorypath
+
 /nb-configuration.xml
