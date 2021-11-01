@@ -104,7 +104,6 @@ import org.jenkinsci.plugin.gitea.client.api.GiteaOwner;
 import org.jenkinsci.plugin.gitea.client.api.GiteaPullRequest;
 import org.jenkinsci.plugin.gitea.client.api.GiteaRepository;
 import org.jenkinsci.plugin.gitea.client.api.GiteaTag;
-import org.jenkinsci.plugin.gitea.client.api.GiteaUser;
 import org.jenkinsci.plugin.gitea.client.api.GiteaVersion;
 import org.jenkinsci.plugin.gitea.servers.GiteaServer;
 import org.jenkinsci.plugin.gitea.servers.GiteaServers;
@@ -114,8 +113,10 @@ import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 
 public class GiteaSCMSource extends AbstractGitSCMSource {
-    private static final Logger LOGGER = Logger.getLogger(GiteaSCMSource.class.getName());
     public static final VersionNumber TAG_SUPPORT_MINIMUM_VERSION = new VersionNumber("1.9.0");
+    public static final VersionNumber READ_ACCESS_COLLABORATOR_LISTING_SUPPORT_MINIMUM_VERSION =
+            new VersionNumber("1.12.0");
+    private static final Logger LOGGER = Logger.getLogger(GiteaSCMSource.class.getName());
     private final String serverUrl;
     private final String repoOwner;
     private final String repository;
@@ -182,6 +183,9 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
     protected SCMRevision retrieve(@NonNull SCMHead head, @NonNull TaskListener listener)
             throws IOException, InterruptedException {
         try (GiteaConnection c = gitea().open()) {
+            listener.getLogger().format("Looking up repository %s/%s%n", repoOwner, repository);
+            giteaRepository = c.fetchRepository(repoOwner, repository);
+
             if (head instanceof BranchSCMHead) {
                 listener.getLogger().format("Querying the current revision of branch %s...%n", head.getName());
                 String revision = c.fetchBranch(repoOwner, repository, head.getName()).getCommit().getId();
@@ -291,8 +295,7 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
                 }
                 if (request.isFetchTags()) {
                     final GiteaVersion version = c.fetchVersion();
-                    int index = version.getVersion().indexOf('+');
-                    VersionNumber v = new VersionNumber(index == -1 ? version.getVersion() : version.getVersion().substring(0, index));
+                    VersionNumber v = version.getVersionNumber();
                     if (v.isOlderThan(TAG_SUPPORT_MINIMUM_VERSION)) {
                         listener.getLogger()
                                 .format("%n  Ignoring tags as Gitea server is version %s and version %s is the "
@@ -564,11 +567,24 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
                         .withTraits(getTraits())
                         .newRequest(this, listener)) {
                     request.setConnection(c);
-                    Set<String> names = new HashSet<>();
-                    for (GiteaUser u : c.fetchCollaborators(giteaRepository)) {
-                        names.add(u.getUsername());
+
+                    final GiteaVersion giteaVersion = c.fetchVersion();
+                    final VersionNumber versionNumber = giteaVersion.getVersionNumber();
+
+                    if (!versionNumber.isOlderThan(READ_ACCESS_COLLABORATOR_LISTING_SUPPORT_MINIMUM_VERSION) ||
+                            giteaRepository.getPermissions().isAdmin()) {
+                        request.setCollaboratorNames(
+                                c.fetchCollaborators(giteaRepository).stream().map(GiteaOwner::getUsername)
+                                        .collect(Collectors.toSet()));
+                    } else {
+                        listener.getLogger()
+                                .format("%n[Gitea] Ignore collaborator fetching because Gitea server version is %s " +
+                                                "and it's requires admin privileges. From %s, " +
+                                                "collaborator fetching requires only read permission to repository.%n",
+                                        giteaVersion.getVersion(),
+                                        READ_ACCESS_COLLABORATOR_LISTING_SUPPORT_MINIMUM_VERSION.toString());
                     }
-                    request.setCollaboratorNames(names);
+
                     if (request.isTrusted(head)) {
                         return revision;
                     }
@@ -951,7 +967,7 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
         @NonNull
         @Override
         protected SCMHeadCategory[] createCategories() {
-            return new SCMHeadCategory[] {
+            return new SCMHeadCategory[]{
                     new UncategorizedSCMHeadCategory(Messages._GiteaSCMSource_UncategorizedCategory()),
                     new ChangeRequestSCMHeadCategory(Messages._GiteaSCMSource_ChangeRequestCategory()),
                     new TagSCMHeadCategory(Messages._GiteaSCMSource_TagCategory())
