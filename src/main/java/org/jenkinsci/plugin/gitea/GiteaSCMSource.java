@@ -182,6 +182,10 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
     protected SCMRevision retrieve(@NonNull SCMHead head, @NonNull TaskListener listener)
             throws IOException, InterruptedException {
         try (GiteaConnection c = gitea().open()) {
+            if (giteaRepository != null) {
+                giteaRepository = c.fetchRepository(repoOwner, repository);
+            }
+            sshRemote = giteaRepository.getSshUrl();
             if (head instanceof BranchSCMHead) {
                 listener.getLogger().format("Querying the current revision of branch %s...%n", head.getName());
                 String revision = c.fetchBranch(repoOwner, repository, head.getName()).getCommit().getId();
