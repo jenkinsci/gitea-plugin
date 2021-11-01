@@ -185,7 +185,7 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
         try (GiteaConnection c = gitea().open()) {
             listener.getLogger().format("Looking up repository %s/%s%n", repoOwner, repository);
             giteaRepository = c.fetchRepository(repoOwner, repository);
-
+            sshRemote = giteaRepository.getSshUrl();
             if (head instanceof BranchSCMHead) {
                 listener.getLogger().format("Querying the current revision of branch %s...%n", head.getName());
                 String revision = c.fetchBranch(repoOwner, repository, head.getName()).getCommit().getId();
