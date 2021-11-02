@@ -63,8 +63,7 @@ public class GiteaDeleteSCMEvent extends AbstractGiteaSCMHeadEvent<GiteaDeleteEv
         String ref = getPayload().getRef();
         ref = ref.startsWith(Constants.R_HEADS) ? ref.substring(Constants.R_HEADS.length()) : ref;
         ref = ref.startsWith(Constants.R_TAGS) ? ref.substring(Constants.R_TAGS.length()) : ref;
-        String refType = getPayload().getRefType();
-        return "Delete event for " + refType + " " + ref + " in repository " + getPayload().getRepository().getName();
+        return "Delete event for " + getPayload().getRefType() + " " + ref + " in repository " + getPayload().getRepository().getName();
     }
 
     /**
@@ -75,8 +74,7 @@ public class GiteaDeleteSCMEvent extends AbstractGiteaSCMHeadEvent<GiteaDeleteEv
         String ref = getPayload().getRef();
         ref = ref.startsWith(Constants.R_HEADS) ? ref.substring(Constants.R_HEADS.length()) : ref;
         ref = ref.startsWith(Constants.R_TAGS) ? ref.substring(Constants.R_TAGS.length()) : ref;
-        String refType = getPayload().getRefType();
-        return "Delete event for " + refType + " " + ref;
+        return "Delete event for " + getPayload().getRefType() + " " + ref;
     }
 
     /**
@@ -87,8 +85,7 @@ public class GiteaDeleteSCMEvent extends AbstractGiteaSCMHeadEvent<GiteaDeleteEv
         String ref = getPayload().getRef();
         ref = ref.startsWith(Constants.R_HEADS) ? ref.substring(Constants.R_HEADS.length()) : ref;
         ref = ref.startsWith(Constants.R_TAGS) ? ref.substring(Constants.R_TAGS.length()) : ref;
-        String refType = getPayload().getRefType();
-        return "Delete event for " + refType + " " + ref + " in repository " +
+        return "Delete event for " + getPayload().getRefType() + " " + ref + " in repository " +
                 getPayload().getRepository().getOwner().getUsername() + "/" +
                 getPayload().getRepository().getName();
     }
@@ -102,54 +99,15 @@ public class GiteaDeleteSCMEvent extends AbstractGiteaSCMHeadEvent<GiteaDeleteEv
         String ref = getPayload().getRef();
         ref = ref.startsWith(Constants.R_HEADS) ? ref.substring(Constants.R_HEADS.length()) : ref;
         ref = ref.startsWith(Constants.R_TAGS) ? ref.substring(Constants.R_TAGS.length()) : ref;
-        String refType = getPayload().getRefType();
-        if ("branch".equals(refType)) {
+        if ("branch".equals(getPayload().getRefType())) {
             BranchSCMHead h = new BranchSCMHead(ref);
             return Collections.<SCMHead, SCMRevision>singletonMap(h, null);
-        } else if ("tag".equals(refType)) {
+        } else if ("tag".equals(getPayload().getRefType())) {
             TagSCMHead h = new TagSCMHead(ref, System.currentTimeMillis());
             return Collections.<SCMHead, SCMRevision>singletonMap(h, null);
         } else {
             return Collections.<SCMHead, SCMRevision>emptyMap();
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isMatch(@NonNull SCM scm) {
-        URIish uri;
-        try {
-            uri = new URIish(getPayload().getRepository().getHtmlUrl());
-        } catch (URISyntaxException e) {
-            return false;
-        }
-        String ref = getPayload().getRef();
-        ref = ref.startsWith(Constants.R_HEADS) ? ref.substring(Constants.R_HEADS.length()) : ref;
-        if (scm instanceof GitSCM) {
-            GitSCM git = (GitSCM) scm;
-            if (git.getExtensions().get(IgnoreNotifyCommit.class) != null) {
-                return false;
-            }
-            for (RemoteConfig repository : git.getRepositories()) {
-                for (URIish remoteURL : repository.getURIs()) {
-                    if (GitStatus.looselyMatches(uri, remoteURL)) {
-                        for (BranchSpec branchSpec : git.getBranches()) {
-                            if (branchSpec.getName().contains("$")) {
-                                // If the branchspec is parametrized, always run the polling
-                                return true;
-                            } else {
-                                if (branchSpec.matches(repository.getName() + "/" + ref)) {
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return false;
     }
 
     /**
