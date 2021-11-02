@@ -62,7 +62,7 @@ public class GiteaCreateSCMEventTest {
         SCMHead scmHead = headsFor.keySet().iterator().next();
         assertThat(scmHead.getName(), is("feature/branch"));
         SCMRevision scmRevision = headsFor.values().iterator().next();
-        assertThat(((AbstractGitSCMSource.SCMRevisionImpl) scmRevision).getHash(), is("12345"));
+        assertThat(((BranchSCMRevision) scmRevision).getHash(), is("12345"));
 
     }
 
@@ -74,7 +74,7 @@ public class GiteaCreateSCMEventTest {
         SCMHead scmHead = headsFor.keySet().iterator().next();
         assertThat(scmHead.getName(), is("mytag"));
         SCMRevision scmRevision = headsFor.values().iterator().next();
-        assertThat(((AbstractGitSCMSource.SCMRevisionImpl) scmRevision).getHash(), is("12345"));
+        assertThat(((TagSCMRevision) scmRevision).getHash(), is("12345"));
     }
 
     GiteaCreateEvent withGiteaCreateEvent(String ref, String refType) {
