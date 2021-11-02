@@ -105,10 +105,10 @@ public class GiteaDeleteSCMEvent extends AbstractGiteaSCMHeadEvent<GiteaDeleteEv
         String refType = getPayload().getRefType();
         if ("branch".equals(refType)) {
             BranchSCMHead h = new BranchSCMHead(ref);
-            return Collections.<SCMHead, SCMRevision>singletonMap(h, null); //new BranchSCMRevision(h, null));
+            return Collections.<SCMHead, SCMRevision>singletonMap(h, null);
         } else if ("tag".equals(refType)) {
             TagSCMHead h = new TagSCMHead(ref, System.currentTimeMillis());
-            return Collections.<SCMHead, SCMRevision>singletonMap(h, null); //new TagSCMRevision(h, null));
+            return Collections.<SCMHead, SCMRevision>singletonMap(h, null);
         } else {
             return Collections.<SCMHead, SCMRevision>emptyMap();
         }
