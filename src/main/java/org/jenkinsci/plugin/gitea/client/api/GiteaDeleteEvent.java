@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2017, CloudBees, Inc.
+ * Copyright (c) 2021, CloudBees, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,37 +23,45 @@
  */
 package org.jenkinsci.plugin.gitea.client.api;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Gitea event types.
+ * Gitea {@link GiteaEventType#DELETE} event.
  */
-public enum GiteaEventType {
-    CREATE("create"),
-    PUSH("push"),
-    PULL_REQUEST("pull_request"),
-    REPOSITORY("repository"),
-    DELETE("delete");
+@JsonIgnoreProperties(ignoreUnknown = Gitea.IGNORE_UNKNOWN_PROPERTIES)
+public class GiteaDeleteEvent extends GiteaEvent {
+    private String ref;
+    private String refType;
 
-    private final String key;
-
-    GiteaEventType(String key) {
-        this.key = key;
+    @Override
+    public GiteaDeleteEvent clone() {
+        return (GiteaDeleteEvent) super.clone();
     }
 
-    @JsonCreator
-    public static GiteaEventType fromString(String key) {
-        for (GiteaEventType s : values()) {
-            if (key.equals(s.key)) {
-                return s;
-            }
-        }
-        return null;
+    @Override
+    public String toString() {
+        return "GiteaDeleteEvent{" +
+                super.toString() +
+                ", ref='" + ref + '\'' +
+                ", refType='" + refType + '\'' +
+                '}';
     }
 
-    @JsonValue
-    public String getKey() {
-        return key;
+    public String getRef() {
+        return ref;
+    }
+
+    public void setRef(String ref) {
+        this.ref = ref;
+    }
+
+    public String getRefType() {
+        return refType;
+    }
+
+    @JsonProperty("ref_type")
+    public void setRefType(String refType) {
+        this.refType = refType;
     }
 }
