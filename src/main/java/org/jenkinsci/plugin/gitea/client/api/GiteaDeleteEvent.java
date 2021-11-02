@@ -41,7 +41,7 @@ public class GiteaDeleteEvent extends GiteaEvent {
 
     @Override
     public String toString() {
-        return "GiteaCreateEvent{" +
+        return "GiteaDeleteEvent{" +
                 super.toString() +
                 ", ref='" + ref + '\'' +
                 ", refType='" + refType + '\'' +
