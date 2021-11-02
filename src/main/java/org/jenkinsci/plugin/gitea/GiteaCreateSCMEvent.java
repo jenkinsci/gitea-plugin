@@ -65,7 +65,8 @@ public class GiteaCreateSCMEvent extends AbstractGiteaSCMHeadEvent<GiteaCreateEv
     public String descriptionFor(@NonNull SCMNavigator navigator) {
         String ref = getPayload().getRef();
         ref = ref.startsWith(Constants.R_HEADS) ? ref.substring(Constants.R_HEADS.length()) : ref;
-        return "Create event for branch " + ref + " in repository " + getPayload().getRepository().getName();
+        ref = ref.startsWith(Constants.R_TAGS) ? ref.substring(Constants.R_TAGS.length()) : ref;
+        return "Create event for " + getPayload().getRefType() + " " + ref + " in repository " + getPayload().getRepository().getName();
     }
 
     /**
@@ -75,7 +76,8 @@ public class GiteaCreateSCMEvent extends AbstractGiteaSCMHeadEvent<GiteaCreateEv
     public String descriptionFor(SCMSource source) {
         String ref = getPayload().getRef();
         ref = ref.startsWith(Constants.R_HEADS) ? ref.substring(Constants.R_HEADS.length()) : ref;
-        return "Create event for branch " + ref;
+        ref = ref.startsWith(Constants.R_TAGS) ? ref.substring(Constants.R_TAGS.length()) : ref;
+        return "Create event for " + getPayload().getRefType() + " " + ref;
     }
 
     /**
@@ -85,7 +87,8 @@ public class GiteaCreateSCMEvent extends AbstractGiteaSCMHeadEvent<GiteaCreateEv
     public String description() {
         String ref = getPayload().getRef();
         ref = ref.startsWith(Constants.R_HEADS) ? ref.substring(Constants.R_HEADS.length()) : ref;
-        return "Create event for branch " + ref + " in repository " +
+        ref = ref.startsWith(Constants.R_TAGS) ? ref.substring(Constants.R_TAGS.length()) : ref;
+        return "Create event for " + getPayload().getRefType() + " " + ref + " in repository " +
                 getPayload().getRepository().getOwner().getUsername() + "/" +
                 getPayload().getRepository().getName();
     }
@@ -98,8 +101,14 @@ public class GiteaCreateSCMEvent extends AbstractGiteaSCMHeadEvent<GiteaCreateEv
     public Map<SCMHead, SCMRevision> headsFor(GiteaSCMSource source) {
         String ref = getPayload().getRef();
         ref = ref.startsWith(Constants.R_HEADS) ? ref.substring(Constants.R_HEADS.length()) : ref;
-        BranchSCMHead h = new BranchSCMHead(ref);
-        return Collections.<SCMHead, SCMRevision>singletonMap(h, new BranchSCMRevision(h, getPayload().getSha()));
+        ref = ref.startsWith(Constants.R_TAGS) ? ref.substring(Constants.R_TAGS.length()) : ref;
+        if ("tag".equals(getPayload().getRefType())) {
+            TagSCMHead h = new TagSCMHead(ref, System.currentTimeMillis());
+            return Collections.<SCMHead, SCMRevision>singletonMap(h, new TagSCMRevision(h, getPayload().getSha()));
+        } else {
+            BranchSCMHead h = new BranchSCMHead(ref);
+            return Collections.<SCMHead, SCMRevision>singletonMap(h, new BranchSCMRevision(h, getPayload().getSha()));
+        }
     }
 
     /**
