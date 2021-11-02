@@ -31,31 +31,28 @@ import hudson.plugins.git.GitSCM;
 import hudson.plugins.git.GitStatus;
 import hudson.plugins.git.extensions.impl.IgnoreNotifyCommit;
 import hudson.scm.SCM;
-import java.net.URISyntaxException;
-import java.util.Collections;
-import java.util.Map;
-import jenkins.scm.api.SCMHead;
-import jenkins.scm.api.SCMHeadEvent;
-import jenkins.scm.api.SCMNavigator;
-import jenkins.scm.api.SCMRevision;
-import jenkins.scm.api.SCMSource;
+import jenkins.scm.api.*;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.URIish;
-import org.jenkinsci.plugin.gitea.client.api.GiteaCreateEvent;
+import org.jenkinsci.plugin.gitea.client.api.GiteaDeleteEvent;
+
+import java.net.URISyntaxException;
+import java.util.Collections;
+import java.util.Map;
 
 /**
- * A {@link SCMHeadEvent} for a {@link GiteaCreateEvent}.
+ * A {@link SCMHeadEvent} for a {@link GiteaDeleteEvent}.
  */
-public class GiteaCreateSCMEvent extends AbstractGiteaSCMHeadEvent<GiteaCreateEvent> {
+public class GiteaDeleteSCMEvent extends AbstractGiteaSCMHeadEvent<GiteaDeleteEvent> {
     /**
      * Constructor.
      *
      * @param payload the payload.
      * @param origin  the origin.
      */
-    public GiteaCreateSCMEvent(@NonNull GiteaCreateEvent payload, @CheckForNull String origin) {
-        super(Type.CREATED, payload, origin);
+    public GiteaDeleteSCMEvent(@NonNull GiteaDeleteEvent payload, @CheckForNull String origin) {
+        super(Type.REMOVED, payload, origin);
     }
 
     /**
@@ -67,7 +64,7 @@ public class GiteaCreateSCMEvent extends AbstractGiteaSCMHeadEvent<GiteaCreateEv
         ref = ref.startsWith(Constants.R_HEADS) ? ref.substring(Constants.R_HEADS.length()) : ref;
         ref = ref.startsWith(Constants.R_TAGS) ? ref.substring(Constants.R_TAGS.length()) : ref;
         String refType = getPayload().getRefType();
-        return "Create event for " + refType + " " + ref + " in repository " + getPayload().getRepository().getName();
+        return "Delete event for " + refType + " " + ref + " in repository " + getPayload().getRepository().getName();
     }
 
     /**
@@ -79,7 +76,7 @@ public class GiteaCreateSCMEvent extends AbstractGiteaSCMHeadEvent<GiteaCreateEv
         ref = ref.startsWith(Constants.R_HEADS) ? ref.substring(Constants.R_HEADS.length()) : ref;
         ref = ref.startsWith(Constants.R_TAGS) ? ref.substring(Constants.R_TAGS.length()) : ref;
         String refType = getPayload().getRefType();
-        return "Create event for " + refType + " " + ref;
+        return "Delete event for " + refType + " " + ref;
     }
 
     /**
@@ -91,7 +88,7 @@ public class GiteaCreateSCMEvent extends AbstractGiteaSCMHeadEvent<GiteaCreateEv
         ref = ref.startsWith(Constants.R_HEADS) ? ref.substring(Constants.R_HEADS.length()) : ref;
         ref = ref.startsWith(Constants.R_TAGS) ? ref.substring(Constants.R_TAGS.length()) : ref;
         String refType = getPayload().getRefType();
-        return "Create event for " + refType + " " + ref + " in repository " +
+        return "Delete event for " + refType + " " + ref + " in repository " +
                 getPayload().getRepository().getOwner().getUsername() + "/" +
                 getPayload().getRepository().getName();
     }
@@ -106,12 +103,14 @@ public class GiteaCreateSCMEvent extends AbstractGiteaSCMHeadEvent<GiteaCreateEv
         ref = ref.startsWith(Constants.R_HEADS) ? ref.substring(Constants.R_HEADS.length()) : ref;
         ref = ref.startsWith(Constants.R_TAGS) ? ref.substring(Constants.R_TAGS.length()) : ref;
         String refType = getPayload().getRefType();
-        if ("tag".equals(refType)) {
-            TagSCMHead h = new TagSCMHead(ref, System.currentTimeMillis());
-            return Collections.<SCMHead, SCMRevision>singletonMap(h, new TagSCMRevision(h, getPayload().getSha()));
-        } else {
+        if ("branch".equals(refType)) {
             BranchSCMHead h = new BranchSCMHead(ref);
-            return Collections.<SCMHead, SCMRevision>singletonMap(h, new BranchSCMRevision(h, getPayload().getSha()));
+            return Collections.<SCMHead, SCMRevision>singletonMap(h, null); //new BranchSCMRevision(h, null));
+        } else if ("tag".equals(refType)) {
+            TagSCMHead h = new TagSCMHead(ref, System.currentTimeMillis());
+            return Collections.<SCMHead, SCMRevision>singletonMap(h, null); //new TagSCMRevision(h, null));
+        } else {
+            return Collections.<SCMHead, SCMRevision>emptyMap();
         }
     }
 
@@ -157,21 +156,21 @@ public class GiteaCreateSCMEvent extends AbstractGiteaSCMHeadEvent<GiteaCreateEv
      * Our handler.
      */
     @Extension
-    public static class HandlerImpl extends GiteaWebhookHandler<GiteaCreateSCMEvent, GiteaCreateEvent> {
+    public static class HandlerImpl extends GiteaWebhookHandler<GiteaDeleteSCMEvent, GiteaDeleteEvent> {
 
         /**
          * {@inheritDoc}
          */
         @Override
-        protected GiteaCreateSCMEvent createEvent(GiteaCreateEvent payload, String origin) {
-            return new GiteaCreateSCMEvent(payload, origin);
+        protected GiteaDeleteSCMEvent createEvent(GiteaDeleteEvent payload, String origin) {
+            return new GiteaDeleteSCMEvent(payload, origin);
         }
 
         /**
          * {@inheritDoc}
          */
         @Override
-        protected void process(GiteaCreateSCMEvent event) {
+        protected void process(GiteaDeleteSCMEvent event) {
             SCMHeadEvent.fireNow(event);
         }
     }
