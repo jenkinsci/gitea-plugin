@@ -1,0 +1,24 @@
+<div>
+    <p>
+        Overrides the defaults for webhook management.
+    </p>
+    <p>
+        Webhooks are used to inform Jenkins about changes to repositories. There are two ways webhooks can be
+        configured:
+    </p>
+    <ul>
+        <li>Manual webhook configuration requires the user to configure Gitea with the Jenkins URL in order
+            to ensure that Bitbucket will send the events to Jenkins after every change.
+        </li>
+        <li>Automatic webhook configuration requires that Jenkins has credentials with sufficient permission to
+            configure webhooks and also that Jenkins knows the URL that Gitea can connect to.
+        </li>
+    </ul>
+    <p>
+        The <strong>Manage Jenkins » Configure System › Gitea Server</strong> allows defining the list of
+        servers. Each server can be associated with credentials. If credentials are defined then the default behaviour
+        is to use those credentials to automatically manage the webhooks of all repositories that Jenkins is interested
+        in. If no  credentials are defined then the default behaviour is to require the user to manually configure
+        webhooks.
+    </p>
+</div>
