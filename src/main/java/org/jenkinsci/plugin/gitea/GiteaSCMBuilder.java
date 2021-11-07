@@ -34,14 +34,13 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.model.Item;
 import hudson.model.Queue;
-import hudson.model.queue.Tasks;
 import hudson.plugins.git.GitSCM;
 import hudson.security.ACL;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashSet;
-import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 import jenkins.plugins.git.GitSCMBuilder;
 import jenkins.plugins.git.MergeWithGitSCMExtension;
 import jenkins.scm.api.SCMHead;
@@ -298,10 +297,9 @@ public class GiteaSCMBuilder extends GitSCMBuilder<GiteaSCMBuilder> {
                         }
                         if (localNames.contains(localName)) {
                             // ok we're just going to mangle our way to something that works
-                            Random entropy = new Random();
                             while (localNames.contains(localName)) {
                                 localName = "remotes/" + remoteName() + "/pr-" + head.getId() + "-upstream-" + name
-                                        + "-" + Integer.toHexString(entropy.nextInt(Integer.MAX_VALUE));
+                                        + "-" + Integer.toHexString(ThreadLocalRandom.current().nextInt(Integer.MAX_VALUE));
                             }
                         }
                         withRefSpec("+refs/heads/" + name + ":refs/" + localName);
