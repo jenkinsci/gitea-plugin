@@ -74,6 +74,7 @@ import jenkins.scm.impl.form.NamedArrayList;
 import jenkins.scm.impl.trait.Discovery;
 import jenkins.scm.impl.trait.Selection;
 import org.apache.commons.lang.StringUtils;
+import org.jenkinsci.Symbol;
 import org.jenkinsci.plugin.gitea.client.api.GiteaAuth;
 import org.jenkinsci.plugin.gitea.client.api.GiteaConnection;
 import org.jenkinsci.plugin.gitea.client.api.Gitea;
@@ -288,6 +289,7 @@ public class GiteaSCMNavigator extends SCMNavigator {
     }
 
     @Extension
+    @Symbol("gitea")
     public static class DescriptorImpl extends SCMNavigatorDescriptor {
 
         @Override
