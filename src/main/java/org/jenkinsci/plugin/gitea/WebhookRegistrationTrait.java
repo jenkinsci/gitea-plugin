@@ -30,6 +30,7 @@ import jenkins.scm.api.SCMSource;
 import jenkins.scm.api.trait.SCMSourceContext;
 import jenkins.scm.api.trait.SCMSourceTrait;
 import jenkins.scm.api.trait.SCMSourceTraitDescriptor;
+import org.jenkinsci.Symbol;
 import org.jenkinsci.plugin.gitea.servers.GiteaServers;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
@@ -88,6 +89,7 @@ public class WebhookRegistrationTrait extends SCMSourceTrait {
      * Our constructor.
      */
     @Extension
+    @Symbol("giteaWebhookRegistration")
     public static class DescriptorImpl extends SCMSourceTraitDescriptor {
 
         /**

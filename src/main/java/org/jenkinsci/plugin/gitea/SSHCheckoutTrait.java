@@ -49,6 +49,7 @@ import jenkins.scm.api.trait.SCMSourceContext;
 import jenkins.scm.api.trait.SCMSourceTrait;
 import jenkins.scm.api.trait.SCMSourceTraitDescriptor;
 import org.apache.commons.lang.StringUtils;
+import org.jenkinsci.Symbol;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.AncestorInPath;
@@ -76,6 +77,7 @@ public class SSHCheckoutTrait extends SCMSourceTrait {
     }
 
     @Extension
+    @Symbol("giteaSSHCheckout")
     public static class DescriptorImpl extends SCMSourceTraitDescriptor {
 
         @NonNull
