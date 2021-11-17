@@ -68,13 +68,16 @@ public class ForkPullRequestDiscoveryTrait extends SCMSourceTrait {
     /**
      * Constructor for stapler.
      *
+     * Note: in order to support the JobDSL plugin we cannot use a complex/generic type for the trust parameter.
+     * See: https://issues.jenkins.io/browse/JENKINS-26535
+     *
      * @param strategyId the strategy id.
      * @param trust      the authority to use.
      */
     @DataBoundConstructor
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public ForkPullRequestDiscoveryTrait(int strategyId,
-                                         @NonNull SCMHeadAuthority<? super GiteaSCMSourceRequest, ? extends
-                                                 ChangeRequestSCMHead2, ? extends SCMRevision> trust) {
+                                         @NonNull SCMHeadAuthority trust) {
         this.strategyId = strategyId;
         this.trust = trust;
     }
