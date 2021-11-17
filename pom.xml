@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>gitea</artifactId>
-    <version>${revision}-${changelist}</version>
+    <version>${revision}</version>
     <packaging>hpi</packaging>
 
     <name>Gitea Plugin</name>
@@ -31,7 +31,7 @@
     </scm>
 
     <properties>
-        <revision>1.4.0</revision>
+        <revision>1.5.0</revision>
         <changelist>999999-SNAPSHOT</changelist>
         <java.level>8</java.level>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
