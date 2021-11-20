@@ -1,8 +1,8 @@
 # Gitea Plugin
 
-[![](https://img.shields.io/jenkins/plugin/v/gitea.svg?label=version)](https://plugins.jenkins.io/gitea)
-[![](https://img.shields.io/github/v/release/jenkinsci/gitea-plugin.svg?label=changelog)](https://github.com/jenkinsci/gitea-plugin/releases/latest)
-[![](https://img.shields.io/jenkins/plugin/i/gitea.svg?color=blue)](https://plugins.jenkins.io/gitea)
+[![Version](https://img.shields.io/jenkins/plugin/v/gitea.svg?label=version)](https://plugins.jenkins.io/gitea)
+[![Changelog](https://img.shields.io/github/v/release/jenkinsci/gitea-plugin.svg?label=changelog)](https://github.com/jenkinsci/gitea-plugin/releases/latest)
+[![Installs](https://img.shields.io/jenkins/plugin/i/gitea.svg?color=blue)](https://plugins.jenkins.io/gitea)
 
 This plugin provides the Jenkins integrations for [Gitea](https://gitea.io).
 
