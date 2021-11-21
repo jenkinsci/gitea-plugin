@@ -44,8 +44,8 @@ jobs:
         git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
     - name: Lock auto-incremented version
       run: |
-        mvn -B -DgenerateBackupPoms=false -Drevision=$(mvn -B -ntp -Dchangelist= -Dexpression=project.version -q -DforceStdout help:evaluate) release:update-versions
-        mvn -Dignore.dirt incrementals:reincrementalify
+        mvn -B -ntp -DgenerateBackupPoms=false -Drevision=$(mvn -B -ntp -Dchangelist= -Dexpression=project.version -q -DforceStdout help:evaluate) release:update-versions
+        mvn -B -ntp -Dignore.dirt incrementals:reincrementalify
         git add pom.xml
         git commit -m "[github-action] prepare for next development iteration"
         git push
