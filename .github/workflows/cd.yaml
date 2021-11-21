@@ -53,3 +53,14 @@ jobs:
         MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
         MAVEN_TOKEN: ${{ secrets.MAVEN_TOKEN }}
         NO_CHANGELIST: '1'
+    - name: Setup Git user
+      run: |
+        git config --local user.name "github-actions[bot]"
+        git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+    - name: Lock auto-incremented version
+      run: |
+        mvn -B -ntp -DgenerateBackupPoms=false -Drevision=$(mvn -B -ntp -Dchangelist= -Dexpression=project.version -q -DforceStdout help:evaluate) release:update-versions
+        mvn -B -ntp -Dignore.dirt incrementals:reincrementalify
+        git add pom.xml
+        git commit -m "[github-action] prepare for next development iteration"
+        git push
