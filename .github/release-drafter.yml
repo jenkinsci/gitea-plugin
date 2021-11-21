@@ -1,6 +1,6 @@
 # Configuration for Release Drafter: https://github.com/toolmantim/release-drafter
-name-template: $NEXT_MINOR_VERSION
-tag-template: $NEXT_MINOR_VERSION
+name-template: v$NEXT_MINOR_VERSION
+tag-template: gitea-$NEXT_MINOR_VERSION
 # Uses a more common 2-digit versioning in Jenkins plugins. Can be replaced by semver: $MAJOR.$MINOR.$PATCH
 version-template: $MAJOR.$MINOR
 
