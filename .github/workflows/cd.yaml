@@ -37,3 +37,4 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
         MAVEN_TOKEN: ${{ secrets.MAVEN_TOKEN }}
+        NO_CHANGELIST: '1'
