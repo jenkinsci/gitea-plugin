@@ -270,11 +270,11 @@ class DefaultGiteaConnection implements GiteaConnection {
                         .path(UriTemplateBuilder.var("username"))
                         .path(UriTemplateBuilder.var("repository"))
                         .literal("/branches")
-                        .path(UriTemplateBuilder.var("name"))
+                        .path(UriTemplateBuilder.var("name", true))
                         .build()
                         .set("username", username)
                         .set("repository", repository)
-                        .set("name", name),
+                        .set("name", StringUtils.split(name, '/')),
                 GiteaBranch.class
         );
     }
