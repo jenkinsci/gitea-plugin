@@ -150,6 +150,12 @@
               <configLocation>${project.basedir}/.mvn/checkstyle.xml</configLocation>
               <suppressionsLocation>${project.basedir}/.mvn/checkstyle-suppressions.xml</suppressionsLocation>
               <includeTestSourceDirectory>true</includeTestSourceDirectory>
+              <sourceDirectories>
+                <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
+              </sourceDirectories>
+              <testSourceDirectories>
+                <sourceDirectory>${project.build.testSourceDirectory}</sourceDirectory>
+              </testSourceDirectories>
             </configuration>
             <executions>
               <execution>
