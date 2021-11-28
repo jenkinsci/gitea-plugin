@@ -1,12 +1,10 @@
 package org.jenkinsci.plugin.gitea.client.impl;
 
-
 import edu.umd.cs.findbugs.annotations.NonNull;
-import org.jenkinsci.plugin.gitea.client.api.GiteaAuth;
-
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.Map;
+import org.jenkinsci.plugin.gitea.client.api.GiteaAuth;
 
 public class GiteaConnection_PagedRequests extends DefaultGiteaConnection {
     private Map<String, HttpURLConnection> requestMocks;

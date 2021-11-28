@@ -3,8 +3,8 @@ package org.jenkinsci.plugin.gitea.client.mock;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import java.util.HashMap;
 import java.util.Map;
-import org.jenkinsci.plugin.gitea.client.api.GiteaConnection;
 import org.jenkinsci.plugin.gitea.client.api.Gitea;
+import org.jenkinsci.plugin.gitea.client.api.GiteaConnection;
 import org.jenkinsci.plugin.gitea.client.spi.GiteaConnectionFactory;
 
 public class MockGiteaConnectionFactory extends GiteaConnectionFactory {

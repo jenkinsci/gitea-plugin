@@ -1,5 +1,8 @@
 package org.jenkinsci.plugin.gitea.client.impl;
 
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import org.jenkinsci.plugin.gitea.client.api.GiteaAuthNone;
 import org.jenkinsci.plugin.gitea.client.api.GiteaIssue;
 import org.jenkinsci.plugin.gitea.client.api.GiteaIssueState;
@@ -8,10 +11,6 @@ import org.jenkinsci.plugin.gitea.client.api.GiteaPullRequest;
 import org.jenkinsci.plugin.gitea.client.api.GiteaRepository;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;

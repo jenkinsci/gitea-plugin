@@ -41,7 +41,6 @@ import hudson.model.Descriptor;
 import hudson.model.Item;
 import hudson.model.Queue;
 import hudson.model.TaskListener;
-import hudson.model.queue.Tasks;
 import hudson.security.ACL;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
@@ -75,9 +74,9 @@ import jenkins.scm.impl.trait.Discovery;
 import jenkins.scm.impl.trait.Selection;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.Symbol;
+import org.jenkinsci.plugin.gitea.client.api.Gitea;
 import org.jenkinsci.plugin.gitea.client.api.GiteaAuth;
 import org.jenkinsci.plugin.gitea.client.api.GiteaConnection;
-import org.jenkinsci.plugin.gitea.client.api.Gitea;
 import org.jenkinsci.plugin.gitea.client.api.GiteaOrganization;
 import org.jenkinsci.plugin.gitea.client.api.GiteaOwner;
 import org.jenkinsci.plugin.gitea.client.api.GiteaRepository;
@@ -179,7 +178,7 @@ public class GiteaSCMNavigator extends SCMNavigator {
                     observer.getListener().getLogger().format("%n    Skipping repository %s because it is archived", r.getName());
                     continue;
 
-                } 
+                }
                 observer.getListener().getLogger().format("%n    Checking repository %s%n",
                         HyperlinkNote.encodeTo(r.getHtmlUrl(), r.getName()));
                 if (request.process(r.getName(), new SCMNavigatorRequest.SourceLambda() {

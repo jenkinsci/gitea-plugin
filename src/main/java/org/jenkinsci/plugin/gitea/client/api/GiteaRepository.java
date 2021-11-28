@@ -42,7 +42,7 @@ public class GiteaRepository extends GiteaObject<GiteaRepository> {
     private boolean fork;
     private boolean empty;
     private boolean mirror;
-    private boolean archived;    
+    private boolean archived;
     private String htmlUrl;
     private String sshUrl;
     private String cloneUrl;

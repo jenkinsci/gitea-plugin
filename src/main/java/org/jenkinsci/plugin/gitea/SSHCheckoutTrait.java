@@ -35,7 +35,6 @@ import hudson.Extension;
 import hudson.Util;
 import hudson.model.Item;
 import hudson.model.Queue;
-import hudson.model.queue.Tasks;
 import hudson.plugins.git.GitSCM;
 import hudson.scm.SCM;
 import hudson.security.ACL;
