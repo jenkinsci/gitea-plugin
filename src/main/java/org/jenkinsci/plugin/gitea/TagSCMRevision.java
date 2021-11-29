@@ -23,7 +23,6 @@
  */
 package org.jenkinsci.plugin.gitea;
 
-import jenkins.plugins.git.AbstractGitSCMSource;
 import jenkins.plugins.git.GitTagSCMRevision;
 import jenkins.scm.api.SCMRevision;
 

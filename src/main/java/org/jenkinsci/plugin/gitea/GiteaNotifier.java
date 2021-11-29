@@ -53,8 +53,6 @@ import jenkins.scm.api.SCMHeadObserver;
 import jenkins.scm.api.SCMRevision;
 import jenkins.scm.api.SCMRevisionAction;
 import jenkins.scm.api.SCMSource;
-import org.acegisecurity.context.SecurityContext;
-import org.acegisecurity.context.SecurityContextHolder;
 import org.jenkinsci.plugin.gitea.client.api.GiteaCommitState;
 import org.jenkinsci.plugin.gitea.client.api.GiteaCommitStatus;
 import org.jenkinsci.plugin.gitea.client.api.GiteaConnection;

@@ -26,20 +26,15 @@ package org.jenkinsci.plugin.gitea;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
-import hudson.plugins.git.BranchSpec;
-import hudson.plugins.git.GitSCM;
-import hudson.plugins.git.GitStatus;
-import hudson.plugins.git.extensions.impl.IgnoreNotifyCommit;
-import hudson.scm.SCM;
-import jenkins.scm.api.*;
-import org.eclipse.jgit.lib.Constants;
-import org.eclipse.jgit.transport.RemoteConfig;
-import org.eclipse.jgit.transport.URIish;
-import org.jenkinsci.plugin.gitea.client.api.GiteaDeleteEvent;
-
-import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.Map;
+import jenkins.scm.api.SCMHead;
+import jenkins.scm.api.SCMHeadEvent;
+import jenkins.scm.api.SCMNavigator;
+import jenkins.scm.api.SCMRevision;
+import jenkins.scm.api.SCMSource;
+import org.eclipse.jgit.lib.Constants;
+import org.jenkinsci.plugin.gitea.client.api.GiteaDeleteEvent;
 
 /**
  * A {@link SCMHeadEvent} for a {@link GiteaDeleteEvent}.

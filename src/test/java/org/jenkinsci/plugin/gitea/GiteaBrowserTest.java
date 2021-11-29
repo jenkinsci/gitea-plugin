@@ -36,7 +36,7 @@ import static org.junit.Assert.assertThat;
 public class GiteaBrowserTest {
 
     private static final String GITEA_URL = "http://gitea.test";
-    
+
     private final GiteaBrowser instance = new GiteaBrowser(GITEA_URL);
 
     @Test

@@ -1,6 +1,7 @@
 package org.jenkinsci.plugin.gitea;
 
-import jenkins.plugins.git.AbstractGitSCMSource;
+import java.util.ArrayList;
+import java.util.Map;
 import jenkins.scm.api.SCMHead;
 import jenkins.scm.api.SCMRevision;
 import jenkins.scm.impl.mock.MockSCMNavigator;
@@ -10,10 +11,7 @@ import org.jenkinsci.plugin.gitea.client.api.GiteaOwner;
 import org.jenkinsci.plugin.gitea.client.api.GiteaRepository;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Map;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 public class GiteaCreateSCMEventTest {

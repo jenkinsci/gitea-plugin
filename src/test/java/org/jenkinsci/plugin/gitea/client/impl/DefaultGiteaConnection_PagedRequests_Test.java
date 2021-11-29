@@ -1,13 +1,9 @@
 package org.jenkinsci.plugin.gitea.client.impl;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.HashMap;
 import java.util.List;
-
 import org.jenkinsci.plugin.gitea.client.api.GiteaAuthNone;
 import org.jenkinsci.plugin.gitea.client.api.GiteaBranch;
 import org.jenkinsci.plugin.gitea.client.api.GiteaCommitStatus;
@@ -22,6 +18,9 @@ import org.jenkinsci.plugin.gitea.client.api.GiteaUser;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 public class DefaultGiteaConnection_PagedRequests_Test {
 
@@ -38,7 +37,7 @@ public class DefaultGiteaConnection_PagedRequests_Test {
                 null
         );
     }
-    
+
     @Test
     public void test_fetchOrganizationRepositories_with_paged_response() throws Exception {
         HashMap<String, HttpURLConnection> mocks = new HashMap<>();

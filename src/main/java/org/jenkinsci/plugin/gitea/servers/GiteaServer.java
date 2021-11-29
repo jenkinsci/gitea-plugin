@@ -98,7 +98,7 @@ public class GiteaServer extends AbstractDescribableImpl<GiteaServer> {
     /**
      * The {@link #serverUrl} that Gitea thinks it is served at, if different from the URL that Jenkins needs to use to
      * access Gitea.
-     * 
+     *
      * @since 1.0.5
      */
     @CheckForNull
