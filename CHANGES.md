@@ -10,6 +10,8 @@
 
 -->
 
+See GitHub releases for versions above 1.3.0.
+
 ## Version 1.2.1 (unreleased)
 
 * Fix the case where the SSH URI port was not specified ([JENKINS-61996](https://issues.jenkins-ci.org/browse/JENKINS-61996))
