@@ -47,5 +47,12 @@ jobs:
         mvn -B -ntp -DgenerateBackupPoms=false -Drevision=$(mvn -B -ntp -Dchangelist= -Dexpression=project.version -q -DforceStdout help:evaluate) release:update-versions
         mvn -B -ntp -Dignore.dirt incrementals:reincrementalify
         git add pom.xml
-        git commit -m "[github-action] prepare for next development iteration"
-        git push
+        git commit -m "[github-action] Prepare for next development iteration"
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v3
+      with:
+        signoff: false
+        delete-branch: true
+        title: '[github-action] Bump version'
+        body: ""
+        labels: "skip-changelog"
