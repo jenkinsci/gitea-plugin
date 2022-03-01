@@ -991,9 +991,8 @@ class DefaultGiteaConnection implements GiteaConnection {
                     }
                     return list;
                 }
-            } else {
-                throw new GiteaHttpStatusException(status, connection.getResponseMessage());
             }
+            throw new GiteaHttpStatusException(status, connection.getResponseMessage());
         } finally {
             connection.disconnect();
         }
