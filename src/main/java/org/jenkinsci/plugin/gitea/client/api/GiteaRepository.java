@@ -131,7 +131,7 @@ public class GiteaRepository extends GiteaObject<GiteaRepository> {
     }
 
     public String getDisplayName(){
-        return this.getName().replace('_', ' ');
+        return this.getName();
     }
 
     public String getDescription() {
