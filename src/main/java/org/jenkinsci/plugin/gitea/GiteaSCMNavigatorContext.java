@@ -29,6 +29,26 @@ import jenkins.scm.api.SCMSourceObserver;
 import jenkins.scm.api.trait.SCMNavigatorContext;
 
 public class GiteaSCMNavigatorContext extends SCMNavigatorContext<GiteaSCMNavigatorContext, GiteaSCMNavigatorRequest> {
+
+     /**
+     * If true, archived repositories will be ignored.
+     */
+    private boolean excludeArchivedRepositories;
+
+    /**
+     * @return True if archived repositories should be ignored, false if they should be included.
+     */
+    public boolean isExcludeArchivedRepositories() {
+        return excludeArchivedRepositories;
+    }
+
+    /**
+     * @param excludeArchivedRepositories Set true to exclude archived repositories
+     */
+    public void setExcludeArchivedRepositories(boolean excludeArchivedRepositories) {
+        this.excludeArchivedRepositories = excludeArchivedRepositories;
+    }
+
     @NonNull
     @Override
     public GiteaSCMNavigatorRequest newRequest(@NonNull SCMNavigator navigator, @NonNull SCMSourceObserver observer) {

@@ -41,7 +41,6 @@ import hudson.model.Descriptor;
 import hudson.model.Item;
 import hudson.model.Queue;
 import hudson.model.TaskListener;
-import hudson.model.queue.Tasks;
 import hudson.security.ACL;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
@@ -74,9 +73,10 @@ import jenkins.scm.impl.form.NamedArrayList;
 import jenkins.scm.impl.trait.Discovery;
 import jenkins.scm.impl.trait.Selection;
 import org.apache.commons.lang.StringUtils;
+import org.jenkinsci.Symbol;
+import org.jenkinsci.plugin.gitea.client.api.Gitea;
 import org.jenkinsci.plugin.gitea.client.api.GiteaAuth;
 import org.jenkinsci.plugin.gitea.client.api.GiteaConnection;
-import org.jenkinsci.plugin.gitea.client.api.Gitea;
 import org.jenkinsci.plugin.gitea.client.api.GiteaOrganization;
 import org.jenkinsci.plugin.gitea.client.api.GiteaOwner;
 import org.jenkinsci.plugin.gitea.client.api.GiteaRepository;
@@ -122,10 +122,23 @@ public class GiteaSCMNavigator extends SCMNavigator {
         return Collections.unmodifiableList(traits);
     }
 
-    @Override
+    // we use the simple `SCMTrait[] ` type here instead of List<SCMTrait<? extends SCMTrait<?>>> such that this
+    // property is supported by the Job DSL plugin. See: https://github.com/jenkinsci/bitbucket-branch-source-plugin/pull/278
+    // for a similar fix in the bickbucket plugin repo.
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @DataBoundSetter
-    public void setTraits(List<SCMTrait<? extends SCMTrait<?>>> traits) {
-        this.traits = new ArrayList<>(Util.fixNull(traits));
+    public void setTraits(SCMTrait[]  traits) {
+        this.traits = new ArrayList<>();
+        if (traits != null) {
+            for (SCMTrait trait : traits) {
+                this.traits.add(trait);
+            }
+        }
+    }
+
+    @Override
+    public void setTraits(@CheckForNull List<SCMTrait<? extends SCMTrait<?>>> traits) {
+        this.traits = traits != null ? new ArrayList<>(traits) : new ArrayList<SCMTrait<? extends SCMTrait<?>>>();
     }
 
     @NonNull
@@ -136,9 +149,8 @@ public class GiteaSCMNavigator extends SCMNavigator {
 
     @Override
     public void visitSources(@NonNull final SCMSourceObserver observer) throws IOException, InterruptedException {
-        try (GiteaSCMNavigatorRequest request = new GiteaSCMNavigatorContext()
-                .withTraits(traits)
-                .newRequest(this, observer);
+        GiteaSCMNavigatorContext context = new GiteaSCMNavigatorContext().withTraits(traits);
+        try (GiteaSCMNavigatorRequest request = context.newRequest(this, observer);
              GiteaConnection c = gitea(observer.getContext()).open()) {
             giteaOwner = c.fetchOwner(repoOwner);
             List<GiteaRepository> repositories = c.fetchRepositories(giteaOwner);
@@ -162,6 +174,10 @@ public class GiteaSCMNavigator extends SCMNavigator {
                     observer.getListener().getLogger().format("%n    Ignoring empty repository %s%n",
                             HyperlinkNote.encodeTo(r.getHtmlUrl(), r.getName()));
                     continue;
+                } else if (r.isArchived() && context.isExcludeArchivedRepositories()) {
+                    observer.getListener().getLogger().format("%n    Skipping repository %s because it is archived", r.getName());
+                    continue;
+
                 }
                 observer.getListener().getLogger().format("%n    Checking repository %s%n",
                         HyperlinkNote.encodeTo(r.getHtmlUrl(), r.getName()));
@@ -272,6 +288,7 @@ public class GiteaSCMNavigator extends SCMNavigator {
     }
 
     @Extension
+    @Symbol("gitea")
     public static class DescriptorImpl extends SCMNavigatorDescriptor {
 
         @Override

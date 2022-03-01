@@ -25,8 +25,8 @@ package org.jenkinsci.plugin.gitea.client.impl;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import java.io.IOException;
-import org.jenkinsci.plugin.gitea.client.api.GiteaConnection;
 import org.jenkinsci.plugin.gitea.client.api.Gitea;
+import org.jenkinsci.plugin.gitea.client.api.GiteaConnection;
 import org.jenkinsci.plugin.gitea.client.spi.GiteaConnectionFactory;
 
 /**

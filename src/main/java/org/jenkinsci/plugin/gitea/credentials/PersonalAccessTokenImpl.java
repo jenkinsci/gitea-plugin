@@ -34,6 +34,7 @@ import hudson.util.FormValidation;
 import hudson.util.Secret;
 import jenkins.model.Jenkins;
 import org.apache.commons.lang.StringUtils;
+import org.jenkinsci.Symbol;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -77,6 +78,7 @@ public class PersonalAccessTokenImpl extends BaseStandardCredentials implements 
     /**
      * Our descriptor.
      */
+    @Symbol("giteaAccessToken")
     @Extension
     public static class DescriptorImpl extends CredentialsDescriptor {
         /**

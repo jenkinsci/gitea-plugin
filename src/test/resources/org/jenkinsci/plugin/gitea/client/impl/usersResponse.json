@@ -1,0 +1,23 @@
+[
+    {
+        "active": true,
+        "avatar_url": "string",
+        "created": "2021-09-17T08:44:48.204Z",
+        "description": "string",
+        "email": "user@example.com",
+        "followers_count": 0,
+        "following_count": 0,
+        "full_name": "string",
+        "id": 0,
+        "is_admin": true,
+        "language": "string",
+        "last_login": "2021-09-17T08:44:48.204Z",
+        "location": "string",
+        "login": "string",
+        "prohibit_login": true,
+        "restricted": true,
+        "starred_repos_count": 0,
+        "visibility": "string",
+        "website": "string"
+    }
+]

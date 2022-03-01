@@ -26,8 +26,8 @@ package org.jenkinsci.plugin.gitea.client.spi;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import java.io.IOException;
 import java.util.ServiceLoader;
-import org.jenkinsci.plugin.gitea.client.api.GiteaConnection;
 import org.jenkinsci.plugin.gitea.client.api.Gitea;
+import org.jenkinsci.plugin.gitea.client.api.GiteaConnection;
 
 /**
  * The SPI for instantiating {@link GiteaConnection} implementations from {@link Gitea}.

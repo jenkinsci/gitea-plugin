@@ -124,7 +124,7 @@ public class OriginPullRequestDiscoveryTrait extends SCMSourceTrait {
         return category instanceof ChangeRequestSCMHeadCategory;
     }
 
-    @Symbol("giteaPullREquestDiscovery") // why the gitea prefix? because symbol support doesn't understand types!
+    @Symbol("giteaPullRequestDiscovery") // why the gitea prefix? because symbol support doesn't understand types!
     @Extension
     @Discovery
     public static class DescriptorImpl extends SCMSourceTraitDescriptor {
