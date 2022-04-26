@@ -130,10 +130,6 @@ public class GiteaRepository extends GiteaObject<GiteaRepository> {
         this.fullName = fullName;
     }
 
-    public String getDisplayName(){
-        return this.getName();
-    }
-
     public String getDescription() {
         return description;
     }
