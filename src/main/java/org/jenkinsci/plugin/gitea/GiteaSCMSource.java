@@ -465,7 +465,10 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
             }
         }
         List<Action> result = new ArrayList<>();
-        result.add(new ObjectMetadataAction(null, giteaRepository.getDescription(), giteaRepository.getWebsite()));
+        result.add(new ObjectMetadataAction(giteaRepository.getName(), giteaRepository.getDescription(), giteaRepository.getWebsite()));
+        if (StringUtils.isNotBlank(giteaRepository.getAvatarUrl())) {
+            result.add(new GiteaAvatar(giteaRepository.getAvatarUrl()));
+        }
         result.add(new GiteaLink("icon-gitea-repo", UriTemplate.buildFromTemplate(serverUrl)
                 .path(UriTemplateBuilder.var("owner"))
                 .path(UriTemplateBuilder.var("repository"))

@@ -30,7 +30,7 @@ public class DefaultGiteaConnectionTest {
                 null, "", "", "",
                 true, false, false, false, false,
                 "", "", "", "",
-                0L, 0L, 0L, 0L, "",
+                0L, 0L, 0L, 0L, "", "",
                 null
         );
     }

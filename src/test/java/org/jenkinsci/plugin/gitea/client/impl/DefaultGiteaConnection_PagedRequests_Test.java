@@ -33,7 +33,7 @@ public class DefaultGiteaConnection_PagedRequests_Test {
                 null, "", "", "",
                 true, false, false, false, false,
                 "", "", "", "",
-                0L, 0L, 0L, 0L, "",
+                0L, 0L, 0L, 0L, "", "",
                 null
         );
     }

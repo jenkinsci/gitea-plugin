@@ -240,7 +240,7 @@ class DefaultGiteaConnection implements GiteaConnection {
 
     @Override
     public List<GiteaRepository> fetchRepositories(GiteaOwner owner) throws IOException, InterruptedException {
-        if(owner instanceof GiteaOrganization) {
+        if (owner instanceof GiteaOrganization) {
             return fetchOrganizationRepositories(owner);
         }
         return fetchRepositories(owner.getUsername());
@@ -248,7 +248,8 @@ class DefaultGiteaConnection implements GiteaConnection {
     }
 
     @Override
-    public List<GiteaRepository> fetchOrganizationRepositories(GiteaOwner owner) throws IOException, InterruptedException {
+    public List<GiteaRepository> fetchOrganizationRepositories(GiteaOwner owner)
+            throws IOException, InterruptedException {
         return getList(
                 api()
                         .literal("/orgs")
@@ -322,7 +323,8 @@ class DefaultGiteaConnection implements GiteaConnection {
     }
 
     @Override
-    public GiteaAnnotatedTag fetchAnnotatedTag(GiteaRepository repository, GiteaTag tag) throws IOException, InterruptedException {
+    public GiteaAnnotatedTag fetchAnnotatedTag(GiteaRepository repository, GiteaTag tag)
+            throws IOException, InterruptedException {
         return fetchAnnotatedTag(repository.getOwner().getUsername(), repository.getName(), tag.getId());
     }
 
