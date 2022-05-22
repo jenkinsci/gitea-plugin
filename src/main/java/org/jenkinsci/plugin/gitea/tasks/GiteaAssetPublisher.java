@@ -293,7 +293,7 @@ public class GiteaAssetPublisher implements SimpleBuildStep, Describable<GiteaAs
         return Jenkins.get().getDescriptorOrDie(getClass());
     }
 
-    @Extension @Symbol("publishGiteaAsset")
+    @Extension @Symbol("publishGiteaAssets")
     public static final class DescriptorImpl extends BuildStepDescriptor<GiteaAssetPublisher> {
 
         @Override
