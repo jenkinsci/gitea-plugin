@@ -44,11 +44,15 @@ import jenkins.scm.api.trait.SCMSourceRequest;
 import org.jenkinsci.plugin.gitea.client.api.GiteaBranch;
 import org.jenkinsci.plugin.gitea.client.api.GiteaConnection;
 import org.jenkinsci.plugin.gitea.client.api.GiteaPullRequest;
+import org.jenkinsci.plugin.gitea.client.api.GiteaRelease;
 import org.jenkinsci.plugin.gitea.client.api.GiteaTag;
 
 public class GiteaSCMSourceRequest extends SCMSourceRequest {
     private final boolean fetchBranches;
     private final boolean fetchTags;
+    private final boolean fetchReleases;
+    private final boolean includeDraftReleases;
+    private final boolean includePreReleases;
     private final boolean fetchOriginPRs;
     private final boolean fetchForkPRs;
     @NonNull
@@ -67,6 +71,8 @@ public class GiteaSCMSourceRequest extends SCMSourceRequest {
     private Iterable<GiteaBranch> branches;
     @CheckForNull
     private Iterable<GiteaTag> tags;
+    @CheckForNull
+    private Iterable<GiteaRelease> releases;
     /**
      * The repository collaborator names or {@code null} if not provided.
      */
@@ -86,6 +92,9 @@ public class GiteaSCMSourceRequest extends SCMSourceRequest {
         super(source, context, listener);
         fetchBranches = context.wantBranches();
         fetchTags = context.wantTags();
+        fetchReleases = context.wantReleases();
+        includeDraftReleases = context.includesDraftReleases();
+        includePreReleases = context.includesPreReleases();
         fetchOriginPRs = context.wantOriginPRs();
         fetchForkPRs = context.wantForkPRs();
         originPRStrategies = fetchOriginPRs && !context.originPRStrategies().isEmpty()
@@ -109,6 +118,8 @@ public class GiteaSCMSourceRequest extends SCMSourceRequest {
                     }
                 } else if (h instanceof TagSCMHead) {
                     tagNames.add(h.getName());
+                } else if (h instanceof ReleaseSCMHead) {
+                    // TODO: implement releaseNames
                 }
             }
             this.requestedPullRequestNumbers = Collections.unmodifiableSet(pullRequestNumbers);
@@ -137,6 +148,23 @@ public class GiteaSCMSourceRequest extends SCMSourceRequest {
      */
     public final boolean isFetchTags() {
         return fetchTags;
+    }
+
+    /**
+     * Returns {@code true} if release details need to be fetched.
+     *
+     * @return {@code true} if release details need to be fetched.
+     */
+    public final boolean isFetchReleases() {
+        return fetchReleases;
+    }
+
+    public final boolean isIncludingDraftReleases() {
+        return includeDraftReleases;
+    }
+
+    public final boolean isIncludingPreReleases() {
+        return includePreReleases;
     }
 
     /**
@@ -306,6 +334,15 @@ public class GiteaSCMSourceRequest extends SCMSourceRequest {
         this.tags = tags;
     }
 
+    @NonNull
+    public final Iterable<GiteaRelease> getReleases() {
+        return Util.fixNull(releases);
+    }
+
+    public final void setReleases(@CheckForNull Iterable<GiteaRelease> releases) {
+        this.releases = releases;
+    }
+
     /**
      * Returns the names of the repository collaborators or {@code null} if those details have not been provided yet.
      *
@@ -350,7 +387,7 @@ public class GiteaSCMSourceRequest extends SCMSourceRequest {
     @Override
     public void close() throws IOException {
         IOException exception = null;
-        for (Object o : Arrays.asList(pullRequests, branches, tags)) {
+        for (Object o : Arrays.asList(pullRequests, branches, tags, releases)) {
             if (o instanceof Closeable) {
                 try {
                     ((Closeable) o).close();

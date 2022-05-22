@@ -102,6 +102,7 @@ import org.jenkinsci.plugin.gitea.client.api.GiteaHttpStatusException;
 import org.jenkinsci.plugin.gitea.client.api.GiteaIssueState;
 import org.jenkinsci.plugin.gitea.client.api.GiteaOwner;
 import org.jenkinsci.plugin.gitea.client.api.GiteaPullRequest;
+import org.jenkinsci.plugin.gitea.client.api.GiteaRelease;
 import org.jenkinsci.plugin.gitea.client.api.GiteaRepository;
 import org.jenkinsci.plugin.gitea.client.api.GiteaTag;
 import org.jenkinsci.plugin.gitea.client.api.GiteaVersion;
@@ -261,6 +262,10 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
                     listener.getLogger().format("Pull request #%s is CLOSED%n", h.getId());
                     return null;
                 }
+            } else if (head instanceof ReleaseSCMHead) {
+                // TODO: this need consideration if we want to implement "changing" releases and how assets shouls be handled then
+                listener.getLogger().format("Tag for release cannot change, we assume that the tag therefore also shouldn't change...%n");
+                return null;
             } else {
                 listener.getLogger().format("Unknown head: %s of type %s%n", head.getName(), head.getClass().getName());
                 return null;
@@ -305,6 +310,10 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
                     } else {
                         request.setTags(c.fetchTags(giteaRepository));
                     }
+                }
+                if (request.isFetchReleases()) {
+                    request.setReleases(c.fetchReleases(giteaRepository,
+                        request.isIncludingDraftReleases(), request.isIncludingPreReleases()));
                 }
 
                 if (request.isFetchBranches()) {
@@ -450,6 +459,33 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
                     }
                     listener.getLogger().format("%n  %d tags were processed%n", count);
                 }
+                if (request.isFetchReleases()) {
+                    int count = 0;
+                    listener.getLogger().format("%n  Checking releases...%n");
+                    for (final GiteaRelease release : request.getReleases()) {
+                        count++;
+                        listener.getLogger().format("%n    Checking release '%s' (tag %s)%n",
+                                release.getName(),
+                                HyperlinkNote.encodeTo(
+                                        UriTemplate.buildFromTemplate(giteaRepository.getHtmlUrl())
+                                                .literal("/src/tag")
+                                                .path("tag")
+                                                .build()
+                                                .set("tag", release.getTagName())
+                                                .expand(),
+                                        release.getTagName()
+                                )
+                        );
+                        final GiteaTag releaseTag = c.fetchTag(giteaRepository, release.getTagName());
+                        final ReleaseSCMHead head = new ReleaseSCMHead(release.getTagName(), release.getId());
+                        final ReleaseSCMRevision revision = new ReleaseSCMRevision(head, releaseTag.getCommit().getSha());
+                        if (request.process(head, revision, this::createProbe, new CriteriaWitness<>(listener))) {
+                            listener.getLogger().format("%n  %d releases were processed (query completed)%n", count);
+                            return;
+                        }
+                    }
+                    listener.getLogger().format("%n  %d releases were processed%n", count);
+                }
             }
         }
     }
@@ -548,6 +584,24 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
                     pullUrl
             ));
             result.add(new GiteaLink("icon-gitea-branch", pullUrl));
+        } else if (head instanceof ReleaseSCMHead) {
+            String releaseUrl = UriTemplate.buildFromTemplate(serverUrl)
+                    .path(UriTemplateBuilder.var("owner"))
+                    .path(UriTemplateBuilder.var("repository"))
+                    .literal("/releases")
+                    .literal("/tag")
+                    .path(UriTemplateBuilder.var("name"))
+                    .build()
+                    .set("owner", repoOwner)
+                    .set("repository", repository)
+                    .set("name", head.getName())
+                    .expand();
+            result.add(new ObjectMetadataAction(
+                null,
+                null,
+                releaseUrl
+            ));
+            result.add(new GiteaLink("icon-gitea-logo", releaseUrl));
         }
         return result;
     }
@@ -666,7 +720,7 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
         GiteaWebhookListener.register(getOwner(), this, mode, credentialsId);
     }
 
-    /*package*/ Gitea gitea() throws AbortException {
+    public Gitea gitea() throws AbortException {
         GiteaServer server = GiteaServers.get().findServer(serverUrl);
         if (server == null) {
             throw new AbortException("Unknown server: " + serverUrl);
@@ -973,7 +1027,8 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
             return new SCMHeadCategory[]{
                     new UncategorizedSCMHeadCategory(Messages._GiteaSCMSource_UncategorizedCategory()),
                     new ChangeRequestSCMHeadCategory(Messages._GiteaSCMSource_ChangeRequestCategory()),
-                    new TagSCMHeadCategory(Messages._GiteaSCMSource_TagCategory())
+                    new TagSCMHeadCategory(Messages._GiteaSCMSource_TagCategory()),
+                    new ReleaseSCMHeadCategory(Messages._GiteaSCMSource_ReleaseCategory())
             };
         }
     }

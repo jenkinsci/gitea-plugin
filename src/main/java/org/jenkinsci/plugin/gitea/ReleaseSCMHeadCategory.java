@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2017, CloudBees, Inc.
+ * Copyright (c) 2017-2022, CloudBees, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,40 +21,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.jenkinsci.plugin.gitea.client.api;
+package org.jenkinsci.plugin.gitea;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
+import org.jvnet.localizer.Localizable;
+
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import jenkins.scm.api.SCMHead;
+import jenkins.scm.api.SCMHeadCategory;
 
 /**
- * Gitea event types.
+ * Category for {@link SCMHead} instances that implement {@link ReleaseSCMHead}.
  */
-public enum GiteaEventType {
-    CREATE("create"),
-    PUSH("push"),
-    PULL_REQUEST("pull_request"),
-    REPOSITORY("repository"),
-    DELETE("delete"),
-    RELEASE("release");
+public class ReleaseSCMHeadCategory extends SCMHeadCategory {
 
-    private final String key;
-
-    GiteaEventType(String key) {
-        this.key = key;
+    /**
+     * Constructs a {@link ReleaseSCMHeadCategory} with customized naming. Use this constructor when the generic
+     * naming is not appropriate terminology for the specific {@link SCMSource}'s naming of change requests.
+     *
+     * @param displayName the display name for change requests.
+     */
+    @SuppressFBWarnings("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION")
+    public ReleaseSCMHeadCategory(@NonNull Localizable displayName) {
+        super("gitea-releases", displayName);
     }
 
-    @JsonCreator
-    public static GiteaEventType fromString(String key) {
-        for (GiteaEventType s : values()) {
-            if (key.equals(s.key)) {
-                return s;
-            }
-        }
-        return null;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isMatch(@NonNull SCMHead instance) {
+        return instance instanceof ReleaseSCMHead;
     }
-
-    @JsonValue
-    public String getKey() {
-        return key;
-    }
+    
 }

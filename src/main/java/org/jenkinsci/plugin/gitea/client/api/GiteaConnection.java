@@ -24,6 +24,7 @@
 package org.jenkinsci.plugin.gitea.client.api;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
 
@@ -70,6 +71,10 @@ public interface GiteaConnection extends AutoCloseable {
     GiteaAnnotatedTag fetchAnnotatedTag(String username, String repository, String sha1) throws IOException, InterruptedException;
 
     GiteaAnnotatedTag fetchAnnotatedTag(GiteaRepository repository, GiteaTag tag) throws IOException, InterruptedException;
+
+    GiteaTag fetchTag(String username, String repository, String tag) throws IOException, InterruptedException;
+
+    GiteaTag fetchTag(GiteaRepository repository, String tag) throws IOException, InterruptedException;
 
     List<GiteaTag> fetchTags(String username, String name) throws IOException, InterruptedException;
 
@@ -149,6 +154,16 @@ public interface GiteaConnection extends AutoCloseable {
     byte[] fetchFile(GiteaRepository repository, String ref, String path) throws IOException, InterruptedException;
 
     boolean checkFile(GiteaRepository repository, String ref, String path) throws IOException, InterruptedException;
+
+    List<GiteaRelease> fetchReleases(String username, String name, boolean draft, boolean prerelease) throws IOException, InterruptedException;
+
+    List<GiteaRelease> fetchReleases(GiteaRepository repository, boolean draft, boolean prerelease) throws IOException, InterruptedException;
+
+    GiteaRelease.Attachment createReleaseAttachment(String username, String repository, long id, String name, InputStream file)
+        throws IOException, InterruptedException;
+
+    GiteaRelease.Attachment createReleaseAttachment(GiteaRepository repository, long id, String name, InputStream file)
+        throws IOException, InterruptedException;
 
     /**
      * {@inheritDoc}

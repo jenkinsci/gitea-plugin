@@ -32,6 +32,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
@@ -69,6 +71,8 @@ import org.jenkinsci.plugin.gitea.client.api.GiteaIssueState;
 import org.jenkinsci.plugin.gitea.client.api.GiteaOrganization;
 import org.jenkinsci.plugin.gitea.client.api.GiteaOwner;
 import org.jenkinsci.plugin.gitea.client.api.GiteaPullRequest;
+import org.jenkinsci.plugin.gitea.client.api.GiteaRelease;
+import org.jenkinsci.plugin.gitea.client.api.GiteaRelease.Attachment;
 import org.jenkinsci.plugin.gitea.client.api.GiteaRepository;
 import org.jenkinsci.plugin.gitea.client.api.GiteaTag;
 import org.jenkinsci.plugin.gitea.client.api.GiteaUser;
@@ -326,6 +330,28 @@ class DefaultGiteaConnection implements GiteaConnection {
     public GiteaAnnotatedTag fetchAnnotatedTag(GiteaRepository repository, GiteaTag tag)
             throws IOException, InterruptedException {
         return fetchAnnotatedTag(repository.getOwner().getUsername(), repository.getName(), tag.getId());
+    }
+
+    @Override
+    public GiteaTag fetchTag(String username, String repository, String tag) throws IOException, InterruptedException {
+        return getObject(
+                api()
+                        .literal("/repos")
+                        .path(UriTemplateBuilder.var("username"))
+                        .path(UriTemplateBuilder.var("name"))
+                        .literal("/tags")
+                        .path(UriTemplateBuilder.var("tag"))
+                        .build()
+                        .set("username", username)
+                        .set("name", repository)
+                        .set("tag", tag),
+                GiteaTag.class
+        );
+    }
+
+    @Override
+    public GiteaTag fetchTag(GiteaRepository repository, String tag) throws IOException, InterruptedException {
+        return fetchTag(repository.getOwner().getUsername(), repository.getName(), tag);
     }
 
     @Override
@@ -812,6 +838,70 @@ class DefaultGiteaConnection implements GiteaConnection {
     }
 
     @Override
+    public List<GiteaRelease> fetchReleases(String username, String name, boolean draft, boolean prerelease)
+            throws IOException, InterruptedException {
+        try {
+            return getList(
+                    api()
+                            .literal("/repos")
+                            .path(UriTemplateBuilder.var("username"))
+                            .path(UriTemplateBuilder.var("name"))
+                            .literal("/releases")
+                            .query(UriTemplateBuilder.var("draft"))
+                            .query(UriTemplateBuilder.var("preRelease"))
+                            .build()
+                            .set("username", username)
+                            .set("name", name)
+                            .set("draft", draft)
+                            .set("preRelease", prerelease),
+                    GiteaRelease.class
+            );
+        } catch (GiteaHttpStatusException e) {
+            // Gitea REST API returns HTTP Code 404 when pull requests or issues are disabled
+            // Therefore we need to handle this case and return a empty List
+            if (e.getStatusCode() == 404) {
+                return Collections.emptyList();
+            } else {
+                // Else other cause... throw exception again
+                throw e;
+            }
+        }
+    }
+
+    @Override
+    public List<GiteaRelease> fetchReleases(GiteaRepository repository, boolean draft, boolean prerelease)
+            throws IOException, InterruptedException {
+        return fetchReleases(repository.getOwner().getUsername(), repository.getName(), draft, prerelease);
+    }
+
+    @Override
+    public GiteaRelease.Attachment createReleaseAttachment(String username, String repository, long id, 
+                                                           String name, InputStream file)
+            throws IOException, InterruptedException {
+        return postFile(api()
+                        .literal("/repos")
+                        .path(UriTemplateBuilder.var("username"))
+                        .path(UriTemplateBuilder.var("repository"))
+                        .literal("/releases")
+                        .path(UriTemplateBuilder.var("id"))
+                        .literal("/assets")
+                        .query(UriTemplateBuilder.var("name"))
+                        .build()
+                        .set("username", username)
+                        .set("repository", repository)
+                        .set("id", id)
+                        .set("name", name),
+                name, file,
+                GiteaRelease.Attachment.class);
+    }
+
+    @Override
+    public GiteaRelease.Attachment createReleaseAttachment(GiteaRepository repository, long id, String name, InputStream file)
+            throws IOException, InterruptedException {
+        return createReleaseAttachment(repository.getOwner().getUsername(), repository.getName(), id, name, file);
+    }
+
+    @Override
     public void close() throws IOException {
     }
 
@@ -907,6 +997,66 @@ class DefaultGiteaConnection implements GiteaConnection {
                     status,
                     connection.getResponseMessage(),
                     bytes != null ? new String(bytes, StandardCharsets.UTF_8) : null
+            );
+        } finally {
+            connection.disconnect();
+        }
+    }
+
+    private <T> T postFile(UriTemplate template, String fileName, InputStream file, final Class<T> modelClass)
+            throws IOException, InterruptedException {
+        HttpURLConnection connection = openConnection(template);
+        withAuthentication(connection);
+        connection.setRequestMethod("POST");
+
+        String boundary = "===" + System.currentTimeMillis() + "===";
+        connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=\"" + boundary + "\"");
+        //connection.setRequestProperty("Content-Length", Integer.toString(bytes.length));
+        connection.setDoOutput(true);
+        connection.setDoInput(!Void.class.equals(modelClass));
+
+        final String LINE_FEED = "\r\n";
+        PrintWriter writer = new PrintWriter(new OutputStreamWriter(connection.getOutputStream()), true);
+        {
+            writer.append("--" + boundary).append(LINE_FEED);
+            writer.append("Content-Disposition: form-data; name=\"attachment\"; filename=\"" + fileName + "\"").append(LINE_FEED);
+            writer.append("Content-Type: " + URLConnection.guessContentTypeFromName(fileName)).append(LINE_FEED);
+            writer.append("Content-Transfer-Encoding: binary").append(LINE_FEED);
+            writer.append(LINE_FEED);
+            writer.flush();
+    
+            byte[] buffer = new byte[4096];
+            int bytesRead = -1;
+            while ((bytesRead = file.read(buffer)) != -1) {
+                connection.getOutputStream().write(buffer, 0, bytesRead);
+            }
+            connection.getOutputStream().flush();
+            file.close();
+    
+            writer.append(LINE_FEED);
+            writer.flush();
+        }
+
+        // fin.
+        writer.append(LINE_FEED);
+        writer.append("--" + boundary + "--").append(LINE_FEED);
+        writer.close();
+
+        try {
+            connection.connect();
+            int status = connection.getResponseCode();
+            if (status / 100 == 2) {
+                if (Void.class.equals(modelClass)) {
+                    return null;
+                }
+                try (InputStream is = connection.getInputStream()) {
+                    return mapper.readerFor(modelClass).readValue(is);
+                }
+            }
+            throw new GiteaHttpStatusException(
+                status,
+                connection.getResponseMessage(),
+                "<multipart/form-data with file>"
             );
         } finally {
             connection.disconnect();

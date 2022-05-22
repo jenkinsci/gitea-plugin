@@ -91,7 +91,7 @@ public class GiteaSCMNavigator extends SCMNavigator {
     private final String serverUrl;
     private final String repoOwner;
     private String credentialsId;
-    private List<SCMTrait<?>> traits = new ArrayList<>();
+    private List<SCMTrait<? extends SCMTrait<?>>> traits = new ArrayList<>();
     private GiteaOwner giteaOwner;
 
     @DataBoundConstructor
@@ -118,7 +118,7 @@ public class GiteaSCMNavigator extends SCMNavigator {
     }
 
     @NonNull
-    public List<SCMTrait<?>> getTraits() {
+    public List<SCMTrait<? extends SCMTrait<?>>> getTraits() {
         return Collections.unmodifiableList(traits);
     }
 

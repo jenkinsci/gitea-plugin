@@ -109,6 +109,9 @@ public class GiteaSCMBuilder extends GitSCMBuilder<GiteaSCMBuilder> {
         } else if (head instanceof TagSCMHead) {
             withRefSpec("+refs/tags/" + head.getName() + ":refs/tags/@{remote}/" + head.getName());
             repoUrl = repositoryUrl(repoOwner, repository);
+        } else if (head instanceof ReleaseSCMHead) {
+            withRefSpec("+refs/tags/" + head.getName() + ":refs/tags/@{remote}/" + head.getName());
+            repoUrl = repositoryUrl(repoOwner, repository);
         } else {
             withRefSpec("+refs/heads/" + head.getName() + ":refs/remotes/@{remote}/" + head.getName());
             repoUrl = repositoryUrl(repoOwner, repository);

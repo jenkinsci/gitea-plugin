@@ -68,6 +68,8 @@ public class GiteaSCMFileSystem extends SCMFileSystem {
                 this.ref = ((BranchSCMRevision) rev).getHash();
             } else if (rev instanceof TagSCMRevision) {
                 this.ref = ((TagSCMRevision) rev).getHash();
+            } else if (rev instanceof ReleaseSCMRevision) {
+                this.ref = ((ReleaseSCMRevision) rev).getHash();
             } else {
                 this.ref = ref;
             }
@@ -139,6 +141,10 @@ public class GiteaSCMFileSystem extends SCMFileSystem {
                 repository = src.getRepository();
                 ref = head.getName();
             } else if (head instanceof TagSCMHead) {
+                repoOwner = src.getRepoOwner();
+                repository = src.getRepository();
+                ref = head.getName();
+            } else if (head instanceof ReleaseSCMHead) {
                 repoOwner = src.getRepoOwner();
                 repository = src.getRepository();
                 ref = head.getName();
