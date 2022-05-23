@@ -107,12 +107,12 @@ public class BranchDiscoveryTrait extends SCMSourceTrait {
     }
 
     /**
-     * Returns {@code true} if building branches that are filed as a PR or the master branch.
+     * Returns {@code true} if building branches that are filed as a PR or the main branch.
      *
-     * @return {@code true} if building branches that are filed as a PR or the master branch.
+     * @return {@code true} if building branches that are filed as a PR or the main branch.
      */
     @Restricted(NoExternalUse.class)
-    public boolean isBuildBranchesWithPROrMaster() {
+    public boolean isBuildBranchesWithPROrMain() {
         return (strategyId & 4) != 0;
     }
 
@@ -135,7 +135,7 @@ public class BranchDiscoveryTrait extends SCMSourceTrait {
                 break;
             case 4:
                 ctx.wantOriginPRs(true);
-                ctx.withFilter(new OriginPRBranchesOrMasterSCMHeadFilter());
+                ctx.withFilter(new OriginPRBranchesOrMainSCMHeadFilter());
                 break;
             case 3:
             default:
@@ -198,7 +198,7 @@ public class BranchDiscoveryTrait extends SCMSourceTrait {
             result.add(Messages.BranchDiscoveryTrait_excludePRs(), "1");
             result.add(Messages.BranchDiscoveryTrait_onlyPRs(), "2");
             result.add(Messages.BranchDiscoveryTrait_allBranches(), "3");
-            result.add(Messages.BranchDiscoveryTrait_onlyPRsOrMaster(), "4");
+            result.add(Messages.BranchDiscoveryTrait_onlyPRsOrMain(), "4");
             return result;
         }
     }
@@ -314,9 +314,9 @@ public class BranchDiscoveryTrait extends SCMSourceTrait {
 
 
     /**
-     * Filter that excludes branches that are not also filed as a pull request.
+     * Filter that excludes branches that are not also filed as a pull request or the main branch.
      */
-    public static class OriginPRBranchesOrMasterSCMHeadFilter extends SCMHeadFilter {
+    public static class OriginPRBranchesOrMainSCMHeadFilter extends SCMHeadFilter {
         /**
          * {@inheritDoc}
          */
