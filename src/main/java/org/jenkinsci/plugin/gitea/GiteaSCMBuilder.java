@@ -165,8 +165,12 @@ public class GiteaSCMBuilder extends GitSCMBuilder<GiteaSCMBuilder> {
                             .build();
                 }
                 URI sshUri = URI.create(sshRemote);
+                String username = ((SSHUserPrivateKey) credentials).getUsername();
+                if (username.equals(System.getProperty("user.name"))) {
+                    username = "git";
+                }
                 return UriTemplate.buildFromTemplate(
-                                "ssh://" + ((SSHUserPrivateKey) credentials).getUsername() + "@" + sshUri.getHost() + (sshUri.getPort() != 22 && sshUri.getPort() != -1 ? ":" + sshUri.getPort() : "")
+                                "ssh://" + username + "@" + sshUri.getHost() + (sshUri.getPort() != 22 && sshUri.getPort() != -1 ? ":" + sshUri.getPort() : "")
                         )
                         .path(UriTemplateBuilder.var("owner"))
                         .path(UriTemplateBuilder.var("repository"))
