@@ -158,16 +158,20 @@ public class GiteaSCMBuilder extends GitSCMBuilder<GiteaSCMBuilder> {
                 int colonIndex = sshRemote.indexOf(':');
                 if (atIndex != -1 && colonIndex != -1 && atIndex < colonIndex) {
                     // this is an scp style url, we will translate to ssh style
-                    return UriTemplate.buildFromTemplate("ssh://"+sshRemote.substring(0, colonIndex))
+                    return UriTemplate.buildFromTemplate("ssh://" + sshRemote.substring(0, colonIndex))
                             .path(UriTemplateBuilder.var("owner"))
                             .path(UriTemplateBuilder.var("repository"))
                             .literal(".git")
                             .build();
                 }
                 URI sshUri = URI.create(sshRemote);
+                String username = ((SSHUserPrivateKey) credentials).getUsername();
+                if (username.equals(System.getProperty("user.name"))) {
+                    username = "git";
+                }
                 return UriTemplate.buildFromTemplate(
-                        "ssh://git@" + sshUri.getHost() + (sshUri.getPort() != 22 && sshUri.getPort() != -1 ? ":" + sshUri.getPort() : "")
-                )
+                                "ssh://" + username + "@" + sshUri.getHost() + (sshUri.getPort() != 22 && sshUri.getPort() != -1 ? ":" + sshUri.getPort() : "")
+                        )
                         .path(UriTemplateBuilder.var("owner"))
                         .path(UriTemplateBuilder.var("repository"))
                         .literal(".git")
