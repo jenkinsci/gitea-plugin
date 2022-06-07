@@ -68,12 +68,12 @@ public class BranchDiscoveryTrait extends SCMSourceTrait {
     /**
      * Constructor for legacy code.
      *
-     * @param buildBranch               build branches that are not filed as a PR.
-     * @param buildBranchWithPr         build branches that are also PRs.
+     * @param buildBranch             build branches that are not filed as a PR.
+     * @param buildBranchWithPr       build branches that are also PRs.
      * @param buildBranchWithPrOrMain build branches that are also PRs or that are main or master.
      */
     public BranchDiscoveryTrait(boolean buildBranch, boolean buildBranchWithPr, boolean buildBranchWithPrOrMain) {
-        this.strategyId = (buildBranch ? 1 : 0) + (buildBranchWithPr ? 2 : 0) +  (buildBranchWithPrOrMain ? 4 : 0);
+        this.strategyId = (buildBranch ? 1 : 0) + (buildBranchWithPr ? 2 : 0) + (buildBranchWithPrOrMain ? 4 : 0);
     }
 
     /**
