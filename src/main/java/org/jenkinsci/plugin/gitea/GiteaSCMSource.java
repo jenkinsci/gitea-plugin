@@ -955,7 +955,7 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
 
         public List<SCMSourceTrait> getTraitsDefaults() {
             return Arrays.asList( // TODO finalize
-                    new BranchDiscoveryTrait(true, false),
+                    new BranchDiscoveryTrait(true, false, false),
                     new OriginPullRequestDiscoveryTrait(EnumSet.of(ChangeRequestCheckoutStrategy.MERGE)),
                     new ForkPullRequestDiscoveryTrait(EnumSet.of(ChangeRequestCheckoutStrategy.MERGE),
                             new ForkPullRequestDiscoveryTrait.TrustContributors())

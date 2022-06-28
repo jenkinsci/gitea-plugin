@@ -68,11 +68,12 @@ public class BranchDiscoveryTrait extends SCMSourceTrait {
     /**
      * Constructor for legacy code.
      *
-     * @param buildBranch       build branches that are not filed as a PR.
-     * @param buildBranchWithPr build branches that are also PRs.
+     * @param buildBranch             build branches that are not filed as a PR.
+     * @param buildBranchWithPr       build branches that are also PRs.
+     * @param buildBranchWithPrOrMain build branches that are also PRs or that are main or master.
      */
-    public BranchDiscoveryTrait(boolean buildBranch, boolean buildBranchWithPr) {
-        this.strategyId = (buildBranch ? 1 : 0) + (buildBranchWithPr ? 2 : 0);
+    public BranchDiscoveryTrait(boolean buildBranch, boolean buildBranchWithPr, boolean buildBranchWithPrOrMain) {
+        this.strategyId = (buildBranch ? 1 : 0) + (buildBranchWithPr ? 2 : 0) + (buildBranchWithPrOrMain ? 4 : 0);
     }
 
     /**
@@ -106,6 +107,16 @@ public class BranchDiscoveryTrait extends SCMSourceTrait {
     }
 
     /**
+     * Returns {@code true} if building branches that are filed as a PR or the main branch.
+     *
+     * @return {@code true} if building branches that are filed as a PR or the main branch.
+     */
+    @Restricted(NoExternalUse.class)
+    public boolean isBuildBranchesWithPROrMain() {
+        return (strategyId & 4) != 0;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -121,6 +132,10 @@ public class BranchDiscoveryTrait extends SCMSourceTrait {
             case 2:
                 ctx.wantOriginPRs(true);
                 ctx.withFilter(new OnlyOriginPRBranchesSCMHeadFilter());
+                break;
+            case 4:
+                ctx.wantOriginPRs(true);
+                ctx.withFilter(new OriginPRBranchesOrMainSCMHeadFilter());
                 break;
             case 3:
             default:
@@ -183,6 +198,7 @@ public class BranchDiscoveryTrait extends SCMSourceTrait {
             result.add(Messages.BranchDiscoveryTrait_excludePRs(), "1");
             result.add(Messages.BranchDiscoveryTrait_onlyPRs(), "2");
             result.add(Messages.BranchDiscoveryTrait_allBranches(), "3");
+            result.add(Messages.BranchDiscoveryTrait_onlyPRsOrMain(), "4");
             return result;
         }
     }
@@ -285,6 +301,46 @@ public class BranchDiscoveryTrait extends SCMSourceTrait {
                             p.getHead().getRepo().getOwner().getUsername())
                             && StringUtils.equalsIgnoreCase(
                                     p.getBase().getRepo().getName(),
+                            p.getHead().getRepo().getName())
+                            && StringUtils.equals(p.getHead().getRef(), head.getName())) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            return false;
+        }
+    }
+
+
+    /**
+     * Filter that excludes branches that are not also filed as a pull request or the main branch.
+     */
+    public static class OriginPRBranchesOrMainSCMHeadFilter extends SCMHeadFilter {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean isExcluded(@NonNull SCMSourceRequest request, @NonNull SCMHead head) {
+            if (head instanceof BranchSCMHead && request instanceof GiteaSCMSourceRequest) {
+                if (head.getName().equalsIgnoreCase( "master") || head.getName().equalsIgnoreCase("main")) {
+                    return false;
+                }
+                for (GiteaPullRequest p : ((GiteaSCMSourceRequest) request).getPullRequests()) {
+                    if (p.getHead() == null || p.getHead().getRepo() == null
+                            || p.getHead().getRepo().getOwner() == null
+                            || p.getHead().getRepo().getName() == null
+                            || p.getHead().getRef() == null
+                    ) {
+                        // the head has already been deleted, so ignore as we cannot build yet JENKINS-60825
+                        // TODO figure out if we can build a PR who's head has been deleted as it should be possible
+                        return true;
+                    }
+                    if (StringUtils.equalsIgnoreCase(
+                            p.getBase().getRepo().getOwner().getUsername(),
+                            p.getHead().getRepo().getOwner().getUsername())
+                            && StringUtils.equalsIgnoreCase(
+                            p.getBase().getRepo().getName(),
                             p.getHead().getRepo().getName())
                             && StringUtils.equals(p.getHead().getRef(), head.getName())) {
                         return false;
