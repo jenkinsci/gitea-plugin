@@ -10,12 +10,19 @@ jobs:
     steps:
       - name: Release Drafter
         uses: release-drafter/release-drafter@v5
+        id: draft
         with:
           name: next
           tag: next
           version: next
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Check interesting categories
+        uses: jenkins-infra/interesting-category-action@v1.2.0
+        id: interesting-categories
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_DRAFT_BODY: ${{ steps.draft.outputs.body }}
 
   release:
     runs-on: ubuntu-latest
