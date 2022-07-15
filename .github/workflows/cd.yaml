@@ -9,7 +9,7 @@ jobs:
       should_release: ${{ steps.verify-ci-status.outputs.result == 'success' && steps.interesting-categories.outputs.interesting == 'true' }}
     steps:
       - name: Verify CI status
-        uses: jenkins-infra/verify-ci-status-action@v1.2.0
+        uses: jenkins-infra/verify-ci-status-action@v1.2.1
         id: verify-ci-status
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -17,6 +17,7 @@ jobs:
 
       - name: Release Drafter
         uses: release-drafter/release-drafter@v5
+        id: draft
         if: steps.verify-ci-status.outputs.result == 'success'
         with:
           name: next
@@ -26,11 +27,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Check interesting categories
-        uses: jenkins-infra/interesting-category-action@v1.0.0
+        uses: jenkins-infra/interesting-category-action@v1.2.0
         id: interesting-categories
         if: steps.verify-ci-status.outputs.result == 'success'
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_DRAFT_BODY: ${{ steps.draft.outputs.body }}
 
   release:
     runs-on: ubuntu-latest
