@@ -4,6 +4,8 @@
 [![](https://img.shields.io/github/v/release/jenkinsci/gitea-plugin.svg?label=changelog)](https://github.com/jenkinsci/gitea-plugin/releases/latest)
 [![](https://img.shields.io/jenkins/plugin/i/gitea.svg?color=blue)](https://plugins.jenkins.io/gitea)
 
+**This is a fork**
+
 This plugin provides the Jenkins integrations for [Gitea](https://gitea.io).
 
 For details on the plugin see [plugins.jenkins.io/gitea](https://plugins.jenkins.io/gitea).
