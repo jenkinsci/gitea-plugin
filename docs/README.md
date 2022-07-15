@@ -22,6 +22,8 @@
 4. log back in as the new "jenkins" user.
 5. in user profile settings, go to "application" and add a new access token. Make sure to note the token shown.
 
+> ℹ️  Hint: As of [Gitea version 1.16.9](https://github.com/go-gitea/gitea/releases/tag/v1.16.9) the user requires **Write permissions** to repository code. Otherwise, status checks cannot be submitted anymore causing "HTTP 403/Forbidden" errors during builds.
+
 ## Map your Gitea organization/user
 
 ### Create an item inside Jenkins
