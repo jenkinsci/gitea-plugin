@@ -72,7 +72,6 @@ import org.jenkinsci.plugin.gitea.client.api.GiteaOrganization;
 import org.jenkinsci.plugin.gitea.client.api.GiteaOwner;
 import org.jenkinsci.plugin.gitea.client.api.GiteaPullRequest;
 import org.jenkinsci.plugin.gitea.client.api.GiteaRelease;
-import org.jenkinsci.plugin.gitea.client.api.GiteaRelease.Attachment;
 import org.jenkinsci.plugin.gitea.client.api.GiteaRepository;
 import org.jenkinsci.plugin.gitea.client.api.GiteaTag;
 import org.jenkinsci.plugin.gitea.client.api.GiteaUser;
@@ -875,7 +874,7 @@ class DefaultGiteaConnection implements GiteaConnection {
     }
 
     @Override
-    public GiteaRelease.Attachment createReleaseAttachment(String username, String repository, long id, 
+    public GiteaRelease.Attachment createReleaseAttachment(String username, String repository, long id,
                                                            String name, InputStream file)
             throws IOException, InterruptedException {
         return postFile(api()
@@ -1016,7 +1015,8 @@ class DefaultGiteaConnection implements GiteaConnection {
         connection.setDoInput(!Void.class.equals(modelClass));
 
         final String LINE_FEED = "\r\n";
-        PrintWriter writer = new PrintWriter(new OutputStreamWriter(connection.getOutputStream()), true);
+        // Default charset is utf8 for forms: https://www.rfc-editor.org/rfc/rfc7578#section-5.1.2
+        PrintWriter writer = new PrintWriter(new OutputStreamWriter(connection.getOutputStream(), "UTF-8"), true);
         {
             writer.append("--" + boundary).append(LINE_FEED);
             writer.append("Content-Disposition: form-data; name=\"attachment\"; filename=\"" + fileName + "\"").append(LINE_FEED);
@@ -1024,7 +1024,7 @@ class DefaultGiteaConnection implements GiteaConnection {
             writer.append("Content-Transfer-Encoding: binary").append(LINE_FEED);
             writer.append(LINE_FEED);
             writer.flush();
-    
+
             byte[] buffer = new byte[4096];
             int bytesRead = -1;
             while ((bytesRead = file.read(buffer)) != -1) {
@@ -1032,7 +1032,7 @@ class DefaultGiteaConnection implements GiteaConnection {
             }
             connection.getOutputStream().flush();
             file.close();
-    
+
             writer.append(LINE_FEED);
             writer.flush();
         }

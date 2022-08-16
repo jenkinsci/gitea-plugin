@@ -23,13 +23,12 @@
  */
 package org.jenkinsci.plugin.gitea;
 
-import org.jvnet.localizer.Localizable;
-
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jenkins.scm.api.SCMHead;
 import jenkins.scm.api.SCMHeadCategory;
 import jenkins.scm.api.SCMSource;
+import org.jvnet.localizer.Localizable;
 
 /**
  * Category for {@link SCMHead} instances that implement {@link ReleaseSCMHead}.
@@ -54,5 +53,5 @@ public class ReleaseSCMHeadCategory extends SCMHeadCategory {
     public boolean isMatch(@NonNull SCMHead instance) {
         return instance instanceof ReleaseSCMHead;
     }
-    
+
 }

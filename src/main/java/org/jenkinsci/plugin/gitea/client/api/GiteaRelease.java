@@ -23,12 +23,11 @@
  */
 package org.jenkinsci.plugin.gitea.client.api;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = Gitea.IGNORE_UNKNOWN_PROPERTIES)
 public class GiteaRelease extends GiteaObject<GiteaRelease> {
@@ -49,25 +48,6 @@ public class GiteaRelease extends GiteaObject<GiteaRelease> {
     private List<Attachment> assets = new ArrayList<>();
 
     public GiteaRelease() {
-    }
-
-    public GiteaRelease(String tagName, String targetCommitish, String name, String body,
-                        String url, String htmlUrl, String tarballUrl, String zipballUrl, boolean draft,
-                        boolean prerelease, Date createdAt, Date publishedAt, GiteaOwner author, List<Attachment> assets) {
-        this.tagName = tagName;
-        this.targetCommitish = targetCommitish;
-        this.name = name;
-        this.body = body;
-        this.url = url;
-        this.htmlUrl = htmlUrl;
-        this.tarballUrl = tarballUrl;
-        this.zipballUrl = zipballUrl;
-        this.draft = draft;
-        this.prerelease = prerelease;
-        this.createdAt = createdAt;
-        this.publishedAt = publishedAt;
-        this.author = author;
-        this.assets = assets;
     }
 
     public long getId() {
@@ -223,16 +203,6 @@ public class GiteaRelease extends GiteaObject<GiteaRelease> {
         public Attachment() {
         }
 
-        public Attachment(String name, long size, long downloadCount, Date createdAt,
-                          String uuid, String browserDownloadUrl) {
-            this.name = name;
-            this.size = size;
-            this.downloadCount = downloadCount;
-            this.createdAt = createdAt;
-            this.uuid = uuid;
-            this.browserDownloadUrl = browserDownloadUrl;
-        }
-
         public long getId() {
             return id;
         }
@@ -269,7 +239,7 @@ public class GiteaRelease extends GiteaObject<GiteaRelease> {
         public Date getCreatedAt() {
             return createdAt == null ? null : (Date) createdAt.clone();
         }
-    
+
         @JsonProperty("created_at")
         public void setCreatedAt(Date createdAt) {
             this.createdAt = createdAt == null ? null : (Date) createdAt.clone();

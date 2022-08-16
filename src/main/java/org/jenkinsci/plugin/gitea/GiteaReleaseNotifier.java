@@ -23,20 +23,18 @@
  */
 package org.jenkinsci.plugin.gitea;
 
-import java.io.IOException;
-
-import org.jenkinsci.plugin.gitea.client.api.GiteaConnection;
-import org.jenkinsci.plugin.gitea.client.api.GiteaRepository;
-
 import hudson.Extension;
 import hudson.model.Result;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.model.listeners.RunListener;
+import java.io.IOException;
 import jenkins.scm.api.SCMHead;
 import jenkins.scm.api.SCMHeadObserver;
 import jenkins.scm.api.SCMSource;
 import jenkins.util.VirtualFile;
+import org.jenkinsci.plugin.gitea.client.api.GiteaConnection;
+import org.jenkinsci.plugin.gitea.client.api.GiteaRepository;
 
 public class GiteaReleaseNotifier {
 

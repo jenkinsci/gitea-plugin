@@ -23,18 +23,16 @@
  */
 package org.jenkinsci.plugin.gitea;
 
+import hudson.Extension;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
-
-import org.jenkinsci.plugin.gitea.client.api.GiteaConnection;
-import org.jenkinsci.plugin.gitea.client.api.GiteaReleaseEvent;
-import org.jenkinsci.plugin.gitea.client.api.GiteaTag;
-
-import hudson.Extension;
 import jenkins.scm.api.SCMHead;
 import jenkins.scm.api.SCMHeadEvent;
 import jenkins.scm.api.SCMRevision;
+import org.jenkinsci.plugin.gitea.client.api.GiteaConnection;
+import org.jenkinsci.plugin.gitea.client.api.GiteaReleaseEvent;
+import org.jenkinsci.plugin.gitea.client.api.GiteaTag;
 
 public class GiteaReleaseSCMEvent extends AbstractGiteaSCMHeadEvent<GiteaReleaseEvent> {
 

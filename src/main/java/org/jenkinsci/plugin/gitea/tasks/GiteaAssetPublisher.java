@@ -23,28 +23,8 @@
  */
 package org.jenkinsci.plugin.gitea.tasks;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.apache.tools.ant.types.FileSet;
-import org.jenkinsci.Symbol;
-import org.jenkinsci.plugin.gitea.GiteaSCMSource;
-import org.jenkinsci.plugin.gitea.Messages;
-import org.jenkinsci.plugin.gitea.ReleaseSCMHead;
-import org.jenkinsci.plugin.gitea.client.api.GiteaConnection;
-import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.DataBoundSetter;
-import org.kohsuke.stapler.StaplerRequest;
-
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.AbortException;
 import hudson.EnvVars;
 import hudson.Extension;
@@ -63,9 +43,18 @@ import hudson.model.TaskListener;
 import hudson.remoting.Future;
 import hudson.remoting.Pipe;
 import hudson.remoting.VirtualChannel;
-import hudson.tasks.ArtifactArchiver;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.util.IOUtils;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import jenkins.MasterToSlaveFileCallable;
 import jenkins.SlaveToMasterFileCallable;
 import jenkins.model.Jenkins;
@@ -73,6 +62,15 @@ import jenkins.scm.api.SCMHead;
 import jenkins.scm.api.SCMSource;
 import jenkins.tasks.SimpleBuildStep;
 import net.sf.json.JSONObject;
+import org.apache.tools.ant.types.FileSet;
+import org.jenkinsci.Symbol;
+import org.jenkinsci.plugin.gitea.GiteaSCMSource;
+import org.jenkinsci.plugin.gitea.Messages;
+import org.jenkinsci.plugin.gitea.ReleaseSCMHead;
+import org.jenkinsci.plugin.gitea.client.api.GiteaConnection;
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.DataBoundSetter;
+import org.kohsuke.stapler.StaplerRequest;
 
 public class GiteaAssetPublisher implements SimpleBuildStep, Describable<GiteaAssetPublisher> {
 
@@ -120,7 +118,7 @@ public class GiteaAssetPublisher implements SimpleBuildStep, Describable<GiteaAs
     public final void setDefaultExcludes(boolean defaultExcludes) {
         this.defaultExcludes = defaultExcludes;
     }
-    
+
     public boolean isCaseSensitive() {
         return caseSensitive;
     }
@@ -184,15 +182,9 @@ public class GiteaAssetPublisher implements SimpleBuildStep, Describable<GiteaAs
                 assets = environment.expand(assets);
             }
 
-            // Map<archivedPath, workspacePath>
-            // 
-            Map<String,String> files = workspace.act(new ListFiles(assets, excludes, defaultExcludes, caseSensitive, followSymlinks));
+            Map<String, String> files = workspace.act(new ListFiles(assets, excludes, defaultExcludes, caseSensitive, followSymlinks));
             if (!files.isEmpty()) {
                 // now publish all files...
-
-                // final DirScanner scanner = new FilePath.ExplicitlySpecifiedDirScanner(files);
-                // Future<Integer> future = workspace.actAsync(new StreamRecursiveRemoteToLocal(pipe, scanner, FilePath.TarCompression.NONE));
-
                 for (Map.Entry<String, String> entry : files.entrySet()) {
                     String archivedPath = entry.getKey();
                     assert archivedPath.indexOf('\\') == -1;
@@ -222,13 +214,8 @@ public class GiteaAssetPublisher implements SimpleBuildStep, Describable<GiteaAs
                 }
             } else {
                 result = build.getResult();
-                //noinspection StatementWithEmptyBody
                 if (result == null || result.isBetterOrEqualTo(Result.UNSTABLE)) {
-                    //if (allowEmptyArchive) {
-                    //    listener.getLogger().println(Messages.ArtifactArchiver_NoMatchFound(artifacts));
-                    //} else {
-                    //    throw new AbortException(Messages.ArtifactArchiver_NoMatchFound(artifacts));
-                    //}
+                    listener.getLogger().println(Messages.GiteaAssetPublisher_NoMatchFound(assets));
                 }
             }
         } catch (java.nio.file.AccessDeniedException e) {
@@ -314,13 +301,13 @@ public class GiteaAssetPublisher implements SimpleBuildStep, Describable<GiteaAs
         }
 
         @Override
-        public GiteaAssetPublisher newInstance(StaplerRequest req, JSONObject formData) throws FormException {
-            return req.bindJSON(GiteaAssetPublisher.class,formData);
+        public GiteaAssetPublisher newInstance(@NonNull StaplerRequest req, JSONObject formData) throws FormException {
+            return req.bindJSON(GiteaAssetPublisher.class, formData);
         }
 
         @Override
         public String getDisplayName() {
-            return "Publishes an asset to the gitea release, if the build was triggered by an release";
+            return Messages.GiteaAssetPublisher_DisplayName();
         }
     }
 }
