@@ -30,6 +30,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -59,8 +60,10 @@ import hudson.model.Descriptor;
 import hudson.model.Result;
 import hudson.model.Run;
 import hudson.model.TaskListener;
+import hudson.remoting.Future;
 import hudson.remoting.Pipe;
 import hudson.remoting.VirtualChannel;
+import hudson.tasks.ArtifactArchiver;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.util.IOUtils;
 import jenkins.MasterToSlaveFileCallable;
@@ -199,13 +202,22 @@ public class GiteaAssetPublisher implements SimpleBuildStep, Describable<GiteaAs
                     listener.getLogger().format("GiteaAssetPublisher: %s -> %s%n", archivedPath, workspacePath);
 
                     final Pipe pipe = Pipe.createRemoteToLocal();
-                    workspace.act(new StreamFileRemoteToLocal(pipe, workspacePath));
-                    // pipe now *should* contain the entire file...
+                    Future<Void> future = workspace.actAsync(new StreamFileRemoteToLocal(pipe, workspacePath));
 
                     try (GiteaConnection c = source.gitea().open()) {
                         c.createReleaseAttachment(
                             source.getRepoOwner(), source.getRepository(), ((ReleaseSCMHead) head).getId(),
                             new File(archivedPath).getName(), pipe.getIn());
+                    }
+
+                    try {
+                        future.get();
+                    } catch (ExecutionException e) {
+                        Throwable cause = e.getCause();
+                        if (cause == null) {
+                            cause = e;
+                        }
+                        throw cause instanceof IOException ? (IOException) cause : new IOException(cause);
                     }
                 }
             } else {
