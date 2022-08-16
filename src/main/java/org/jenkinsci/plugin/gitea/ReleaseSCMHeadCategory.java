@@ -29,6 +29,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jenkins.scm.api.SCMHead;
 import jenkins.scm.api.SCMHeadCategory;
+import jenkins.scm.api.SCMSource;
 
 /**
  * Category for {@link SCMHead} instances that implement {@link ReleaseSCMHead}.
