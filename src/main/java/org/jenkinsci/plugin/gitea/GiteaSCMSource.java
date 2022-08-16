@@ -263,9 +263,10 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
                     return null;
                 }
             } else if (head instanceof ReleaseSCMHead) {
-                // TODO: this need consideration if we want to implement "changing" releases and how assets shouls be handled then
-                listener.getLogger().format("Tag for release cannot change, we assume that the tag therefore also shouldn't change...%n");
-                return null;
+                ReleaseSCMHead h = (ReleaseSCMHead) head;
+                final GiteaTag tag = c.fetchTag(repoOwner, repository, h.getName());
+                String revision = tag.getCommit().getSha();
+                return new ReleaseSCMRevision(new ReleaseSCMHead(h.getName(), h.getId()), revision);
             } else {
                 listener.getLogger().format("Unknown head: %s of type %s%n", head.getName(), head.getClass().getName());
                 return null;
