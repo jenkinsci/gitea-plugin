@@ -31,11 +31,12 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.model.Item;
+import hudson.model.Queue.Task;
 import hudson.scm.SCM;
 import hudson.scm.SCMDescriptor;
+import hudson.security.ACL;
 import java.io.IOException;
 import jenkins.authentication.tokens.api.AuthenticationTokens;
-import jenkins.model.Jenkins;
 import jenkins.scm.api.SCMFile;
 import jenkins.scm.api.SCMFileSystem;
 import jenkins.scm.api.SCMHead;
@@ -43,6 +44,7 @@ import jenkins.scm.api.SCMRevision;
 import jenkins.scm.api.SCMSource;
 import jenkins.scm.api.SCMSourceDescriptor;
 import jenkins.scm.api.SCMSourceOwner;
+import org.acegisecurity.Authentication;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugin.gitea.client.api.Gitea;
 import org.jenkinsci.plugin.gitea.client.api.GiteaAuth;
@@ -146,20 +148,24 @@ public class GiteaSCMFileSystem extends SCMFileSystem {
             SCMSourceOwner owner = source.getOwner();
             String serverUrl = src.getServerUrl();
             String credentialsId = src.getCredentialsId();
-            StandardCredentials credentials = StringUtils.isBlank(credentialsId)
-                    ? null
-                    : CredentialsMatchers.firstOrNull(
+            StandardCredentials credentials = null;
+            if (!StringUtils.isBlank(credentialsId)) {
+                Authentication authentication = owner instanceof Task
+                    ? ((Task) owner).getDefaultAuthentication()
+                    : ACL.SYSTEM;
+                credentials = CredentialsMatchers.firstOrNull(
                     CredentialsProvider.lookupCredentials(
                             StandardCredentials.class,
                             owner,
-                            Jenkins.getAuthentication(),
+                            authentication,
                             URIRequirementBuilder.fromUri(serverUrl).build()
                     ),
                     CredentialsMatchers.allOf(
                             AuthenticationTokens.matcher(GiteaAuth.class),
                             CredentialsMatchers.withId(credentialsId)
                     )
-            );
+                );
+            }
             if (owner != null) {
                 CredentialsProvider.track(owner, credentials);
             }
