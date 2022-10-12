@@ -1033,7 +1033,6 @@ class DefaultGiteaConnection implements GiteaConnection {
             connection.getOutputStream().flush();
             file.close();
 
-            writer.append(LINE_FEED);
             writer.flush();
         }
 
