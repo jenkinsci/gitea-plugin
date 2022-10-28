@@ -27,14 +27,20 @@ import hudson.Extension;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import jenkins.scm.api.SCMHead;
 import jenkins.scm.api.SCMHeadEvent;
 import jenkins.scm.api.SCMRevision;
 import org.jenkinsci.plugin.gitea.client.api.GiteaConnection;
+import org.jenkinsci.plugin.gitea.client.api.GiteaHttpStatusException;
 import org.jenkinsci.plugin.gitea.client.api.GiteaReleaseEvent;
 import org.jenkinsci.plugin.gitea.client.api.GiteaTag;
 
 public class GiteaReleaseSCMEvent extends AbstractGiteaSCMHeadEvent<GiteaReleaseEvent> {
+
+    public static final Logger LOGGER = Logger.getLogger(GiteaReleaseSCMEvent.class.getName());
 
     public GiteaReleaseSCMEvent(GiteaReleaseEvent payload, String origin) {
         super(Type.CREATED, payload, origin);
@@ -48,6 +54,15 @@ public class GiteaReleaseSCMEvent extends AbstractGiteaSCMHeadEvent<GiteaRelease
         try (GiteaConnection c = source.gitea().open()) {
             GiteaTag releaseTag = c.fetchTag(source.getRepoOwner(), source.getRepository(), ref);
             sha = releaseTag.getCommit().getSha();
+        } catch (GiteaHttpStatusException e) {
+            if (e.getStatusCode() == 404 && getPayload().getRelease().isDraft()) {
+                // release is a draft and tag could not be fetched: tag isn't created yet, so return an empty map
+                LOGGER.log(Level.INFO, "Draft-release '" + getPayload().getRelease().getName() + "' : fetching tag '" + ref + "' from repo " + source.getRepoOwner() + "/" + source.getRepository() + " produced an 404; skipping");
+                return Collections.<SCMHead, SCMRevision>emptyMap();
+            } else {
+                // in any other case: throw an error
+                throw new RuntimeException(e);
+            }
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
