@@ -39,7 +39,6 @@ public class GiteaSCMSourceContext
     private boolean wantBranches;
     private boolean wantTags;
     private boolean wantReleases;
-    private boolean includesDraftReleases;
     private boolean includesPreReleases;
     private boolean wantOriginPRs;
     private boolean wantForkPRs;
@@ -66,10 +65,6 @@ public class GiteaSCMSourceContext
 
     public final boolean wantReleases() {
         return wantReleases;
-    }
-
-    public final boolean includesDraftReleases() {
-        return includesDraftReleases;
     }
 
     public final boolean includesPreReleases() {
@@ -122,12 +117,6 @@ public class GiteaSCMSourceContext
     @NonNull
     public GiteaSCMSourceContext wantReleases(boolean include) {
         wantReleases = wantReleases || include;
-        return this;
-    }
-
-    @NonNull
-    public GiteaSCMSourceContext includeDraftReleases(boolean include) {
-        includesDraftReleases = includesDraftReleases || include;
         return this;
     }
 

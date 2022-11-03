@@ -36,23 +36,12 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
 public class ReleaseDiscoveryTrait extends SCMSourceTrait {
-    private boolean includeDrafts;
     private boolean includePreReleases;
     private boolean artifactToAssetMappingEnabled;
 
     @DataBoundConstructor
-    public ReleaseDiscoveryTrait(boolean includeDrafts, boolean includePreReleases) {
-        this.includeDrafts = includeDrafts;
+    public ReleaseDiscoveryTrait(boolean includePreReleases) {
         this.includePreReleases = includePreReleases;
-    }
-
-    public boolean getIncludeDrafts() {
-        return includeDrafts;
-    }
-
-    @DataBoundSetter
-    public final void setIncludeDrafts(boolean includeDrafts) {
-        this.includeDrafts = includeDrafts;
     }
 
     public boolean getIncludePreReleases() {
@@ -77,7 +66,6 @@ public class ReleaseDiscoveryTrait extends SCMSourceTrait {
     protected void decorateContext(SCMSourceContext<?, ?> context) {
         GiteaSCMSourceContext ctx = (GiteaSCMSourceContext) context;
         ctx.wantReleases(true);
-        ctx.includeDraftReleases(this.includeDrafts);
         ctx.includePreReleases(this.includePreReleases);
         ctx.withArtifactToAssetMappingEnabled(this.artifactToAssetMappingEnabled);
         //ctx.withAuthority(new TagSCMHeadAuthority());

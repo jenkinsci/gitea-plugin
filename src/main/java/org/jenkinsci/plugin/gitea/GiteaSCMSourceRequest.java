@@ -51,7 +51,6 @@ public class GiteaSCMSourceRequest extends SCMSourceRequest {
     private final boolean fetchBranches;
     private final boolean fetchTags;
     private final boolean fetchReleases;
-    private final boolean includeDraftReleases;
     private final boolean includePreReleases;
     private final boolean fetchOriginPRs;
     private final boolean fetchForkPRs;
@@ -93,7 +92,6 @@ public class GiteaSCMSourceRequest extends SCMSourceRequest {
         fetchBranches = context.wantBranches();
         fetchTags = context.wantTags();
         fetchReleases = context.wantReleases();
-        includeDraftReleases = context.includesDraftReleases();
         includePreReleases = context.includesPreReleases();
         fetchOriginPRs = context.wantOriginPRs();
         fetchForkPRs = context.wantForkPRs();
@@ -157,10 +155,6 @@ public class GiteaSCMSourceRequest extends SCMSourceRequest {
      */
     public final boolean isFetchReleases() {
         return fetchReleases;
-    }
-
-    public final boolean isIncludingDraftReleases() {
-        return includeDraftReleases;
     }
 
     public final boolean isIncludingPreReleases() {

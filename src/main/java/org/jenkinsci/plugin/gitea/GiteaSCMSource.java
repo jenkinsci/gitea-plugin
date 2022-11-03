@@ -313,8 +313,7 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
                     }
                 }
                 if (request.isFetchReleases()) {
-                    request.setReleases(c.fetchReleases(giteaRepository,
-                        request.isIncludingDraftReleases(), request.isIncludingPreReleases()));
+                    request.setReleases(c.fetchReleases(giteaRepository, false, request.isIncludingPreReleases()));
                 }
 
                 if (request.isFetchBranches()) {
