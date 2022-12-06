@@ -26,6 +26,7 @@ package org.jenkinsci.plugin.gitea.credentials;
 import com.cloudbees.plugins.credentials.CredentialsDescriptor;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.CredentialsScope;
+import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
 import com.cloudbees.plugins.credentials.impl.BaseStandardCredentials;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -44,7 +45,7 @@ import org.kohsuke.stapler.QueryParameter;
  * Default implementation of {@link PersonalAccessToken} for use by {@link Jenkins} {@link CredentialsProvider}
  * instances that store {@link Secret} locally.
  */
-public class PersonalAccessTokenImpl extends BaseStandardCredentials implements PersonalAccessToken {
+public class PersonalAccessTokenImpl extends BaseStandardCredentials implements StandardUsernameCredentials, PersonalAccessToken {
     /**
      * Our token.
      */
@@ -73,6 +74,24 @@ public class PersonalAccessTokenImpl extends BaseStandardCredentials implements 
     @NonNull
     public Secret getToken() {
         return token;
+    }
+
+
+    @Override
+    public boolean isUsernameSecret() {
+        return true;
+    }
+
+    @NonNull
+    @Override
+    public String getUsername() {
+        return getToken().getPlainText();
+    }
+
+    @NonNull
+    @Override
+    public Secret getPassword() {
+        return getToken();
     }
 
     /**

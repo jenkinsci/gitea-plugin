@@ -37,7 +37,6 @@ import hudson.model.Queue;
 import hudson.plugins.git.GitSCM;
 import hudson.security.ACL;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
@@ -49,7 +48,6 @@ import jenkins.scm.api.SCMSourceOwner;
 import jenkins.scm.api.mixin.ChangeRequestCheckoutStrategy;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.transport.RefSpec;
-import org.jenkinsci.plugin.gitea.credentials.PersonalAccessToken;
 
 /**
  * Builds a {@link GitSCM} for {@link GiteaSCMSource}.
@@ -176,27 +174,6 @@ public class GiteaSCMBuilder extends GitSCMBuilder<GiteaSCMBuilder> {
                         .path(UriTemplateBuilder.var("repository"))
                         .literal(".git")
                         .build();
-            }
-            if (credentials instanceof PersonalAccessToken) {
-                try {
-                    // TODO is there a way we can get git plugin to redact the secret?
-                    URI tokenUri = new URI(
-                            serverUri.getScheme(),
-                            ((PersonalAccessToken) credentials).getToken().getPlainText(),
-                            serverUri.getHost(),
-                            serverUri.getPort(),
-                            serverUri.getPath(),
-                            serverUri.getQuery(),
-                            serverUri.getFragment()
-                    );
-                    return UriTemplate.buildFromTemplate(tokenUri.toASCIIString())
-                            .path(UriTemplateBuilder.var("owner"))
-                            .path(UriTemplateBuilder.var("repository"))
-                            .literal(".git")
-                            .build();
-                } catch (URISyntaxException e) {
-                    // ok we are at the end of the road
-                }
             }
         }
         return UriTemplate.buildFromTemplate(serverUrl)

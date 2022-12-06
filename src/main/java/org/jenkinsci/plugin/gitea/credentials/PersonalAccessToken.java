@@ -23,14 +23,14 @@
  */
 package org.jenkinsci.plugin.gitea.credentials;
 
-import com.cloudbees.plugins.credentials.common.StandardCredentials;
+import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.util.Secret;
 
 /**
  * A Gitea personal access token.
  */
-public interface PersonalAccessToken extends StandardCredentials {
+public interface PersonalAccessToken extends StandardUsernamePasswordCredentials {
     /**
      * Gets the token.
      * @return the token.
