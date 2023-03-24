@@ -41,7 +41,9 @@
 ### Configure the item
 
 1. When configuring the new item, select "Repository Sources"  
+
 ℹ️ **This is only necessary when using `branch-api` plugin version >=2.7.0**
+
 2. In the "Gitea organzations" section, add a new credential of type "Gitea personal access token".
 3. Add the access token created before for the jenkins user in Gitea. Ignore the error about the token not having the correct length.
 4. In the "Owner" field, add the name of the organization in Gitea you want to build projects for (**not** the full name).
