@@ -1,1 +1,6 @@
-buildPlugin(configurations: buildPlugin.recommendedConfigurations())
+buildPlugin(
+  useContainerAgent: true,
+  configurations: [
+    [platform: 'linux', jdk: 8],
+    [platform: 'windows', jdk: 8],
+])
