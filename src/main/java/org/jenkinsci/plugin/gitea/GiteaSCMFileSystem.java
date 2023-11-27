@@ -131,9 +131,9 @@ public class GiteaSCMFileSystem extends SCMFileSystem {
             String repository;
             String ref;
             if (head instanceof PullRequestSCMHead) {
-                repoOwner = ((PullRequestSCMHead) head).getOriginOwner();
-                repository = ((PullRequestSCMHead) head).getOriginRepository();
-                ref = ((PullRequestSCMHead) head).getOriginName();
+                repoOwner = src.getRepoOwner();
+                repository = src.getRepository();
+                ref = head.getName();
             } else if (head instanceof BranchSCMHead) {
                 repoOwner = src.getRepoOwner();
                 repository = src.getRepository();
