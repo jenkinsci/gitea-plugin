@@ -31,7 +31,7 @@
     </scm>
 
     <properties>
-        <revision>1.4.6</revision>
+        <revision>1.4.7</revision>
         <changelist>-SNAPSHOT</changelist>
         <java.level>8</java.level>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
