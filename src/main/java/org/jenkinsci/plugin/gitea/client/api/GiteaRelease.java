@@ -136,7 +136,7 @@ public class GiteaRelease extends GiteaObject<GiteaRelease> {
     }
 
     public boolean isPrerelease() {
-        return draft;
+        return prerelease;
     }
 
     public void setPrerelease(boolean prerelease) {

@@ -846,13 +846,12 @@ class DefaultGiteaConnection implements GiteaConnection {
                             .path(UriTemplateBuilder.var("username"))
                             .path(UriTemplateBuilder.var("name"))
                             .literal("/releases")
-                            .query(UriTemplateBuilder.var("draft"))
-                            .query(UriTemplateBuilder.var("preRelease"))
+                            // Unfortunately, "pre-release" is not a valid variable name.
+                            // So we have to craft the query part on our own.
+                            .literal("?draft=" + draft + "&pre-release=" + prerelease)
                             .build()
                             .set("username", username)
-                            .set("name", name)
-                            .set("draft", draft)
-                            .set("preRelease", prerelease),
+                            .set("name", name),
                     GiteaRelease.class
             );
         } catch (GiteaHttpStatusException e) {
