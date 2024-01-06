@@ -46,6 +46,7 @@ import hudson.remoting.VirtualChannel;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.util.IOUtils;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collection;
@@ -193,23 +194,32 @@ public class GiteaAssetPublisher implements SimpleBuildStep, Describable<GiteaAs
 
                     listener.getLogger().format("GiteaAssetPublisher: %s -> %s%n", archivedPath, workspacePath);
 
-                    final Pipe pipe = Pipe.createRemoteToLocal();
-                    Future<Void> future = workspace.actAsync(new StreamFileRemoteToLocal(pipe, workspacePath));
+                    if (workspace.isRemote()) {
+                        final Pipe pipe = Pipe.createRemoteToLocal();
+                        Future<Void> future = workspace.actAsync(new StreamFileRemoteToLocal(pipe, workspacePath));
 
-                    try (GiteaConnection c = source.gitea().open()) {
-                        c.createReleaseAttachment(
-                            source.getRepoOwner(), source.getRepository(), ((ReleaseSCMHead) head).getId(),
-                            new File(archivedPath).getName(), pipe.getIn());
-                    }
-
-                    try {
-                        future.get();
-                    } catch (ExecutionException e) {
-                        Throwable cause = e.getCause();
-                        if (cause == null) {
-                            cause = e;
+                        try (GiteaConnection c = source.gitea().open()) {
+                            c.createReleaseAttachment(
+                                source.getRepoOwner(), source.getRepository(), ((ReleaseSCMHead) head).getId(),
+                                new File(archivedPath).getName(), pipe.getIn());
                         }
-                        throw cause instanceof IOException ? (IOException) cause : new IOException(cause);
+
+                        try {
+                            future.get();
+                        } catch (ExecutionException e) {
+                            Throwable cause = e.getCause();
+                            if (cause == null) {
+                                cause = e;
+                            }
+                            throw cause instanceof IOException ? (IOException) cause : new IOException(cause);
+                        }
+                    } else {
+                        FileInputStream file = new FileInputStream(new File(workspace.getRemote(), workspacePath));
+                        try (GiteaConnection c = source.gitea().open()) {
+                            c.createReleaseAttachment(
+                                source.getRepoOwner(), source.getRepository(), ((ReleaseSCMHead) head).getId(),
+                                new File(archivedPath).getName(), file);
+                        }
                     }
                 }
             } else {
