@@ -840,6 +840,24 @@ class DefaultGiteaConnection implements GiteaConnection {
     public List<GiteaRelease> fetchReleases(String username, String name, boolean draft, boolean prerelease)
             throws IOException, InterruptedException {
         try {
+            StringBuilder params = new StringBuilder();
+            if (!draft || !prerelease) {
+                // gitea's api makes the "draft" and "pre-release" flags "tri-state":
+                // - Not present means do nothing, drafts/pre-releases are included
+                // - Present + "false" means remove them from the result
+                // - Present + "true" means return ONLY those; means with "draft=true" we ONLY get drafts.
+                params.append("?");
+                if (!draft) {
+                    params.append("draft=false");
+                }
+                if (!prerelease) {
+                    if (!draft) {
+                        params.append("&");
+                    }
+                    params.append("pre-release=false");
+                }
+            }
+
             return getList(
                     api()
                             .literal("/repos")
@@ -848,7 +866,7 @@ class DefaultGiteaConnection implements GiteaConnection {
                             .literal("/releases")
                             // Unfortunately, "pre-release" is not a valid variable name.
                             // So we have to craft the query part on our own.
-                            .literal("?draft=" + draft + "&pre-release=" + prerelease)
+                            .literal(params.toString())
                             .build()
                             .set("username", username)
                             .set("name", name),
