@@ -132,6 +132,11 @@ public class GiteaNotifier {
                     status.getState().name(), status.getDescription());
             hash = ((TagSCMRevision) revision).getHash();
             statusContext += "tag";
+        } else if (revision instanceof ReleaseSCMRevision) {
+            listener.getLogger().format("[Gitea] Notifying release build status: %s %s%n",
+                    status.getState().name(), status.getDescription());
+            hash = ((ReleaseSCMRevision) revision).getHash();
+            statusContext += "release";
         } else {
             return;
         }
@@ -237,6 +242,10 @@ public class GiteaNotifier {
                             LOGGER.log(Level.INFO, "Notifying tag pending build {0}", job.getFullName());
                             statusContext += "tag";
                             hash = ((TagSCMRevision) revision).getHash();
+                        } else if (revision instanceof ReleaseSCMRevision) {
+                            LOGGER.log(Level.INFO, "Notifying release pending build {0}", job.getFullName());
+                            statusContext += "release";
+                            hash = ((ReleaseSCMRevision) revision).getHash();
                         } else {
                             return;
                         }

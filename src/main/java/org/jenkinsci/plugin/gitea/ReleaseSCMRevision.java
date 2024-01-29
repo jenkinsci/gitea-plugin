@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2017, CloudBees, Inc.
+ * Copyright (c) 2017-2022, CloudBees, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,40 +21,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.jenkinsci.plugin.gitea.client.api;
+package org.jenkinsci.plugin.gitea;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import jenkins.plugins.git.AbstractGitSCMSource;
 
-/**
- * Gitea event types.
- */
-public enum GiteaEventType {
-    CREATE("create"),
-    PUSH("push"),
-    PULL_REQUEST("pull_request"),
-    REPOSITORY("repository"),
-    DELETE("delete"),
-    RELEASE("release");
+public class ReleaseSCMRevision extends AbstractGitSCMSource.SCMRevisionImpl {
 
-    private final String key;
-
-    GiteaEventType(String key) {
-        this.key = key;
-    }
-
-    @JsonCreator
-    public static GiteaEventType fromString(String key) {
-        for (GiteaEventType s : values()) {
-            if (key.equals(s.key)) {
-                return s;
-            }
-        }
-        return null;
-    }
-
-    @JsonValue
-    public String getKey() {
-        return key;
+    public ReleaseSCMRevision(@NonNull ReleaseSCMHead head, @NonNull String hash) {
+        super(head, hash);
     }
 }
