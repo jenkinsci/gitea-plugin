@@ -106,6 +106,9 @@ public class GiteaNotifier {
         } else if (Result.FAILURE.equals(result)) {
             status.setDescription("There was a failure building this commit");
             status.setState(GiteaCommitState.FAILURE);
+        } else if (Result.NOT_BUILT.equals(result)) {
+            status.setDescription("This commit was not built");
+            status.setState(GiteaCommitState.WARNING);
         } else if (result != null) { // ABORTED etc.
             status.setDescription("Something is wrong with the build of this commit");
             status.setState(GiteaCommitState.ERROR);
