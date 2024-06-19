@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>4.29</version>
+        <version>4.82</version>
         <relativePath />
     </parent>
 
@@ -14,7 +14,6 @@
     <packaging>hpi</packaging>
 
     <name>Gitea Plugin</name>
-    <description>SCM API implementation for Gitea</description>
     <url>https://github.com/jenkinsci/gitea-plugin/blob/master/docs/README.md</url>
     <licenses>
         <license>
@@ -24,7 +23,7 @@
     </licenses>
 
     <scm>
-        <connection>scm:git:git://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
+        <connection>https://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
         <developerConnection>scm:git:git@github.com:jenkinsci/${project.artifactId}-plugin.git</developerConnection>
         <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
         <tag>${scmTag}</tag>
@@ -33,10 +32,9 @@
     <properties>
         <revision>1.4.8</revision>
         <changelist>-SNAPSHOT</changelist>
-        <java.level>8</java.level>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <argLine>-Dfile.encoding=${project.build.sourceEncoding}</argLine>
-        <jenkins.version>2.289.1</jenkins.version>
+        <jenkins.version>2.426.3</jenkins.version>
         <spotbugs.effort>Max</spotbugs.effort>
         <spotbugs.failOnError>true</spotbugs.failOnError>
         <spotbugs.threshold>Medium</spotbugs.threshold>
@@ -46,8 +44,8 @@
         <dependencies>
             <dependency>
                 <groupId>io.jenkins.tools.bom</groupId>
-                <artifactId>bom-2.289.x</artifactId>
-                <version>987.v4ade2e49fe70</version>
+                <artifactId>bom-2.426.x</artifactId>
+                <version>3105.v672692894683</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -57,12 +55,12 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>handy-uri-templates-2-api</artifactId>
-            <version>2.1.8-1.0</version>
+            <version>2.1.8-30.v7e777411b_148</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>authentication-tokens</artifactId>
-            <version>1.4</version>
+            <version>1.113.v81215a_241826</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>

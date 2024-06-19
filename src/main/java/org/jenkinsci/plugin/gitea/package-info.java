@@ -23,7 +23,7 @@
  */
 
 /**
- * <h1>Jenkins SCM API implementation for <a href="https://gitea.io/">Gitea</a></h1>.
+ * <h2>Jenkins SCM API implementation for <a href="https://gitea.com/">Gitea</a></h2>.
  *
  * The primary entry points for the implementation are:
  *
