@@ -4,7 +4,7 @@
 [![Changelog](https://img.shields.io/github/v/release/jenkinsci/gitea-plugin.svg?label=changelog)](https://github.com/jenkinsci/gitea-plugin/releases/latest)
 [![Installs](https://img.shields.io/jenkins/plugin/i/gitea.svg?color=blue)](https://plugins.jenkins.io/gitea)
 
-This plugin provides the Jenkins integrations for [Gitea](https://gitea.io).
+This plugin provides the Jenkins integrations for [Gitea](https://gitea.com).
 
 For details on the plugin see [plugins.jenkins.io/gitea](https://plugins.jenkins.io/gitea).
 
@@ -13,7 +13,7 @@ For open issues on the plugin see [the Jenkins JIRA under component `gitea-plugi
 Build using something like:
 
 ```bash
-export JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64/"
+export JAVA_HOME="/usr/lib/jvm/java-17-openjdk-amd64/"
 export MAVEN_HOME="/opt/apache-maven-3.8.4/"
 "${MAVEN_HOME}/bin/mvn" package
 ```
