@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>gitea</artifactId>
-    <version>${revision}${changelist}</version>
+    <version>${changelist}</version>
     <packaging>hpi</packaging>
 
     <name>Gitea Plugin</name>
@@ -30,8 +30,7 @@
     </scm>
 
     <properties>
-        <revision>1.4.8</revision>
-        <changelist>-SNAPSHOT</changelist>
+        <changelist>999999-SNAPSHOT</changelist>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <argLine>-Dfile.encoding=${project.build.sourceEncoding}</argLine>
         <jenkins.version>2.426.3</jenkins.version>
