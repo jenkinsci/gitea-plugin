@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2017, CloudBees, Inc.
+ * Copyright (c) 2017-2022, CloudBees, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,40 +21,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.jenkinsci.plugin.gitea.client.api;
+package org.jenkinsci.plugin.gitea;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import jenkins.scm.api.SCMHead;
 
-/**
- * Gitea event types.
- */
-public enum GiteaEventType {
-    CREATE("create"),
-    PUSH("push"),
-    PULL_REQUEST("pull_request"),
-    REPOSITORY("repository"),
-    DELETE("delete"),
-    RELEASE("release");
+public class ReleaseSCMHead extends SCMHead {
 
-    private final String key;
+    private final long id;
 
-    GiteaEventType(String key) {
-        this.key = key;
+    public ReleaseSCMHead(@NonNull String name, long id) {
+        super(name);
+        this.id = id;
     }
 
-    @JsonCreator
-    public static GiteaEventType fromString(String key) {
-        for (GiteaEventType s : values()) {
-            if (key.equals(s.key)) {
-                return s;
-            }
-        }
-        return null;
-    }
-
-    @JsonValue
-    public String getKey() {
-        return key;
+    public long getId() {
+        return id;
     }
 }

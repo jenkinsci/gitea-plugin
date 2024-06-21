@@ -3,6 +3,7 @@ package org.jenkinsci.plugin.gitea.client.mock;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -27,6 +28,7 @@ import org.jenkinsci.plugin.gitea.client.api.GiteaObject;
 import org.jenkinsci.plugin.gitea.client.api.GiteaOrganization;
 import org.jenkinsci.plugin.gitea.client.api.GiteaOwner;
 import org.jenkinsci.plugin.gitea.client.api.GiteaPullRequest;
+import org.jenkinsci.plugin.gitea.client.api.GiteaRelease;
 import org.jenkinsci.plugin.gitea.client.api.GiteaRepository;
 import org.jenkinsci.plugin.gitea.client.api.GiteaTag;
 import org.jenkinsci.plugin.gitea.client.api.GiteaUser;
@@ -46,6 +48,7 @@ public class MockGiteaConnection implements GiteaConnection {
     private final Map<String, List<GiteaHook>> orgHooks = new TreeMap<>();
     private final Map<String, List<GiteaHook>> repoHooks = new TreeMap<>();
     private final Map<String, Map<String, Map<String,byte[]>>> files = new TreeMap<>();
+    private final Map<String, Map<Long, GiteaRelease>> releases = new TreeMap<>();
 
     public MockGiteaConnection(String user) {
         this.user = user;
@@ -409,6 +412,18 @@ public class MockGiteaConnection implements GiteaConnection {
     }
 
     @Override
+    public GiteaTag fetchTag(String username, String repository, String tag) throws IOException, InterruptedException {
+        // TODO
+        return null;
+    }
+
+    @Override
+    public GiteaTag fetchTag(GiteaRepository repository, String tag) throws IOException, InterruptedException {
+        // TODO
+        return null;
+    }
+
+    @Override
     public List<GiteaTag> fetchTags(String username, String name) throws IOException, InterruptedException {
         // TODO
         return null;
@@ -514,6 +529,35 @@ public class MockGiteaConnection implements GiteaConnection {
     public boolean checkFile(GiteaRepository repository, String ref, String path)
             throws IOException, InterruptedException {
         return notFoundIfNull(notFoundIfNull(files.get(keyOf(repository))).get(ref)).containsKey(path);
+    }
+
+    @Override
+    public List<GiteaRelease> fetchReleases(String username, String name, boolean draft, boolean prerelease)
+            throws IOException, InterruptedException {
+        List<GiteaRelease> result = new ArrayList<>();
+        for (GiteaRelease i : notFoundIfNull(releases.get(keyOf(username, name))).values()) {
+            result.add(i.clone());
+        }
+        return result;
+    }
+
+    @Override
+    public List<GiteaRelease> fetchReleases(GiteaRepository repository, boolean draft, boolean prerelease)
+            throws IOException, InterruptedException {
+        return fetchReleases(repository.getOwner().getUsername(), repository.getName(), draft, prerelease);
+    }
+
+    @Override
+    public GiteaRelease.Attachment createReleaseAttachment(String username, String repository, long id, String name, InputStream file)
+            throws IOException, InterruptedException {
+        // TODO
+        return null;
+    }
+
+    @Override
+    public GiteaRelease.Attachment createReleaseAttachment(GiteaRepository repository, long id, String name, InputStream file)
+            throws IOException, InterruptedException {
+        return createReleaseAttachment(repository.getOwner().getUsername(), repository.getName(), id, name, file);
     }
 
     @Override

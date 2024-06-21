@@ -15,7 +15,7 @@
 
 ## Setup Gitea user
 
-1. login to your Gitea instance with an administrator account.
+1. login to your Gitea instance with an administrator account (optional, you can also register a new user).
 2. create a new user, e.g. "jenkins". Set password to something secure - you will not need it for login.
 3. add the jenkins user to the organization you want to build projects for in jenkins (either by adding him to an existing team or adding a new "ci"-team). Make sure that team is associated to the repositories you want to build.
 3. log out of Gitea.
@@ -41,7 +41,9 @@
 ### Configure the item
 
 1. When configuring the new item, select "Repository Sources"  
+
 ℹ️ **This is only necessary when using `branch-api` plugin version >=2.7.0**
+
 2. In the "Gitea organzations" section, add a new credential of type "Gitea personal access token".
 3. Add the access token created before for the jenkins user in Gitea. Ignore the error about the token not having the correct length.
 4. In the "Owner" field, add the name of the organization in Gitea you want to build projects for (**not** the full name).

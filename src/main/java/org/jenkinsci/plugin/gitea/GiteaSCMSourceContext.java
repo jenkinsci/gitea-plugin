@@ -38,6 +38,8 @@ public class GiteaSCMSourceContext
         extends SCMSourceContext<GiteaSCMSourceContext, GiteaSCMSourceRequest> {
     private boolean wantBranches;
     private boolean wantTags;
+    private boolean wantReleases;
+    private boolean includesPreReleases;
     private boolean wantOriginPRs;
     private boolean wantForkPRs;
     @NonNull
@@ -47,6 +49,7 @@ public class GiteaSCMSourceContext
     @NonNull
     private WebhookRegistration webhookRegistration = WebhookRegistration.SYSTEM;
     private boolean notificationsDisabled;
+    private boolean artifactToAssetMappingEnabled;
 
     public GiteaSCMSourceContext(@CheckForNull SCMSourceCriteria criteria, @NonNull SCMHeadObserver observer) {
         super(criteria, observer);
@@ -58,6 +61,14 @@ public class GiteaSCMSourceContext
 
     public final boolean wantTags() {
         return wantTags;
+    }
+
+    public final boolean wantReleases() {
+        return wantReleases;
+    }
+
+    public final boolean includesPreReleases() {
+        return includesPreReleases;
     }
 
     public final boolean wantPRs() {
@@ -104,6 +115,22 @@ public class GiteaSCMSourceContext
     }
 
     @NonNull
+    public GiteaSCMSourceContext wantReleases(boolean include) {
+        wantReleases = wantReleases || include;
+        return this;
+    }
+
+    @NonNull
+    public GiteaSCMSourceContext includePreReleases(boolean include) {
+        includesPreReleases = includesPreReleases || include;
+        return this;
+    }
+
+    public final boolean artifactToAssetMappingEnabled() {
+        return artifactToAssetMappingEnabled;
+    }
+
+    @NonNull
     public GiteaSCMSourceContext wantOriginPRs(boolean include) {
         wantOriginPRs = wantOriginPRs || include;
         return this;
@@ -136,6 +163,12 @@ public class GiteaSCMSourceContext
     @NonNull
     public final GiteaSCMSourceContext withNotificationsDisabled(boolean disabled) {
         this.notificationsDisabled = disabled;
+        return this;
+    }
+
+    @NonNull
+    public final GiteaSCMSourceContext withArtifactToAssetMappingEnabled(boolean enabled) {
+        this.artifactToAssetMappingEnabled = enabled;
         return this;
     }
 
