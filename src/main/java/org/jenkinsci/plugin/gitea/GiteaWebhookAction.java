@@ -28,17 +28,17 @@ import hudson.ExtensionList;
 import hudson.model.UnprotectedRootAction;
 import hudson.security.csrf.CrumbExclusion;
 import hudson.util.HttpResponses;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import jenkins.scm.api.SCMEvent;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.HttpResponse;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 @Extension
 public class GiteaWebhookAction extends CrumbExclusion implements UnprotectedRootAction {
@@ -70,7 +70,7 @@ public class GiteaWebhookAction extends CrumbExclusion implements UnprotectedRoo
         return false;
     }
 
-    public HttpResponse doPost(StaplerRequest request) throws IOException {
+    public HttpResponse doPost(StaplerRequest2 request) throws IOException {
         String origin = SCMEvent.originOf(request);
         if (!request.getMethod().equals("POST")) {
             LOGGER.log(Level.FINE, "Received {0} request (expecting POST) from {1}",

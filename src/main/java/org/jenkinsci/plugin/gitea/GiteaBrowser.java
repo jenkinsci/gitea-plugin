@@ -38,7 +38,7 @@ import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugin.gitea.servers.GiteaServers;
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 /**
  * A {@link GitRepositoryBrowser} for Gitea.
@@ -143,7 +143,7 @@ public class GiteaBrowser extends GitRepositoryBrowser {
          * {@inheritDoc}
          */
         @Override
-        public GiteaBrowser newInstance(StaplerRequest req, JSONObject jsonObject) throws FormException {
+        public GiteaBrowser newInstance(StaplerRequest2 req, JSONObject jsonObject) throws FormException {
             return req.bindJSON(GiteaBrowser.class, jsonObject);
         }
     }
