@@ -71,7 +71,7 @@ import org.jenkinsci.plugin.gitea.ReleaseSCMHead;
 import org.jenkinsci.plugin.gitea.client.api.GiteaConnection;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 public class GiteaAssetPublisher implements SimpleBuildStep, Describable<GiteaAssetPublisher> {
 
@@ -311,7 +311,7 @@ public class GiteaAssetPublisher implements SimpleBuildStep, Describable<GiteaAs
         }
 
         @Override
-        public GiteaAssetPublisher newInstance(@NonNull StaplerRequest req, JSONObject formData) throws FormException {
+        public GiteaAssetPublisher newInstance(@NonNull StaplerRequest2 req, JSONObject formData) throws FormException {
             return req.bindJSON(GiteaAssetPublisher.class, formData);
         }
 
