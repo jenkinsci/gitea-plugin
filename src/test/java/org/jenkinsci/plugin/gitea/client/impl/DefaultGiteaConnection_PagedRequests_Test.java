@@ -15,19 +15,19 @@ import org.jenkinsci.plugin.gitea.client.api.GiteaPullRequest;
 import org.jenkinsci.plugin.gitea.client.api.GiteaRepository;
 import org.jenkinsci.plugin.gitea.client.api.GiteaTag;
 import org.jenkinsci.plugin.gitea.client.api.GiteaUser;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
-public class DefaultGiteaConnection_PagedRequests_Test {
+class DefaultGiteaConnection_PagedRequests_Test {
 
     private GiteaRepository giteaRepository;
 
-    @Before
-    public void reset() {
+    @BeforeEach
+    void reset() {
         giteaRepository = new GiteaRepository(
                 new GiteaOwner("", "", "", ""),
                 null, "", "", "",
@@ -39,7 +39,7 @@ public class DefaultGiteaConnection_PagedRequests_Test {
     }
 
     @Test
-    public void test_fetchOrganizationRepositories_with_paged_response() throws Exception {
+    void test_fetchOrganizationRepositories_with_paged_response() throws Exception {
         HashMap<String, HttpURLConnection> mocks = new HashMap<>();
         String page1Url = "http://server.com/api/v1/orgs//repos";
         String page2Url = "http://server.com/api/v1/orgs//repos?page2";
@@ -54,7 +54,7 @@ public class DefaultGiteaConnection_PagedRequests_Test {
     }
 
     @Test
-    public void test_fetchUserRepositories_with_paged_response() throws Exception {
+    void test_fetchUserRepositories_with_paged_response() throws Exception {
         HashMap<String, HttpURLConnection> mocks = new HashMap<>();
         String page1Url = "http://server.com/api/v1/users//repos";
         String page2Url = "http://server.com/api/v1/users//repos?page2";
@@ -68,7 +68,7 @@ public class DefaultGiteaConnection_PagedRequests_Test {
     }
 
     @Test
-    public void test_fetchCurrentUserRepositories_with_paged_response() throws Exception {
+    void test_fetchCurrentUserRepositories_with_paged_response() throws Exception {
         HashMap<String, HttpURLConnection> mocks = new HashMap<>();
         String page1Url = "http://server.com/api/v1/user/repos";
         String page2Url = "http://server.com/api/v1/user/repos?page2";
@@ -82,7 +82,7 @@ public class DefaultGiteaConnection_PagedRequests_Test {
     }
 
     @Test
-    public void test_fetchBranches_with_paged_response() throws Exception {
+    void test_fetchBranches_with_paged_response() throws Exception {
         HashMap<String, HttpURLConnection> mocks = new HashMap<>();
         String page1Url = "http://server.com/api/v1/repos///branches";
         String page2Url = "http://server.com/api/v1/repos///branches?page2";
@@ -96,7 +96,7 @@ public class DefaultGiteaConnection_PagedRequests_Test {
     }
 
     @Test
-    public void test_fetchTags_with_paged_response() throws Exception {
+    void test_fetchTags_with_paged_response() throws Exception {
         HashMap<String, HttpURLConnection> mocks = new HashMap<>();
         String page1Url = "http://server.com/api/v1/repos///tags";
         String page2Url = "http://server.com/api/v1/repos///tags?page2";
@@ -110,7 +110,7 @@ public class DefaultGiteaConnection_PagedRequests_Test {
     }
 
     @Test
-    public void test_fetchCollaborators_with_paged_response() throws Exception {
+    void test_fetchCollaborators_with_paged_response() throws Exception {
         HashMap<String, HttpURLConnection> mocks = new HashMap<>();
         String page1Url = "http://server.com/api/v1/repos///collaborators";
         String page2Url = "http://server.com/api/v1/repos///collaborators?page2";
@@ -124,7 +124,7 @@ public class DefaultGiteaConnection_PagedRequests_Test {
     }
 
     @Test
-    public void test_fetchHooks_from_user_with_paged_response() throws Exception {
+    void test_fetchHooks_from_user_with_paged_response() throws Exception {
         HashMap<String, HttpURLConnection> mocks = new HashMap<>();
         String page1Url = "http://server.com/api/v1/repos///hooks";
         String page2Url = "http://server.com/api/v1/repos///hooks?page2";
@@ -138,7 +138,7 @@ public class DefaultGiteaConnection_PagedRequests_Test {
     }
 
     @Test
-    public void test_fetchHooks_from_org_with_paged_response() throws Exception {
+    void test_fetchHooks_from_org_with_paged_response() throws Exception {
         HashMap<String, HttpURLConnection> mocks = new HashMap<>();
         String page1Url = "http://server.com/api/v1/orgs//hooks";
         String page2Url = "http://server.com/api/v1/orgs//hooks?page2";
@@ -152,7 +152,7 @@ public class DefaultGiteaConnection_PagedRequests_Test {
     }
 
     @Test
-    public void test_fetchCommitStatuses_from_org_with_paged_response() throws Exception {
+    void test_fetchCommitStatuses_from_org_with_paged_response() throws Exception {
         HashMap<String, HttpURLConnection> mocks = new HashMap<>();
         String page1Url = "http://server.com/api/v1/repos///statuses/sha";
         String page2Url = "http://server.com/api/v1/repos///statuses/sha?page2";
@@ -166,7 +166,7 @@ public class DefaultGiteaConnection_PagedRequests_Test {
     }
 
     @Test
-    public void test_fetchPullRequests_from_org_with_paged_response() throws Exception {
+    void test_fetchPullRequests_from_org_with_paged_response() throws Exception {
         HashMap<String, HttpURLConnection> mocks = new HashMap<>();
         String page1Url = "http://server.com/api/v1/repos///pulls?state=open";
         String page2Url = "http://server.com/api/v1/repos///pulls?state=open&page2";
@@ -180,7 +180,7 @@ public class DefaultGiteaConnection_PagedRequests_Test {
     }
 
     @Test
-    public void test_fetchIssues_from_org_with_paged_response() throws Exception {
+    void test_fetchIssues_from_org_with_paged_response() throws Exception {
         HashMap<String, HttpURLConnection> mocks = new HashMap<>();
         String page1Url = "http://server.com/api/v1/repos///issues?state=open";
         String page2Url = "http://server.com/api/v1/repos///issues?state=open&page2";

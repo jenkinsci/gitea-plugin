@@ -9,51 +9,51 @@ import jenkins.scm.impl.mock.MockSCMSource;
 import org.jenkinsci.plugin.gitea.client.api.GiteaCreateEvent;
 import org.jenkinsci.plugin.gitea.client.api.GiteaOwner;
 import org.jenkinsci.plugin.gitea.client.api.GiteaRepository;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-public class GiteaCreateSCMEventTest {
+class GiteaCreateSCMEventTest {
 
-    GiteaSCMSource giteaSCMSource = new GiteaSCMSource("", "", "");
-    MockSCMSource scmSource = new MockSCMSource("controllerId", "giteaRepo", new ArrayList<>());
-    MockSCMNavigator scmNavigator = new MockSCMNavigator("controllerId", new ArrayList<>());
-    GiteaCreateSCMEvent branchCreateEvent = new GiteaCreateSCMEvent(withGiteaCreateEvent("feature/branch", "branch"), "?");
-    GiteaCreateSCMEvent tagCreateEvent = new GiteaCreateSCMEvent(withGiteaCreateEvent("mytag", "tag"), "?");
+    private final GiteaSCMSource giteaSCMSource = new GiteaSCMSource("", "", "");
+    private final MockSCMSource scmSource = new MockSCMSource("controllerId", "giteaRepo", new ArrayList<>());
+    private final MockSCMNavigator scmNavigator = new MockSCMNavigator("controllerId", new ArrayList<>());
+    private final GiteaCreateSCMEvent branchCreateEvent = new GiteaCreateSCMEvent(withGiteaCreateEvent("feature/branch", "branch"), "?");
+    private final GiteaCreateSCMEvent tagCreateEvent = new GiteaCreateSCMEvent(withGiteaCreateEvent("mytag", "tag"), "?");
 
     @Test
-    public void descriptionForSCMNavigator_withBranchCreateEvent() {
+    void descriptionForSCMNavigator_withBranchCreateEvent() {
         assertThat(branchCreateEvent.descriptionFor(scmNavigator), is("Create event for branch feature/branch in repository giteaRepo"));
     }
 
     @Test
-    public void descriptionForSCMNavigator_withTagCreateEvent() {
+    void descriptionForSCMNavigator_withTagCreateEvent() {
         assertThat(tagCreateEvent.descriptionFor(scmNavigator), is("Create event for tag mytag in repository giteaRepo"));
     }
 
     @Test
-    public void descriptionForSCMSource_withBranchCreateEvent() {
+    void descriptionForSCMSource_withBranchCreateEvent() {
         assertThat(branchCreateEvent.descriptionFor(scmSource), is("Create event for branch feature/branch"));
     }
 
     @Test
-    public void descriptionForSCMSource_withTagCreateEvent() {
+    void descriptionForSCMSource_withTagCreateEvent() {
         assertThat(tagCreateEvent.descriptionFor(scmSource), is("Create event for tag mytag"));
     }
 
     @Test
-    public void description_withBranchCreateEvent() {
+    void description_withBranchCreateEvent() {
         assertThat(branchCreateEvent.description(), is("Create event for branch feature/branch in repository ownerUser/giteaRepo"));
     }
 
     @Test
-    public void description_withTagCreateEvent() {
+    void description_withTagCreateEvent() {
         assertThat(tagCreateEvent.description(), is("Create event for tag mytag in repository ownerUser/giteaRepo"));
     }
 
     @Test
-    public void headsFor_withBranchCreateEvent() {
+    void headsFor_withBranchCreateEvent() {
         Map<SCMHead, SCMRevision> headsFor = branchCreateEvent.headsFor(giteaSCMSource);
 
         assertThat(headsFor.size(), is(1));
@@ -65,7 +65,7 @@ public class GiteaCreateSCMEventTest {
     }
 
     @Test
-    public void headsFor_withTagCreateEvent() {
+    void headsFor_withTagCreateEvent() {
         Map<SCMHead, SCMRevision> headsFor = tagCreateEvent.headsFor(giteaSCMSource);
 
         assertThat(headsFor.size(), is(1));

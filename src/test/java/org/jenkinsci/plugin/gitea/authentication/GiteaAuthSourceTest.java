@@ -30,21 +30,20 @@ import org.jenkinsci.plugin.gitea.client.api.GiteaAuth;
 import org.jenkinsci.plugin.gitea.client.api.GiteaAuthToken;
 import org.jenkinsci.plugin.gitea.client.api.GiteaAuthUser;
 import org.jenkinsci.plugin.gitea.credentials.PersonalAccessToken;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 import org.mockito.Mockito;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
-public class GiteaAuthSourceTest {
-    @ClassRule
-    public static JenkinsRule j = new JenkinsRule();
+@WithJenkins
+class GiteaAuthSourceTest {
 
     @Test
-    public void given__tokenCredential__when__convert__then__tokenAuth() throws Exception {
+    void given__tokenCredential__when__convert__then__tokenAuth(JenkinsRule j) {
         // we use a mock to ensure that java.lang.reflect.Proxy implementations of the credential interface work
         PersonalAccessToken credential = Mockito.mock(PersonalAccessToken.class);
         Mockito.when(credential.getToken()).thenReturn(Secret.fromString("b5bc10f13665362bd61de931c731e3c74187acc4"));
@@ -54,7 +53,7 @@ public class GiteaAuthSourceTest {
     }
 
     @Test
-    public void given__userPassCredential__when__convert__then__tokenAuth() throws Exception {
+    void given__userPassCredential__when__convert__then__tokenAuth(JenkinsRule j) {
         // we use a mock to ensure that java.lang.reflect.Proxy implementations of the credential interface work
         UsernamePasswordCredentials credential = Mockito.mock(UsernamePasswordCredentials.class);
         Mockito.when(credential.getUsername()).thenReturn("bob");
