@@ -27,58 +27,58 @@ import hudson.plugins.git.GitChangeLogParser;
 import hudson.plugins.git.GitChangeSet;
 import hudson.plugins.git.GitChangeSet.Path;
 import java.io.InputStream;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
 
-public class GiteaBrowserTest {
+class GiteaBrowserTest {
 
     private static final String GITEA_URL = "http://gitea.test";
 
     private final GiteaBrowser instance = new GiteaBrowser(GITEA_URL);
 
     @Test
-    public void given__instance__when__getUrl__then__urlEndsWithSlash() throws Exception {
+    void given__instance__when__getUrl__then__urlEndsWithSlash() throws Exception {
         assertThat(instance.getUrl().toString(),
                 is(GITEA_URL + "/"));
     }
 
     @Test
-    public void given__instance__when__nonNormalizedUrl__then__urlNormalized() throws Exception {
+    void given__instance__when__nonNormalizedUrl__then__urlNormalized() throws Exception {
         assertThat(new GiteaBrowser("http://gitea.test:80/foo/../bar/..").getUrl().toString(),
                 is(GITEA_URL + "/"));
     }
 
     @Test
-    public void given__instance__when__repoUrl_ends_with_slash__then__no_double_slash() throws Exception {
+    void given__instance__when__repoUrl_ends_with_slash__then__no_double_slash() throws Exception {
         assertThat(new GiteaBrowser(GITEA_URL + "/").getUrl().toString(),
                 is(GITEA_URL + "/"));
     }
 
     @Test
-    public void given__changeset__when__getChangeSetLink__then__url_generater() throws Exception {
+    void given__changeset__when__getChangeSetLink__then__url_generater() throws Exception {
         assertThat(instance.getChangeSetLink(loadChangeSet("rawchangelog")).toString(),
                 is(GITEA_URL + "/commit/396fc230a3db05c427737aa5c2eb7856ba72b05d"));
     }
 
     @Test
-    public void given__changeset__when__getDiffLink_first_file__then__fragment_1() throws Exception {
+    void given__changeset__when__getDiffLink_first_file__then__fragment_1() throws Exception {
         assertThat(instance.getDiffLink(
                 findPath(loadChangeSet("rawchangelog"), "src/main/java/hudson/plugins/git/browser/GithubWeb.java")
         ).toString(), is(GITEA_URL + "/commit/396fc230a3db05c427737aa5c2eb7856ba72b05d#diff-1"));
     }
 
     @Test
-    public void given__changeset__when__getDiffLink_second_file__then__fragment_2() throws Exception {
+    void given__changeset__when__getDiffLink_second_file__then__fragment_2() throws Exception {
         assertThat(instance.getDiffLink(
                 findPath(loadChangeSet("rawchangelog"), "src/test/java/hudson/plugins/git/browser/GithubWebTest.java")
         ).toString(), is(GITEA_URL + "/commit/396fc230a3db05c427737aa5c2eb7856ba72b05d#diff-2"));
     }
 
     @Test
-    public void given__changeset__when__getDiffLink_new_file__then__no_diff_link() throws Exception {
+    void given__changeset__when__getDiffLink_new_file__then__no_diff_link() throws Exception {
         assertThat(instance.getDiffLink(
                 findPath(
                         loadChangeSet("rawchangelog"),
@@ -88,7 +88,7 @@ public class GiteaBrowserTest {
     }
 
     @Test
-    public void given__path__when__getFileLink_existing_file__then__file_link_points_to_file() throws Exception {
+    void given__path__when__getFileLink_existing_file__then__file_link_points_to_file() throws Exception {
         assertThat(instance.getFileLink(
                 findPath(
                         loadChangeSet("rawchangelog"),
@@ -101,7 +101,7 @@ public class GiteaBrowserTest {
     }
 
     @Test
-    public void given__path__when__getFileLink_deleted_file__then__file_link_points_to_diff() throws Exception {
+    void given__path__when__getFileLink_deleted_file__then__file_link_points_to_diff() throws Exception {
         assertThat(instance.getFileLink(
                 findPath(loadChangeSet("rawchangelog-with-deleted-file"), "bar")
         ).toString(), is(GITEA_URL + "/commit/fc029da233f161c65eb06d0f1ed4f36ae81d1f4f#diff-1"));
@@ -109,11 +109,11 @@ public class GiteaBrowserTest {
 
     private GitChangeSet loadChangeSet(String resourceName) throws Exception {
         try (InputStream is = GiteaBrowserTest.class.getResourceAsStream(resourceName)) {
-            return new GitChangeLogParser(false).parse(is).get(0);
+            return new GitChangeLogParser(null, false).parse(is).get(0);
         }
     }
 
-    private Path findPath(GitChangeSet changeSet, String path) throws Exception {
+    private Path findPath(GitChangeSet changeSet, String path) {
         for (final Path p : changeSet.getPaths()) {
             if (path.equals(p.getPath())) {
                 return p;
