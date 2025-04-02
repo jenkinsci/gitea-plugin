@@ -7,6 +7,7 @@ import org.jenkinsci.plugin.gitea.client.api.GiteaAuth;
 import org.jenkinsci.plugin.gitea.client.api.GiteaHttpStatusException;
 
 public class GiteaConnection_DisabledPR_Issues extends DefaultGiteaConnection {
+
     GiteaConnection_DisabledPR_Issues(@NonNull String serverUrl, @NonNull GiteaAuth authentication) {
         super(serverUrl, authentication);
     }
