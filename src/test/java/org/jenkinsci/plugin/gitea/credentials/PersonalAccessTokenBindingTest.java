@@ -48,7 +48,7 @@ class PersonalAccessTokenBindingTest {
                 getClass().getResourceAsStream("pipeline/withCredentials-pipeline.groovy"), StandardCharsets.UTF_8);
         project.setDefinition(new CpsFlowDefinition(pipelineText, false));
         Run<?, ?> build = jenkins.buildAndAssertSuccess(project);
-        // assert false to know we run it in tests
+        // Pipeline script outputs a substring of credential so that it will not be masked
         jenkins.assertLogContains("Token1 is ecret", build);
         jenkins.assertLogContains("Token2 is ecret", build);
     }
