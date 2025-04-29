@@ -70,8 +70,7 @@ pipeline {
   stages {
     stage('Checkout') {
       steps {
-        withCredentials([giteaPersonalAccessToken(credentialsId: 'my-gitea-token',
-                                                  variable: 'MY_TOKEN')]) {
+        withCredentials([string(credentialsId: 'my-gitea-token', variable: 'MY_TOKEN')]) {
           sh 'git clone https://$MY_TOKEN@gitea.com/exampleUser/private-repo.git'
         }
       }
@@ -85,8 +84,7 @@ A typical example of a Gitea personal access token in a Jenkins scripted Pipelin
 ```groovy
 node {
   stage('Checkout') {
-    withCredentials([giteaPersonalAccessToken(credentialsId: 'my-gitea-token',
-                                              variable: 'MY_TOKEN')]) {
+    withCredentials([string(credentialsId: 'my-gitea-token', variable: 'MY_TOKEN')]) {
       sh 'git clone https://$MY_TOKEN@gitea.com/exampleUser/private-repo.git'
     }
   }
