@@ -61,6 +61,7 @@ Personal access token permissions can be defined to grant access to a subset of 
 
 Once a Gitea personal access token has been created in Gitea and added to Jenkins as a credential, it can be referenced from a Pipeline job using the `withCredentials` Pipeline step.
 Use the [Pipeline syntax snippet generator](https://www.jenkins.io/pipeline/getting-started-pipelines/#using-snippet-generator) to create an example of the `withCredentials` step.
+Choose "Secret text" as the credential type in the snippet generator.
 
 A typical example of a Gitea personal access token in a Jenkins declarative Pipeline would look like:
 
