@@ -40,7 +40,7 @@
 
 ### Configure the item
 
-1. When configuring the new item, select "Repository Sources"  
+1. When configuring the new item, select "Repository Sources"
 
 ℹ️ **This is only necessary when using `branch-api` plugin version >=2.7.0**
 
@@ -48,3 +48,55 @@
 3. Add the access token created before for the jenkins user in Gitea. Ignore the error about the token not having the correct length.
 4. In the "Owner" field, add the name of the organization in Gitea you want to build projects for (**not** the full name).
 5. Fill the rest of the form as required. Click "Save". The following scan should list the repositories that the jenkins user can see in the organization selected.
+
+## Using a Gitea personal access token in a Jenkins Pipeline
+
+["Using credentials"](https://www.jenkins.io/doc/book/using/using-credentials/) includes a Jenkins Pipeline credentials tutorial.
+Additional credentials examples are available in the ["Injecting secrets into builds"](https://docs.cloudbees.com/docs/cloudbees-ci/latest/secure/injecting-secrets) page from CloudBees.
+
+The Gitea plugin includes support for Gitea personal access tokens as Jenkins [credentials](https://www.jenkins.io/doc/book/using/using-credentials/).
+Personal access tokens are used to authenticate Gitea repository and API access without using a Gitea username and password.
+Gitea personal access tokens are defined in Gitea from the "Applications" page of each Gitea user's "Settings" (/user/settings/applications).
+Personal access token permissions can be defined to grant access to a subset of the resources of the Gitea server.
+
+Once a Gitea personal access token has been created in Gitea and added to Jenkins as a credential, it can be referenced from a Pipeline job using the `withCredentials` Pipeline step.
+Use the [Pipeline syntax snippet generator](https://www.jenkins.io/pipeline/getting-started-pipelines/#using-snippet-generator) to create an example of the `withCredentials` step.
+
+A typical example of a Gitea personal access token in a Jenkins declarative Pipeline would look like:
+
+```groovy
+pipeline {
+  agent any
+  stages {
+    stage('Checkout') {
+      steps {
+        withCredentials([giteaPersonalAccessToken(credentialsId: 'my-gitea-token',
+                                                  variable: 'MY_TOKEN')]) {
+          sh 'git clone https://$MY_TOKEN@gitea.com/exampleUser/private-repo.git'
+        }
+      }
+    }
+  }
+}
+```
+
+A typical example of a Gitea personal access token in a Jenkins scripted Pipeline would look like:
+
+```groovy
+node {
+  stage('Checkout') {
+    withCredentials([giteaPersonalAccessToken(credentialsId: 'my-gitea-token',
+                                              variable: 'MY_TOKEN')]) {
+      sh 'git clone https://$MY_TOKEN@gitea.com/exampleUser/private-repo.git'
+    }
+  }
+}
+```
+
+### Note
+
+You should use a single quote (`'`) instead of a double quote (`"`) whenever you can.
+This is particularly important in Pipelines where a statement may be interpreted by both the Pipeline engine and an external interpreter, such as a Unix shell (`sh`) or Windows Command (`bat`) or Powershell (`ps`).
+This reduces complications with password masking and command processing.
+The `sh` step in the above examples properly demonstrates this.
+It references an environment variable, so the single-quoted string passes its value unprocessed to the `sh` step, and the shell interprets `$MY_TOKEN`.
