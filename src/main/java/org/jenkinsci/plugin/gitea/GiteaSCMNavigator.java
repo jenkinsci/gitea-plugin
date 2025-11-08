@@ -51,6 +51,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import jenkins.authentication.tokens.api.AuthenticationTokens;
 import jenkins.model.Jenkins;
 import jenkins.plugins.git.traits.GitBrowserSCMSourceTrait;
@@ -90,6 +92,7 @@ import org.kohsuke.stapler.QueryParameter;
 public class GiteaSCMNavigator extends SCMNavigator {
     private final String serverUrl;
     private final String repoOwner;
+    private static final Logger LOGGER = Logger.getLogger(GiteaSCMNavigator.class.getName());
     private String credentialsId;
     private List<SCMTrait<? extends SCMTrait<?>>> traits = new ArrayList<>();
     private GiteaOwner giteaOwner;
@@ -383,6 +386,61 @@ public class GiteaSCMNavigator extends SCMNavigator {
                 return FormValidation.error(Messages.GiteaSCMNavigator_selectedCredentialsMissing());
             }
             return FormValidation.ok();
+        }
+
+        public ListBoxModel doFillRepoOwnerItems(@AncestorInPath SCMSourceOwner context,
+                                                 @QueryParameter String serverUrl,
+                                                 @QueryParameter String credentialsId,
+                                                 @QueryParameter String repoOwner) throws IOException,
+                InterruptedException {
+            ListBoxModel result = new ListBoxModel();
+            if (context == null) {
+                if (!Jenkins.get().hasPermission(Jenkins.ADMINISTER)) {
+                    result.add(repoOwner);
+                    return result;
+                }
+            } else {
+                if (!context.hasPermission(Item.EXTENDED_READ)
+                        && !context.hasPermission(CredentialsProvider.USE_ITEM)) {
+                    result.add(repoOwner);
+                    return result;
+                }
+            }
+            GiteaServer server = GiteaServers.get().findServer(serverUrl);
+            if (server == null) {
+                result.add(repoOwner);
+                return result;
+            }
+            StandardCredentials credentials = CredentialsMatchers.firstOrNull(
+                    CredentialsProvider.lookupCredentials(
+                            StandardCredentials.class,
+                            context,
+                            context instanceof Queue.Task
+                                    ? ((Queue.Task) context).getDefaultAuthentication()
+                                    : ACL.SYSTEM,
+                            URIRequirementBuilder.fromUri(serverUrl).build()
+                    ),
+                    CredentialsMatchers.allOf(
+                            AuthenticationTokens.matcher(GiteaAuth.class),
+                            CredentialsMatchers.withId(credentialsId)
+                    )
+            );
+            if (credentials == null) {
+                result.add(repoOwner);
+                return result;
+            }
+
+            try (GiteaConnection c = Gitea.server(serverUrl)
+                    .as(AuthenticationTokens.convert(GiteaAuth.class, credentials))
+                    .open()) {
+                List<GiteaRepository> repositories = c.fetchCurrentUserRepositories();
+                String currentUser = c.fetchCurrentUser().getUsername();
+                return GiteaOwnerListHelper.populateOwnerListBoxModel(currentUser, repoOwner, repositories);
+            } catch (IOException e) {
+                LOGGER.log(Level.FINE, "Could not populate owners", e);
+            }
+
+            return result;
         }
 
         @NonNull
