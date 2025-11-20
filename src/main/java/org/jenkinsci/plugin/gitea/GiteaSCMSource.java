@@ -112,6 +112,7 @@ import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.verb.POST;
 
 public class GiteaSCMSource extends AbstractGitSCMSource {
     public static final VersionNumber TAG_SUPPORT_MINIMUM_VERSION = new VersionNumber("1.9.0");
@@ -919,6 +920,7 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
             return FormValidation.ok();
         }
 
+        @POST
         public ListBoxModel doFillRepoOwnerItems(@AncestorInPath SCMSourceOwner context,
                                                  @QueryParameter String serverUrl,
                                                  @QueryParameter String credentialsId,

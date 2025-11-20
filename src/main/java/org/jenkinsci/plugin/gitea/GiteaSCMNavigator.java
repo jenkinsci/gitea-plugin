@@ -88,6 +88,7 @@ import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.verb.POST;
 
 public class GiteaSCMNavigator extends SCMNavigator {
     private final String serverUrl;
@@ -388,6 +389,7 @@ public class GiteaSCMNavigator extends SCMNavigator {
             return FormValidation.ok();
         }
 
+        @POST
         public ListBoxModel doFillRepoOwnerItems(@AncestorInPath SCMSourceOwner context,
                                                  @QueryParameter String serverUrl,
                                                  @QueryParameter String credentialsId,
