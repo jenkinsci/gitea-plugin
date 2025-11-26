@@ -72,7 +72,11 @@ pipeline {
     stage('Checkout') {
       steps {
         withCredentials([string(credentialsId: 'my-gitea-token', variable: 'MY_TOKEN')]) {
-          sh 'git clone https://$MY_TOKEN@gitea.com/exampleUser/private-repo.git'
+          if (isUnix()) {
+            sh 'git clone https://$MY_TOKEN@gitea.com/exampleUser/private-repo.git'
+          } else {
+            bat 'git clone https://%MY_TOKEN%@gitea.com/exampleUser/private-repo.git'
+          }
         }
       }
     }
@@ -86,7 +90,11 @@ A typical example of a Gitea personal access token in a Jenkins scripted Pipelin
 node {
   stage('Checkout') {
     withCredentials([string(credentialsId: 'my-gitea-token', variable: 'MY_TOKEN')]) {
-      sh 'git clone https://$MY_TOKEN@gitea.com/exampleUser/private-repo.git'
+      if (isUnix()) {
+        sh 'git clone https://$MY_TOKEN@gitea.com/exampleUser/private-repo.git'
+      } else {
+        bat 'git clone https://%MY_TOKEN%@gitea.com/exampleUser/private-repo.git'
+      }
     }
   }
 }
