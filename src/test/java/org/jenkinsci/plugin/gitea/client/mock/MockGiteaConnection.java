@@ -65,7 +65,7 @@ public class MockGiteaConnection implements GiteaConnection {
         GiteaOrganization clone = org.clone();
         clone.setId(nextId.incrementAndGet());
         this.organizations.put(org.getUsername(), clone);
-        this.orgHooks.put(org.getUsername(), new ArrayList<GiteaHook>());
+        this.orgHooks.put(org.getUsername(), new ArrayList<>());
         return this;
     }
 
@@ -75,22 +75,19 @@ public class MockGiteaConnection implements GiteaConnection {
         clone.setCreatedAt(new Date());
         clone.setUpdatedAt(new Date());
         this.repositories.put(keyOf(clone), clone);
-        this.repoHooks.put(keyOf(clone), new ArrayList<GiteaHook>());
-        this.branches.put(keyOf(clone), new HashMap<String, GiteaBranch>());
-        this.pulls.put(keyOf(clone), new HashMap<Long, GiteaPullRequest>());
-        this.issues.put(keyOf(clone), new HashMap<Long, GiteaIssue>());
-        this.collaborators.put(keyOf(clone), new TreeSet<String>());
-        this.files.put(keyOf(clone), new TreeMap<String, Map<String, byte[]>>());
+        this.repoHooks.put(keyOf(clone), new ArrayList<>());
+        this.branches.put(keyOf(clone), new HashMap<>());
+        this.pulls.put(keyOf(clone), new HashMap<>());
+        this.issues.put(keyOf(clone), new HashMap<>());
+        this.collaborators.put(keyOf(clone), new TreeSet<>());
+        this.files.put(keyOf(clone), new TreeMap<>());
         return this;
     }
 
     public MockGiteaConnection withBranch(GiteaRepository repo, GiteaBranch branch) {
         GiteaBranch clone = branch.clone();
         this.branches.get(keyOf(repo)).put(clone.getName(), clone);
-        Map<String, byte[]> content = this.files.get(keyOf(repo)).get(clone.getCommit().getId());
-        if (content == null) {
-            this.files.get(keyOf(repo)).put(clone.getCommit().getId(), new HashMap<String, byte[]>());
-        }
+        this.files.get(keyOf(repo)).computeIfAbsent(clone.getCommit().getId(), k -> new HashMap<>());
         return this;
     }
 
@@ -103,11 +100,11 @@ public class MockGiteaConnection implements GiteaConnection {
         pulls.get(keyOf(repo)).put(clone.getId(), clone);
         Map<String, byte[]> content = this.files.get(keyOf(repo)).get(pull.getHead().getSha());
         if (content == null) {
-            this.files.get(keyOf(repo)).put(pull.getHead().getSha(), new HashMap<String, byte[]>());
+            this.files.get(keyOf(repo)).put(pull.getHead().getSha(), new HashMap<>());
         }
         content = this.files.get(keyOf(repo)).get(pull.getBase().getSha());
         if (content == null) {
-            this.files.get(keyOf(repo)).put(pull.getBase().getSha(), new HashMap<String, byte[]>());
+            this.files.get(keyOf(repo)).put(pull.getBase().getSha(), new HashMap<>());
         }
         GiteaIssue issue = new GiteaIssue();
         issue.setUrl(clone.getUrl());
@@ -141,50 +138,50 @@ public class MockGiteaConnection implements GiteaConnection {
     }
 
     @Override
-    public GiteaVersion fetchVersion() throws IOException, InterruptedException {
+    public GiteaVersion fetchVersion() {
         GiteaVersion result = new GiteaVersion();
         result.setVersion("mock");
         return result;
     }
 
     @Override
-    public GiteaUser fetchCurrentUser() throws IOException, InterruptedException {
+    public GiteaUser fetchCurrentUser() throws IOException {
         return notFoundIfNull(users.get(user)).clone();
     }
 
     @Override
-    public GiteaOwner fetchOwner(String name) throws IOException, InterruptedException {
+    public GiteaOwner fetchOwner(String name) throws IOException {
         GiteaOrganization organization = organizations.get(name);
         return organization != null ? organization : notFoundIfNull(users.get(name));
     }
 
     @Override
-    public GiteaUser fetchUser(String name) throws IOException, InterruptedException {
+    public GiteaUser fetchUser(String name) throws IOException {
         return notFoundIfNull(users.get(name)).clone();
     }
 
     @Override
-    public GiteaOrganization fetchOrganization(String name) throws IOException, InterruptedException {
+    public GiteaOrganization fetchOrganization(String name) throws IOException {
         return notFoundIfNull(organizations.get(name)).clone();
     }
 
     @Override
-    public GiteaRepository fetchRepository(String username, String name) throws IOException, InterruptedException {
+    public GiteaRepository fetchRepository(String username, String name) throws IOException {
         return notFoundIfNull(repositories.get(keyOf(username, name))).clone();
     }
 
     @Override
-    public GiteaRepository fetchRepository(GiteaOwner owner, String name) throws IOException, InterruptedException {
+    public GiteaRepository fetchRepository(GiteaOwner owner, String name) throws IOException {
         return fetchRepository(owner.getUsername(), name);
     }
 
     @Override
-    public List<GiteaRepository> fetchCurrentUserRepositories() throws IOException, InterruptedException {
+    public List<GiteaRepository> fetchCurrentUserRepositories() throws IOException {
         return fetchRepositories(user);
     }
 
     @Override
-    public List<GiteaRepository> fetchRepositories(String username) throws IOException, InterruptedException {
+    public List<GiteaRepository> fetchRepositories(String username) throws IOException {
         if (organizations.containsKey(username) || users.containsKey(username)) {
             List<GiteaRepository> result = new ArrayList<>();
             for (Map.Entry<String, GiteaRepository> entry : repositories.entrySet()) {
@@ -198,38 +195,38 @@ public class MockGiteaConnection implements GiteaConnection {
     }
 
     @Override
-    public List<GiteaRepository> fetchRepositories(GiteaOwner owner) throws IOException, InterruptedException {
+    public List<GiteaRepository> fetchRepositories(GiteaOwner owner) throws IOException {
         return fetchRepositories(owner.getUsername());
     }
 
     @Override
-    public List<GiteaRepository> fetchOrganizationRepositories(GiteaOwner owner) throws IOException, InterruptedException {
+    public List<GiteaRepository> fetchOrganizationRepositories(GiteaOwner owner) throws IOException {
         return fetchRepositories(owner.getUsername());
     }
 
     @Override
     public GiteaBranch fetchBranch(String username, String repository, String name)
-            throws IOException, InterruptedException {
+            throws IOException {
         return notFoundIfNull(notFoundIfNull(branches.get(keyOf(username, repository))).get(name)).clone();
     }
 
     @Override
-    public GiteaBranch fetchBranch(GiteaRepository repository, String name) throws IOException, InterruptedException {
+    public GiteaBranch fetchBranch(GiteaRepository repository, String name) throws IOException {
         return fetchBranch(repository.getOwner().getUsername(), repository.getName(), name);
     }
 
     @Override
-    public List<GiteaBranch> fetchBranches(String username, String name) throws IOException, InterruptedException {
+    public List<GiteaBranch> fetchBranches(String username, String name) throws IOException {
         return clone(notFoundIfNull(branches.get(keyOf(username, name)).values()));
     }
 
     @Override
-    public List<GiteaBranch> fetchBranches(GiteaRepository repository) throws IOException, InterruptedException {
+    public List<GiteaBranch> fetchBranches(GiteaRepository repository) throws IOException {
         return fetchBranches(repository.getOwner().getUsername(), repository.getName());
     }
 
     @Override
-    public List<GiteaUser> fetchCollaborators(String username, String name) throws IOException, InterruptedException {
+    public List<GiteaUser> fetchCollaborators(String username, String name) throws IOException {
         List<GiteaUser> result = new ArrayList<>();
         for (String user : notFoundIfNull(collaborators.get(keyOf(username, name)))) {
             GiteaUser u = users.get(user);
@@ -241,36 +238,36 @@ public class MockGiteaConnection implements GiteaConnection {
     }
 
     @Override
-    public List<GiteaUser> fetchCollaborators(GiteaRepository repository) throws IOException, InterruptedException {
+    public List<GiteaUser> fetchCollaborators(GiteaRepository repository) throws IOException {
         return fetchCollaborators(repository.getOwner().getUsername(), repository.getName());
     }
 
     @Override
     public boolean checkCollaborator(String username, String name, String collaboratorName)
-            throws IOException, InterruptedException {
+            throws IOException {
         return notFoundIfNull(collaborators.get(keyOf(username, name))).contains(collaboratorName);
     }
 
     @Override
     public boolean checkCollaborator(GiteaRepository repository, String collaboratorName)
-            throws IOException, InterruptedException {
+            throws IOException {
         return checkCollaborator(repository.getOwner().getUsername(), repository.getName(), collaboratorName);
     }
 
     @Override
-    public List<GiteaHook> fetchHooks(String organizationName) throws IOException, InterruptedException {
+    public List<GiteaHook> fetchHooks(String organizationName) throws IOException {
         return clone(notFoundIfNull(orgHooks.get(organizationName)));
     }
 
     @Override
-    public List<GiteaHook> fetchHooks(GiteaOrganization organization) throws IOException, InterruptedException {
+    public List<GiteaHook> fetchHooks(GiteaOrganization organization) throws IOException {
         return fetchHooks(organization.getUsername());
     }
 
     @Override
     public GiteaHook createHook(GiteaOrganization organization, GiteaHook hook)
-            throws IOException, InterruptedException {
-        List<GiteaHook> list = notFoundIfNull(orgHooks.get(organization));
+            throws IOException {
+        List<GiteaHook> list = notFoundIfNull(orgHooks.get(organization.getUsername()));
         hook = hook.clone();
         hook.setId(nextId.incrementAndGet());
         hook.setCreatedAt(new Date());
@@ -280,14 +277,14 @@ public class MockGiteaConnection implements GiteaConnection {
     }
 
     @Override
-    public void deleteHook(GiteaOrganization organization, GiteaHook hook) throws IOException, InterruptedException {
+    public void deleteHook(GiteaOrganization organization, GiteaHook hook) throws IOException {
         deleteHook(organization, hook.getId());
     }
 
     @Override
-    public void deleteHook(GiteaOrganization organization, long id) throws IOException, InterruptedException {
+    public void deleteHook(GiteaOrganization organization, long id) throws IOException {
         GiteaHook target = null;
-        for (Iterator<GiteaHook> iterator = notFoundIfNull(orgHooks.get(organization)).iterator();
+        for (Iterator<GiteaHook> iterator = notFoundIfNull(orgHooks.get(organization.getUsername())).iterator();
              iterator.hasNext(); ) {
             GiteaHook h = iterator.next();
             if (h.getId() == id) {
@@ -300,9 +297,9 @@ public class MockGiteaConnection implements GiteaConnection {
     }
 
     @Override
-    public void updateHook(GiteaOrganization organization, GiteaHook hook) throws IOException, InterruptedException {
+    public void updateHook(GiteaOrganization organization, GiteaHook hook) throws IOException {
         GiteaHook target = null;
-        for (GiteaHook h : notFoundIfNull(orgHooks.get(organization))) {
+        for (GiteaHook h : notFoundIfNull(orgHooks.get(organization.getUsername()))) {
             if (h.getId() == hook.getId()) {
                 target = h;
                 break;
@@ -316,17 +313,17 @@ public class MockGiteaConnection implements GiteaConnection {
     }
 
     @Override
-    public List<GiteaHook> fetchHooks(String username, String name) throws IOException, InterruptedException {
+    public List<GiteaHook> fetchHooks(String username, String name) throws IOException {
         return clone(notFoundIfNull(repoHooks.get(keyOf(username, name))));
     }
 
     @Override
-    public List<GiteaHook> fetchHooks(GiteaRepository repository) throws IOException, InterruptedException {
+    public List<GiteaHook> fetchHooks(GiteaRepository repository) throws IOException {
         return fetchHooks(repository.getOwner().getUsername(), repository.getName());
     }
 
     @Override
-    public GiteaHook createHook(GiteaRepository repository, GiteaHook hook) throws IOException, InterruptedException {
+    public GiteaHook createHook(GiteaRepository repository, GiteaHook hook) throws IOException {
         List<GiteaHook> list =
                 notFoundIfNull(repoHooks.get(keyOf(repository)));
         hook = hook.clone();
@@ -338,13 +335,13 @@ public class MockGiteaConnection implements GiteaConnection {
     }
 
     @Override
-    public void deleteHook(GiteaRepository repository, GiteaHook hook) throws IOException, InterruptedException {
+    public void deleteHook(GiteaRepository repository, GiteaHook hook) throws IOException {
         deleteHook(repository, hook.getId());
 
     }
 
     @Override
-    public void deleteHook(GiteaRepository repository, long id) throws IOException, InterruptedException {
+    public void deleteHook(GiteaRepository repository, long id) throws IOException {
         GiteaHook target = null;
         for (Iterator<GiteaHook> iterator = notFoundIfNull(
                 repoHooks.get(keyOf(repository))).iterator();
@@ -360,7 +357,7 @@ public class MockGiteaConnection implements GiteaConnection {
     }
 
     @Override
-    public void updateHook(GiteaRepository repository, GiteaHook hook) throws IOException, InterruptedException {
+    public void updateHook(GiteaRepository repository, GiteaHook hook) throws IOException {
         GiteaHook target = null;
         for (GiteaHook h : notFoundIfNull(
                 repoHooks.get(keyOf(repository)))) {
@@ -377,105 +374,99 @@ public class MockGiteaConnection implements GiteaConnection {
     }
 
     @Override
-    public List<GiteaCommitStatus> fetchCommitStatuses(GiteaRepository repository, String sha)
-            throws IOException, InterruptedException {
+    public List<GiteaCommitStatus> fetchCommitStatuses(GiteaRepository repository, String sha) {
         // TODO
         return null;
     }
 
     @Override
     public GiteaCommitStatus createCommitStatus(String username, String repository, String sha,
-                                                GiteaCommitStatus status) throws IOException, InterruptedException {
+                                                GiteaCommitStatus status) {
         // TODO
         return null;
     }
 
     @Override
-    public GiteaCommitStatus createCommitStatus(GiteaRepository repository, String sha, GiteaCommitStatus status)
-            throws IOException, InterruptedException {
+    public GiteaCommitStatus createCommitStatus(GiteaRepository repository, String sha, GiteaCommitStatus status) {
         // TODO
         return null;
     }
 
     @Override
-    public GiteaAnnotatedTag fetchAnnotatedTag(String username, String repository, String sha1)
-            throws IOException, InterruptedException {
+    public GiteaAnnotatedTag fetchAnnotatedTag(String username, String repository, String sha1) {
         // TODO
         return null;
     }
 
     @Override
-    public GiteaAnnotatedTag fetchAnnotatedTag(GiteaRepository repository, GiteaTag tag)
-            throws IOException, InterruptedException {
+    public GiteaAnnotatedTag fetchAnnotatedTag(GiteaRepository repository, GiteaTag tag) {
         // TODO
         return null;
     }
 
     @Override
-    public GiteaTag fetchTag(String username, String repository, String tag) throws IOException, InterruptedException {
+    public GiteaTag fetchTag(String username, String repository, String tag) {
         // TODO
         return null;
     }
 
     @Override
-    public GiteaTag fetchTag(GiteaRepository repository, String tag) throws IOException, InterruptedException {
+    public GiteaTag fetchTag(GiteaRepository repository, String tag) {
         // TODO
         return null;
     }
 
     @Override
-    public List<GiteaTag> fetchTags(String username, String name) throws IOException, InterruptedException {
+    public List<GiteaTag> fetchTags(String username, String name) {
         // TODO
         return null;
     }
 
     @Override
-    public List<GiteaTag> fetchTags(GiteaRepository repository) throws IOException, InterruptedException {
+    public List<GiteaTag> fetchTags(GiteaRepository repository) {
         // TODO
         return null;
     }
 
     @Override
-    public GiteaCommitDetail fetchCommit(String username, String repository, String sha1)
-            throws IOException, InterruptedException {
+    public GiteaCommitDetail fetchCommit(String username, String repository, String sha1) {
         // TODO
         return null;
     }
 
     @Override
-    public GiteaCommitDetail fetchCommit(GiteaRepository repository, String sha1)
-            throws IOException, InterruptedException {
+    public GiteaCommitDetail fetchCommit(GiteaRepository repository, String sha1) {
         // TODO
         return null;
     }
 
     @Override
     public GiteaPullRequest fetchPullRequest(String username, String name, long id)
-            throws IOException, InterruptedException {
+            throws IOException {
         return notFoundIfNull(notFoundIfNull(pulls.get(keyOf(username, name))).get(id));
     }
 
     @Override
     public GiteaPullRequest fetchPullRequest(GiteaRepository repository, long id)
-            throws IOException, InterruptedException {
+            throws IOException {
         return fetchPullRequest(repository.getOwner().getUsername(), repository.getName(), id);
     }
 
     @Override
     public List<GiteaPullRequest> fetchPullRequests(String username, String name)
-            throws IOException, InterruptedException {
+            throws IOException {
         return fetchPullRequests(username, name, EnumSet.of(GiteaIssueState.OPEN));
     }
 
     @Override
     public List<GiteaPullRequest> fetchPullRequests(GiteaRepository repository)
-            throws IOException, InterruptedException {
+            throws IOException {
         return fetchPullRequests(repository.getOwner().getUsername(), repository.getName());
     }
 
     @Override
     public List<GiteaPullRequest> fetchPullRequests(String username, String name, Set<GiteaIssueState> states)
-            throws IOException, InterruptedException {
+            throws IOException {
         List<GiteaPullRequest> result = new ArrayList<>();
         for (GiteaPullRequest r : notFoundIfNull(pulls.get(keyOf(username, name))).values()) {
             if (states.contains(r.getState())) {
@@ -487,23 +478,23 @@ public class MockGiteaConnection implements GiteaConnection {
 
     @Override
     public List<GiteaPullRequest> fetchPullRequests(GiteaRepository repository, Set<GiteaIssueState> states)
-            throws IOException, InterruptedException {
+            throws IOException {
         return fetchPullRequests(repository.getOwner().getUsername(), repository.getName(), states);
     }
 
     @Override
-    public List<GiteaIssue> fetchIssues(String username, String name) throws IOException, InterruptedException {
+    public List<GiteaIssue> fetchIssues(String username, String name) throws IOException {
         return fetchIssues(username, name, EnumSet.of(GiteaIssueState.OPEN));
     }
 
     @Override
-    public List<GiteaIssue> fetchIssues(GiteaRepository repository) throws IOException, InterruptedException {
+    public List<GiteaIssue> fetchIssues(GiteaRepository repository) throws IOException {
         return fetchIssues(repository, EnumSet.of(GiteaIssueState.OPEN));
     }
 
     @Override
     public List<GiteaIssue> fetchIssues(String username, String name, Set<GiteaIssueState> states)
-            throws IOException, InterruptedException {
+            throws IOException {
         List<GiteaIssue> result = new ArrayList<>();
         for (GiteaIssue i : notFoundIfNull(issues.get(keyOf(username, name))).values()) {
             if (states.contains(i.getState())) {
@@ -515,25 +506,25 @@ public class MockGiteaConnection implements GiteaConnection {
 
     @Override
     public List<GiteaIssue> fetchIssues(GiteaRepository repository, Set<GiteaIssueState> states)
-            throws IOException, InterruptedException {
+            throws IOException {
         return fetchIssues(repository.getOwner().getUsername(), repository.getName(), states);
     }
 
     @Override
     public byte[] fetchFile(GiteaRepository repository, String ref, String path)
-            throws IOException, InterruptedException {
+            throws IOException {
         return notFoundIfNull(notFoundIfNull(notFoundIfNull(files.get(keyOf(repository))).get(ref)).get(path)).clone();
     }
 
     @Override
     public boolean checkFile(GiteaRepository repository, String ref, String path)
-            throws IOException, InterruptedException {
+            throws IOException {
         return notFoundIfNull(notFoundIfNull(files.get(keyOf(repository))).get(ref)).containsKey(path);
     }
 
     @Override
     public List<GiteaRelease> fetchReleases(String username, String name, boolean draft, boolean prerelease)
-            throws IOException, InterruptedException {
+            throws IOException {
         List<GiteaRelease> result = new ArrayList<>();
         for (GiteaRelease i : notFoundIfNull(releases.get(keyOf(username, name))).values()) {
             result.add(i.clone());
@@ -543,25 +534,23 @@ public class MockGiteaConnection implements GiteaConnection {
 
     @Override
     public List<GiteaRelease> fetchReleases(GiteaRepository repository, boolean draft, boolean prerelease)
-            throws IOException, InterruptedException {
+            throws IOException {
         return fetchReleases(repository.getOwner().getUsername(), repository.getName(), draft, prerelease);
     }
 
     @Override
-    public GiteaRelease.Attachment createReleaseAttachment(String username, String repository, long id, String name, InputStream file)
-            throws IOException, InterruptedException {
+    public GiteaRelease.Attachment createReleaseAttachment(String username, String repository, long id, String name, InputStream file) {
         // TODO
         return null;
     }
 
     @Override
-    public GiteaRelease.Attachment createReleaseAttachment(GiteaRepository repository, long id, String name, InputStream file)
-            throws IOException, InterruptedException {
+    public GiteaRelease.Attachment createReleaseAttachment(GiteaRepository repository, long id, String name, InputStream file) {
         return createReleaseAttachment(repository.getOwner().getUsername(), repository.getName(), id, name, file);
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
 
     }
 
