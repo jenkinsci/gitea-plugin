@@ -9,52 +9,52 @@ import jenkins.scm.impl.mock.MockSCMSource;
 import org.jenkinsci.plugin.gitea.client.api.GiteaDeleteEvent;
 import org.jenkinsci.plugin.gitea.client.api.GiteaOwner;
 import org.jenkinsci.plugin.gitea.client.api.GiteaRepository;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
 
-public class GiteaDeleteSCMEventTest {
+class GiteaDeleteSCMEventTest {
 
-    GiteaSCMSource giteaSCMSource = new GiteaSCMSource("", "", "");
-    MockSCMSource scmSource = new MockSCMSource("controllerId", "giteaRepo", new ArrayList<>());
-    MockSCMNavigator scmNavigator = new MockSCMNavigator("controllerId", new ArrayList<>());
-    GiteaDeleteSCMEvent branchDeleteEvent = new GiteaDeleteSCMEvent(withGiteaDeleteEvent("feature/branch", "branch"), "?");
-    GiteaDeleteSCMEvent tagDeleteEvent = new GiteaDeleteSCMEvent(withGiteaDeleteEvent("mytag", "tag"), "?");
+    final GiteaSCMSource giteaSCMSource = new GiteaSCMSource("", "", "");
+    final MockSCMSource scmSource = new MockSCMSource("controllerId", "giteaRepo", new ArrayList<>());
+    final MockSCMNavigator scmNavigator = new MockSCMNavigator("controllerId", new ArrayList<>());
+    final GiteaDeleteSCMEvent branchDeleteEvent = new GiteaDeleteSCMEvent(withGiteaDeleteEvent("feature/branch", "branch"), "?");
+    final GiteaDeleteSCMEvent tagDeleteEvent = new GiteaDeleteSCMEvent(withGiteaDeleteEvent("mytag", "tag"), "?");
 
     @Test
-    public void descriptionForSCMNavigator_withBranchDeleteEvent() {
+    void descriptionForSCMNavigator_withBranchDeleteEvent() {
         assertThat(branchDeleteEvent.descriptionFor(scmNavigator), is("Delete event for branch feature/branch in repository giteaRepo"));
     }
 
     @Test
-    public void descriptionForSCMNavigator_withTagDeleteEvent() {
+    void descriptionForSCMNavigator_withTagDeleteEvent() {
         assertThat(tagDeleteEvent.descriptionFor(scmNavigator), is("Delete event for tag mytag in repository giteaRepo"));
     }
 
     @Test
-    public void descriptionForSCMSource_withBranchDeleteEvent() {
+    void descriptionForSCMSource_withBranchDeleteEvent() {
         assertThat(branchDeleteEvent.descriptionFor(scmSource), is("Delete event for branch feature/branch"));
     }
 
     @Test
-    public void descriptionForSCMSource_withTagDeleteEvent() {
+    void descriptionForSCMSource_withTagDeleteEvent() {
         assertThat(tagDeleteEvent.descriptionFor(scmSource), is("Delete event for tag mytag"));
     }
 
     @Test
-    public void description_withBranchDeleteEvent() {
+    void description_withBranchDeleteEvent() {
         assertThat(branchDeleteEvent.description(), is("Delete event for branch feature/branch in repository ownerUser/giteaRepo"));
     }
 
     @Test
-    public void description_withTagDeleteEvent() {
+    void description_withTagDeleteEvent() {
         assertThat(tagDeleteEvent.description(), is("Delete event for tag mytag in repository ownerUser/giteaRepo"));
     }
 
     @Test
-    public void headsFor_withBranchDeleteEvent() {
+    void headsFor_withBranchDeleteEvent() {
         Map<SCMHead, SCMRevision> headsFor = branchDeleteEvent.headsFor(giteaSCMSource);
 
         assertThat(headsFor.size(), is(1));
@@ -66,7 +66,7 @@ public class GiteaDeleteSCMEventTest {
     }
 
     @Test
-    public void headsFor_withTagDeleteEvent() {
+    void headsFor_withTagDeleteEvent() {
         Map<SCMHead, SCMRevision> headsFor = tagDeleteEvent.headsFor(giteaSCMSource);
 
         assertThat(headsFor.size(), is(1));

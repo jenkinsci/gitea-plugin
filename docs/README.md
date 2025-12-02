@@ -61,6 +61,7 @@ Personal access token permissions can be defined to grant access to a subset of 
 
 Once a Gitea personal access token has been created in Gitea and added to Jenkins as a credential, it can be referenced from a Pipeline job using the `withCredentials` Pipeline step.
 Use the [Pipeline syntax snippet generator](https://www.jenkins.io/pipeline/getting-started-pipelines/#using-snippet-generator) to create an example of the `withCredentials` step.
+Choose "Secret text" as the credential type in the snippet generator.
 
 A typical example of a Gitea personal access token in a Jenkins declarative Pipeline would look like:
 
@@ -70,9 +71,12 @@ pipeline {
   stages {
     stage('Checkout') {
       steps {
-        withCredentials([giteaPersonalAccessToken(credentialsId: 'my-gitea-token',
-                                                  variable: 'MY_TOKEN')]) {
-          sh 'git clone https://$MY_TOKEN@gitea.com/exampleUser/private-repo.git'
+        withCredentials([string(credentialsId: 'my-gitea-token', variable: 'MY_TOKEN')]) {
+          if (isUnix()) {
+            sh 'git clone https://$MY_TOKEN@gitea.com/exampleUser/private-repo.git'
+          } else {
+            bat 'git clone https://%MY_TOKEN%@gitea.com/exampleUser/private-repo.git'
+          }
         }
       }
     }
@@ -85,9 +89,12 @@ A typical example of a Gitea personal access token in a Jenkins scripted Pipelin
 ```groovy
 node {
   stage('Checkout') {
-    withCredentials([giteaPersonalAccessToken(credentialsId: 'my-gitea-token',
-                                              variable: 'MY_TOKEN')]) {
-      sh 'git clone https://$MY_TOKEN@gitea.com/exampleUser/private-repo.git'
+    withCredentials([string(credentialsId: 'my-gitea-token', variable: 'MY_TOKEN')]) {
+      if (isUnix()) {
+        sh 'git clone https://$MY_TOKEN@gitea.com/exampleUser/private-repo.git'
+      } else {
+        bat 'git clone https://%MY_TOKEN%@gitea.com/exampleUser/private-repo.git'
+      }
     }
   }
 }
