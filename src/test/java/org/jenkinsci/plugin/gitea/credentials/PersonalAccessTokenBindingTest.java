@@ -53,6 +53,7 @@ class PersonalAccessTokenBindingTest {
         Run<?, ?> build = jenkins.buildAndAssertSuccess(project);
         // Pipeline script outputs a substring of credential so that it will not be masked
         jenkins.assertLogContains("Token1 is ecret", build);
-        jenkins.assertLogContains("Token2 is ecret", build);
+        // Pipeline script shell and bat masks credential
+        jenkins.assertLogContains("API_TOKEN1 is ****", build);
     }
 }
