@@ -36,6 +36,7 @@ import hudson.util.Secret;
 import jenkins.model.Jenkins;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.Symbol;
+import org.jenkinsci.plugins.plaincredentials.StringCredentials;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -45,7 +46,7 @@ import org.kohsuke.stapler.QueryParameter;
  * Default implementation of {@link PersonalAccessToken} for use by {@link Jenkins} {@link CredentialsProvider}
  * instances that store {@link Secret} locally.
  */
-public class PersonalAccessTokenImpl extends BaseStandardCredentials implements StandardUsernameCredentials, PersonalAccessToken {
+public class PersonalAccessTokenImpl extends BaseStandardCredentials implements StandardUsernameCredentials, PersonalAccessToken, StringCredentials {
     /**
      * Our token.
      */
@@ -91,6 +92,12 @@ public class PersonalAccessTokenImpl extends BaseStandardCredentials implements 
     @NonNull
     @Override
     public Secret getPassword() {
+        return getToken();
+    }
+
+    @NonNull
+    @Override
+    public Secret getSecret() {
         return getToken();
     }
 
