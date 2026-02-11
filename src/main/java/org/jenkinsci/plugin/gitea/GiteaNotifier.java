@@ -41,6 +41,7 @@ import hudson.scm.SCMRevisionState;
 import hudson.security.ACL;
 import hudson.security.ACLContext;
 import hudson.util.LogTaskListener;
+import hudson.util.VersionNumber;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -57,13 +58,14 @@ import org.jenkinsci.plugin.gitea.client.api.GiteaCommitState;
 import org.jenkinsci.plugin.gitea.client.api.GiteaCommitStatus;
 import org.jenkinsci.plugin.gitea.client.api.GiteaConnection;
 import org.jenkinsci.plugin.gitea.client.api.GiteaHttpStatusException;
+import org.jenkinsci.plugin.gitea.client.api.GiteaVersion;
 import org.jenkinsci.plugins.displayurlapi.DisplayURLProvider;
 
 /**
  * Notification of commit status information to Gitea.
  */
 public class GiteaNotifier {
-
+    private static final VersionNumber SKIPPED_STATE_MINIMUM_VERSION = new VersionNumber("1.25.0");
     /**
      * Our logger.
      */
@@ -93,67 +95,71 @@ public class GiteaNotifier {
                             + " configured in Jenkins global configuration.");
             return;
         }
-        Result result = build.getResult();
-        GiteaCommitStatus status = new GiteaCommitStatus();
-        status.setTargetUrl(url);
 
-        if (Result.SUCCESS.equals(result)) {
-            status.setDescription("This commit looks good");
-            status.setState(GiteaCommitState.SUCCESS);
-        } else if (Result.UNSTABLE.equals(result)) {
-            status.setDescription("This commit is unstable");
-            status.setState(GiteaCommitState.WARNING);
-        } else if (Result.FAILURE.equals(result)) {
-            status.setDescription("There was a failure building this commit");
-            status.setState(GiteaCommitState.FAILURE);
-        } else if (Result.NOT_BUILT.equals(result)) {
-            status.setDescription("This commit was not built");
-            status.setState(GiteaCommitState.WARNING);
-        } else if (result != null) { // ABORTED etc.
-            status.setDescription("Something is wrong with the build of this commit");
-            status.setState(GiteaCommitState.ERROR);
-        } else {
-            status.setDescription("Build started...");
-            status.setState(GiteaCommitState.PENDING);
-        }
-
-        SCMRevision revision = SCMRevisionAction.getRevision(source, build);
-        String statusContext = stripBranchName(build.getParent()) + "/pipeline/";
-        String hash;
-        if (revision instanceof BranchSCMRevision) {
-            listener.getLogger().format("[Gitea] Notifying branch build status: %s %s%n",
-                    status.getState().name(), status.getDescription());
-            hash = ((BranchSCMRevision) revision).getHash();
-            statusContext += "head";
-        } else if (revision instanceof PullRequestSCMRevision) {
-            listener.getLogger().format("[Gitea] Notifying pull request build status: %s %s%n",
-                    status.getState().name(), status.getDescription());
-            hash = ((PullRequestSCMRevision) revision).getOrigin().getHash();
-            statusContext += getPrContextTarget(((PullRequestSCMRevision) revision).getTarget().getHead().getName());
-        } else if (revision instanceof TagSCMRevision) {
-            listener.getLogger().format("[Gitea] Notifying tag build status: %s %s%n",
-                    status.getState().name(), status.getDescription());
-            hash = ((TagSCMRevision) revision).getHash();
-            statusContext += "tag";
-        } else if (revision instanceof ReleaseSCMRevision) {
-            listener.getLogger().format("[Gitea] Notifying release build status: %s %s%n",
-                    status.getState().name(), status.getDescription());
-            hash = ((ReleaseSCMRevision) revision).getHash();
-            statusContext += "release";
-        } else {
-            return;
-        }
-        status.setContext(statusContext);
-        JobScheduledListener jsl = ExtensionList.lookup(QueueListener.class).get(JobScheduledListener.class);
-        if (jsl != null) {
-            // we are setting the status, so don't let the queue listener background thread change it to pending
-            synchronized (jsl.resolving) {
-                jsl.resolving.remove(build.getParent());
-            }
-        }
         try (GiteaConnection c = source.gitea().open()) {
+            GiteaCommitStatus status = new GiteaCommitStatus();
+            status.setTargetUrl(url);
+
+            Result result = build.getResult();
+            if (Result.SUCCESS.equals(result)) {
+                status.setDescription("This commit looks good");
+                status.setState(GiteaCommitState.SUCCESS);
+            } else if (Result.UNSTABLE.equals(result)) {
+                status.setDescription("This commit is unstable");
+                status.setState(GiteaCommitState.WARNING);
+            } else if (Result.FAILURE.equals(result)) {
+                status.setDescription("There was a failure building this commit");
+                status.setState(GiteaCommitState.FAILURE);
+            } else if (Result.NOT_BUILT.equals(result)) {
+                status.setDescription("This commit was not built");
+                VersionNumber giteaVersion = fetchGiteaVersion(c).getVersionNumber();
+                boolean supportsSkippedState = giteaVersion.isNewerThanOrEqualTo(SKIPPED_STATE_MINIMUM_VERSION);
+                status.setState(supportsSkippedState ? GiteaCommitState.SKIPPED : GiteaCommitState.WARNING);
+            } else if (result != null) { // ABORTED etc.
+                status.setDescription("Something is wrong with the build of this commit");
+                status.setState(GiteaCommitState.ERROR);
+            } else {
+                status.setDescription("Build started...");
+                status.setState(GiteaCommitState.PENDING);
+            }
+
+            SCMRevision revision = SCMRevisionAction.getRevision(source, build);
+            String statusContext = stripBranchName(build.getParent()) + "/pipeline/";
+            String hash;
+            if (revision instanceof BranchSCMRevision) {
+                listener.getLogger().format("[Gitea] Notifying branch build status: %s %s%n",
+                        status.getState().name(), status.getDescription());
+                hash = ((BranchSCMRevision) revision).getHash();
+                statusContext += "head";
+            } else if (revision instanceof PullRequestSCMRevision) {
+                listener.getLogger().format("[Gitea] Notifying pull request build status: %s %s%n",
+                        status.getState().name(), status.getDescription());
+                hash = ((PullRequestSCMRevision) revision).getOrigin().getHash();
+                statusContext += getPrContextTarget(((PullRequestSCMRevision) revision).getTarget().getHead().getName());
+            } else if (revision instanceof TagSCMRevision) {
+                listener.getLogger().format("[Gitea] Notifying tag build status: %s %s%n",
+                        status.getState().name(), status.getDescription());
+                hash = ((TagSCMRevision) revision).getHash();
+                statusContext += "tag";
+            } else if (revision instanceof ReleaseSCMRevision) {
+                listener.getLogger().format("[Gitea] Notifying release build status: %s %s%n",
+                        status.getState().name(), status.getDescription());
+                hash = ((ReleaseSCMRevision) revision).getHash();
+                statusContext += "release";
+            } else {
+                return;
+            }
+            status.setContext(statusContext);
+            JobScheduledListener jsl = ExtensionList.lookup(QueueListener.class).get(JobScheduledListener.class);
+            if (jsl != null) {
+                // we are setting the status, so don't let the queue listener background thread change it to pending
+                synchronized (jsl.resolving) {
+                    jsl.resolving.remove(build.getParent());
+                }
+            }
+
             int tries = 3;
-            while (true){
+            while (true) {
                 tries--;
                 try {
                     c.createCommitStatus(source.getRepoOwner(), source.getRepository(), hash, status);
@@ -167,6 +173,23 @@ public class GiteaNotifier {
                 }
             }
             listener.getLogger().format("[Gitea] Notified%n");
+        }
+    }
+
+    private static GiteaVersion fetchGiteaVersion(GiteaConnection connection)
+            throws IOException, InterruptedException {
+        int tries = 3;
+        while (true) {
+            tries--;
+            try {
+                return connection.fetchVersion();
+            } catch (GiteaHttpStatusException e) {
+                if (e.getStatusCode() == 500 && tries > 0) {
+                    // server may be overloaded
+                    continue;
+                }
+                throw e;
+            }
         }
     }
 
