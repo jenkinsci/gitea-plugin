@@ -58,7 +58,6 @@ import org.jenkinsci.plugin.gitea.client.api.GiteaCommitState;
 import org.jenkinsci.plugin.gitea.client.api.GiteaCommitStatus;
 import org.jenkinsci.plugin.gitea.client.api.GiteaConnection;
 import org.jenkinsci.plugin.gitea.client.api.GiteaHttpStatusException;
-import org.jenkinsci.plugin.gitea.client.api.GiteaVersion;
 import org.jenkinsci.plugins.displayurlapi.DisplayURLProvider;
 
 /**
@@ -112,7 +111,7 @@ public class GiteaNotifier {
                 status.setState(GiteaCommitState.FAILURE);
             } else if (Result.NOT_BUILT.equals(result)) {
                 status.setDescription("This commit was not built");
-                VersionNumber giteaVersion = fetchGiteaVersion(c).getVersionNumber();
+                VersionNumber giteaVersion = retryOnServerError(c::fetchVersion).getVersionNumber();
                 boolean supportsSkippedState = giteaVersion.isNewerThanOrEqualTo(SKIPPED_STATE_MINIMUM_VERSION);
                 status.setState(supportsSkippedState ? GiteaCommitState.SKIPPED : GiteaCommitState.WARNING);
             } else if (result != null) { // ABORTED etc.
@@ -158,31 +157,22 @@ public class GiteaNotifier {
                 }
             }
 
-            int tries = 3;
-            while (true) {
-                tries--;
-                try {
-                    c.createCommitStatus(source.getRepoOwner(), source.getRepository(), hash, status);
-                    break;
-                } catch (GiteaHttpStatusException e) {
-                    if (e.getStatusCode() == 500 && tries > 0) {
-                        // server may be overloaded
-                        continue;
-                    }
-                    throw e;
-                }
-            }
+            retryOnServerError(() -> c.createCommitStatus(source.getRepoOwner(), source.getRepository(), hash, status));
             listener.getLogger().format("[Gitea] Notified%n");
         }
     }
 
-    private static GiteaVersion fetchGiteaVersion(GiteaConnection connection)
-            throws IOException, InterruptedException {
+    @FunctionalInterface
+    private interface GiteaOperation<T> {
+        T execute() throws IOException, InterruptedException;
+    }
+
+    private static <T> T retryOnServerError(GiteaOperation<T> operation) throws IOException, InterruptedException {
         int tries = 3;
         while (true) {
             tries--;
             try {
-                return connection.fetchVersion();
+                return operation.execute();
             } catch (GiteaHttpStatusException e) {
                 if (e.getStatusCode() == 500 && tries > 0) {
                     // server may be overloaded
