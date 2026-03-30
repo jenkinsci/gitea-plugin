@@ -105,7 +105,7 @@ public class GiteaNotifier {
                 status.setState(GiteaCommitState.SUCCESS);
             } else if (Result.UNSTABLE.equals(result)) {
                 status.setDescription("This commit is unstable");
-                status.setState(GiteaCommitState.WARNING);
+                status.setState(GiteaCommitState.FAILURE);
             } else if (Result.FAILURE.equals(result)) {
                 status.setDescription("There was a failure building this commit");
                 status.setState(GiteaCommitState.FAILURE);
