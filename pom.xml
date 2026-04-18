@@ -34,12 +34,14 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <argLine>-Dfile.encoding=${project.build.sourceEncoding}</argLine>
         <!-- https://www.jenkins.io/doc/developer/plugin-development/choosing-jenkins-baseline/ -->
-        <jenkins.baseline>2.479</jenkins.baseline>
+        <jenkins.baseline>2.528</jenkins.baseline>
         <jenkins.version>${jenkins.baseline}.3</jenkins.version>
         <spotbugs.effort>Max</spotbugs.effort>
         <spotbugs.failOnError>true</spotbugs.failOnError>
         <spotbugs.threshold>Medium</spotbugs.threshold>
         <ban-junit4-imports.skip>false</ban-junit4-imports.skip>
+        <hpi.strictBundledArtifacts>true</hpi.strictBundledArtifacts>
+        <ban-deprecated-stapler.skip>false</ban-deprecated-stapler.skip>
     </properties>
 
     <dependencyManagement>
@@ -47,7 +49,7 @@
             <dependency>
                 <groupId>io.jenkins.tools.bom</groupId>
                 <artifactId>bom-${jenkins.baseline}.x</artifactId>
-                <version>5054.v620b_5d2b_d5e6</version>
+                <version>6329.v403d8c87a_5ce</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
