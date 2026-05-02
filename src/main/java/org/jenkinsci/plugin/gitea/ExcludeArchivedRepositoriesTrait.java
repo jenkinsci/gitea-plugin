@@ -24,7 +24,7 @@
 package org.jenkinsci.plugin.gitea;
 
 import hudson.Extension;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import jenkins.scm.api.trait.SCMNavigatorContext;
 import jenkins.scm.api.trait.SCMNavigatorTrait;
 import jenkins.scm.api.trait.SCMNavigatorTraitDescriptor;

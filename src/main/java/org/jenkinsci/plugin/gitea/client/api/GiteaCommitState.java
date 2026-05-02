@@ -34,7 +34,8 @@ public enum GiteaCommitState {
     SUCCESS("success"),
     ERROR("error"),
     FAILURE("failure"),
-    WARNING("warning");
+    WARNING("warning"),
+    SKIPPED("skipped");
 
     private final String key;
 
