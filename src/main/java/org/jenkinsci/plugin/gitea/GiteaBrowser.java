@@ -35,7 +35,7 @@ import hudson.scm.RepositoryBrowser;
 import java.io.IOException;
 import java.net.URL;
 import net.sf.json.JSONObject;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugin.gitea.servers.GiteaServers;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest2;

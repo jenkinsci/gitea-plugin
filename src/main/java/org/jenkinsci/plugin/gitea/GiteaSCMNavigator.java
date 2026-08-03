@@ -72,7 +72,7 @@ import jenkins.scm.api.trait.SCMTraitDescriptor;
 import jenkins.scm.impl.form.NamedArrayList;
 import jenkins.scm.impl.trait.Discovery;
 import jenkins.scm.impl.trait.Selection;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.Symbol;
 import org.jenkinsci.plugin.gitea.client.api.Gitea;
 import org.jenkinsci.plugin.gitea.client.api.GiteaAuth;

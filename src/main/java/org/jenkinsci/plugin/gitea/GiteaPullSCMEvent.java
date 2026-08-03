@@ -40,7 +40,7 @@ import jenkins.scm.api.SCMNavigator;
 import jenkins.scm.api.SCMRevision;
 import jenkins.scm.api.SCMSource;
 import jenkins.scm.api.mixin.ChangeRequestCheckoutStrategy;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugin.gitea.client.api.GiteaPullRequest;
 import org.jenkinsci.plugin.gitea.client.api.GiteaPullRequestEvent;
 import org.jenkinsci.plugin.gitea.client.api.GiteaPullRequestEventType;

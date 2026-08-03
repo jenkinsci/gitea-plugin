@@ -46,7 +46,7 @@ import java.net.URISyntaxException;
 import jenkins.authentication.tokens.api.AuthenticationTokens;
 import jenkins.model.Jenkins;
 import jenkins.scm.api.SCMName;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugin.gitea.client.api.Gitea;
 import org.jenkinsci.plugin.gitea.client.api.GiteaAuth;
 import org.jenkinsci.plugin.gitea.client.api.GiteaConnection;

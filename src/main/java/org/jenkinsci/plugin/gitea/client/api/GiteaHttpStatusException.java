@@ -24,7 +24,7 @@
 package org.jenkinsci.plugin.gitea.client.api;
 
 import java.io.IOException;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * A richer {@link IOException} that reflects the status code of a response.
