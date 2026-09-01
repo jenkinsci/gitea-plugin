@@ -36,6 +36,7 @@ public enum GiteaHookType {
 
     private final String key;
 
+    @JsonCreator
     GiteaHookType(String key) {
         this.key = key;
     }

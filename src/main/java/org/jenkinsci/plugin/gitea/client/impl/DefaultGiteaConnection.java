@@ -25,8 +25,6 @@ package org.jenkinsci.plugin.gitea.client.impl;
 
 import com.damnhandy.uri.template.UriTemplate;
 import com.damnhandy.uri.template.UriTemplateBuilder;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.util.StdDateFormat;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -78,6 +76,10 @@ import org.jenkinsci.plugin.gitea.client.api.GiteaUser;
 import org.jenkinsci.plugin.gitea.client.api.GiteaVersion;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.util.StdDateFormat;
 
 /**
  * Default implementation of {@link GiteaConnection} that uses the JVM native {@link URLConnection} to communicate
@@ -89,7 +91,7 @@ class DefaultGiteaConnection implements GiteaConnection {
     private final String serverUrl;
 
     private final GiteaAuth authentication;
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = JsonMapper.builder().disable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES).build();
 
     DefaultGiteaConnection(@NonNull String serverUrl,
                            @NonNull GiteaAuth authentication) {

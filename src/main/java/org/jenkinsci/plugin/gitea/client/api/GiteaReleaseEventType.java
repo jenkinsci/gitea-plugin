@@ -33,6 +33,7 @@ public enum GiteaReleaseEventType {
 
     private final String key;
 
+    @JsonCreator
     GiteaReleaseEventType(String key) {
         this.key = key;
     }
