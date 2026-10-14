@@ -39,6 +39,7 @@ public enum GiteaCommitState {
 
     private final String key;
 
+    @JsonCreator
     GiteaCommitState(String key) {
         this.key = key;
     }

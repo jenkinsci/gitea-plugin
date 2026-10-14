@@ -34,6 +34,7 @@ public enum GiteaPullRequestEventType {
 
     private final String key;
 
+    @JsonCreator
     GiteaPullRequestEventType(String key) {
         this.key = key;
     }

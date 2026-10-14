@@ -23,7 +23,6 @@
  */
 package org.jenkinsci.plugin.gitea;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import hudson.ExtensionPoint;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,13 +34,16 @@ import java.util.regex.Pattern;
 import jenkins.scm.api.SCMEvent;
 import org.jenkinsci.plugin.gitea.client.api.GiteaEvent;
 import org.jvnet.tiger_types.Types;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 public abstract class GiteaWebhookHandler<E extends SCMEvent<P>, P extends GiteaEvent> implements ExtensionPoint {
 
     private final String eventName;
     private final Class<E> eventClass;
     private final Class<P> payloadClass;
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = JsonMapper.builder().disable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES).build();
 
     protected GiteaWebhookHandler(String eventName, Class<E> eventClass, Class<P> payloadClass) {
         this.eventName = eventName;

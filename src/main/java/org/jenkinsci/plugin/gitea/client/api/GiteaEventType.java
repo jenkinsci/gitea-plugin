@@ -39,6 +39,7 @@ public enum GiteaEventType {
 
     private final String key;
 
+    @JsonCreator
     GiteaEventType(String key) {
         this.key = key;
     }
