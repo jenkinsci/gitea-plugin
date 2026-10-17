@@ -35,6 +35,7 @@ public enum GiteaPayloadType {
 
     private final String key;
 
+    @JsonCreator
     GiteaPayloadType(String key) {
         this.key = key;
     }

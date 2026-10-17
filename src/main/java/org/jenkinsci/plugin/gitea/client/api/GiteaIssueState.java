@@ -32,6 +32,7 @@ public enum GiteaIssueState {
 
     private final String key;
 
+    @JsonCreator
     GiteaIssueState(String key) {
         this.key = key;
     }
