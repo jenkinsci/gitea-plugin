@@ -8,10 +8,10 @@
     <c:select/>
   </f:entry>
   <f:entry title="${%Owner}" field="repoOwner">
-    <f:textbox/>
+    <f:select fillDependsOn="serverUrl,credentialsId"/>
   </f:entry>
   <f:entry title="${%Repository}" field="repository">
-    <f:select/>
+    <f:select fillDependsOn="serverUrl,credentialsId,repoOwner"/>
   </f:entry>
   <f:entry title="${%Behaviours}">
     <scm:traits field="traits"/>
