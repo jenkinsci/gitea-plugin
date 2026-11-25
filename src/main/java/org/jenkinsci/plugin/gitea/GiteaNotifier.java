@@ -162,20 +162,34 @@ public class GiteaNotifier {
         }
     }
 
+    /**
+     * How many times a Gitea API call is attempted when the server keeps answering with a 5xx status.
+     */
+    private static final int MAX_ATTEMPTS = 3;
+    /**
+     * Delay before the first retry; it doubles before each further retry (1s, then 2s).
+     */
+    private static final long RETRY_BASE_DELAY_MILLIS = 1000L;
+
     @FunctionalInterface
-    private interface GiteaOperation<T> {
+    interface GiteaOperation<T> {
         T execute() throws IOException, InterruptedException;
     }
 
-    private static <T> T retryOnServerError(GiteaOperation<T> operation) throws IOException, InterruptedException {
-        int tries = 3;
+    // package-private for testing
+    static <T> T retryOnServerError(GiteaOperation<T> operation) throws IOException, InterruptedException {
+        int tries = MAX_ATTEMPTS;
+        long delay = RETRY_BASE_DELAY_MILLIS;
         while (true) {
             tries--;
             try {
                 return operation.execute();
             } catch (GiteaHttpStatusException e) {
-                if (e.getStatusCode() == 500 && tries > 0) {
-                    // server may be overloaded
+                int statusCode = e.getStatusCode();
+                if (statusCode >= 500 && statusCode < 600 && tries > 0) {
+                    // Gitea, or a reverse proxy in front of it, may be overloaded or restarting
+                    Thread.sleep(delay);
+                    delay *= 2;
                     continue;
                 }
                 throw e;
