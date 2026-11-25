@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <g fill="currentColor">
+    <!-- Center person -->
+    <circle cx="24" cy="14" r="5"/>
+    <path d="M16,28 C16,23.6 19.6,20 24,20 C28.4,20 32,23.6 32,28 L16,28Z"/>
+    <!-- Left person -->
+    <circle cx="11" cy="17" r="4"/>
+    <path d="M4,29 C4,25.1 7.1,22 11,22 C13.2,22 15.1,23.1 16.3,24.7 C15.5,25.7 14.9,26.8 14.5,28 L14.5,29 L4,29Z"/>
+    <!-- Right person -->
+    <circle cx="37" cy="17" r="4"/>
+    <path d="M44,29 C44,25.1 40.9,22 37,22 C34.8,22 32.9,23.1 31.7,24.7 C32.5,25.7 33.1,26.8 33.5,28 L33.5,29 L44,29Z"/>
+    <!-- Base bar -->
+    <rect x="4" y="31" width="40" height="3" rx="1.5"/>
+  </g>
+</svg>
