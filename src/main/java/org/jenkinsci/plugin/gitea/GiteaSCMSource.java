@@ -90,8 +90,6 @@ import jenkins.scm.impl.form.NamedArrayList;
 import jenkins.scm.impl.trait.Discovery;
 import jenkins.scm.impl.trait.Selection;
 import org.apache.commons.lang3.StringUtils;
-import org.jenkins.ui.icon.Icon;
-import org.jenkins.ui.icon.IconSet;
 import org.jenkinsci.plugin.gitea.client.api.Gitea;
 import org.jenkinsci.plugin.gitea.client.api.GiteaAnnotatedTag;
 import org.jenkinsci.plugin.gitea.client.api.GiteaAuth;
@@ -505,7 +503,7 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
         if (StringUtils.isNotBlank(giteaRepository.getAvatarUrl())) {
             result.add(new GiteaAvatar(giteaRepository.getAvatarUrl()));
         }
-        result.add(new GiteaLink("icon-gitea-repo", UriTemplate.buildFromTemplate(serverUrl)
+        result.add(new GiteaLink("symbol-gitea-repo plugin-gitea", UriTemplate.buildFromTemplate(serverUrl)
                 .path(UriTemplateBuilder.var("owner"))
                 .path(UriTemplateBuilder.var("repository"))
                 .build()
@@ -543,7 +541,7 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
                     null,
                     branchUrl
             ));
-            result.add(new GiteaLink("icon-gitea-branch", branchUrl));
+            result.add(new GiteaLink("symbol-gitea-branch plugin-gitea", branchUrl));
             if (head.getName().equals(giteaRepository.getDefaultBranch())) {
                 result.add(new PrimaryInstanceMetadataAction());
             }
@@ -563,7 +561,7 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
                     null,
                     tagUrl
             ));
-            result.add(new GiteaLink("icon-gitea-branch", tagUrl));
+            result.add(new GiteaLink("symbol-gitea-branch plugin-gitea", tagUrl));
             if (head.getName().equals(giteaRepository.getDefaultBranch())) {
                 result.add(new PrimaryInstanceMetadataAction());
             }
@@ -583,7 +581,7 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
                     null,
                     pullUrl
             ));
-            result.add(new GiteaLink("icon-gitea-branch", pullUrl));
+            result.add(new GiteaLink("symbol-gitea-branch plugin-gitea", pullUrl));
         } else if (head instanceof ReleaseSCMHead) {
             String releaseUrl = UriTemplate.buildFromTemplate(serverUrl)
                     .path(UriTemplateBuilder.var("owner"))
@@ -601,7 +599,7 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
                 null,
                 releaseUrl
             ));
-            result.add(new GiteaLink("icon-gitea-logo", releaseUrl));
+            result.add(new GiteaLink("symbol-gitea plugin-gitea", releaseUrl));
         }
         return result;
     }
@@ -754,76 +752,6 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
 
     @Extension
     public static class DescriptorImpl extends SCMSourceDescriptor {
-
-        static {
-            IconSet.icons.addIcon(
-                    new Icon("icon-gitea-org icon-sm",
-                            "plugin/gitea/images/16x16/gitea-org.png",
-                            Icon.ICON_SMALL_STYLE));
-            IconSet.icons.addIcon(
-                    new Icon("icon-gitea-org icon-md",
-                            "plugin/gitea/images/24x24/gitea-org.png",
-                            Icon.ICON_MEDIUM_STYLE));
-            IconSet.icons.addIcon(
-                    new Icon("icon-gitea-org icon-lg",
-                            "plugin/gitea/images/32x32/gitea-org.png",
-                            Icon.ICON_LARGE_STYLE));
-            IconSet.icons.addIcon(
-                    new Icon("icon-gitea-org icon-xlg",
-                            "plugin/gitea/images/48x48/gitea-org.png",
-                            Icon.ICON_XLARGE_STYLE));
-
-            IconSet.icons.addIcon(
-                    new Icon("icon-gitea-logo icon-sm",
-                            "plugin/gitea/images/16x16/gitea.png",
-                            Icon.ICON_SMALL_STYLE));
-            IconSet.icons.addIcon(
-                    new Icon("icon-gitea-logo icon-md",
-                            "plugin/gitea/images/24x24/gitea.png",
-                            Icon.ICON_MEDIUM_STYLE));
-            IconSet.icons.addIcon(
-                    new Icon("icon-gitea-logo icon-lg",
-                            "plugin/gitea/images/32x32/gitea.png",
-                            Icon.ICON_LARGE_STYLE));
-            IconSet.icons.addIcon(
-                    new Icon("icon-gitea-logo icon-xlg",
-                            "plugin/gitea/images/48x48/gitea.png",
-                            Icon.ICON_XLARGE_STYLE));
-
-            IconSet.icons.addIcon(
-                    new Icon("icon-gitea-repo icon-sm",
-                            "plugin/gitea/images/16x16/gitea-repo.png",
-                            Icon.ICON_SMALL_STYLE));
-            IconSet.icons.addIcon(
-                    new Icon("icon-gitea-repo icon-md",
-                            "plugin/gitea/images/24x24/gitea-repo.png",
-                            Icon.ICON_MEDIUM_STYLE));
-            IconSet.icons.addIcon(
-                    new Icon("icon-gitea-repo icon-lg",
-                            "plugin/gitea/images/32x32/gitea-repo.png",
-                            Icon.ICON_LARGE_STYLE));
-            IconSet.icons.addIcon(
-                    new Icon("icon-gitea-repo icon-xlg",
-                            "plugin/gitea/images/48x48/gitea-repo.png",
-                            Icon.ICON_XLARGE_STYLE));
-
-            IconSet.icons.addIcon(
-                    new Icon("icon-gitea-branch icon-sm",
-                            "plugin/gitea/images/16x16/gitea-branch.png",
-                            Icon.ICON_SMALL_STYLE));
-            IconSet.icons.addIcon(
-                    new Icon("icon-gitea-branch icon-md",
-                            "plugin/gitea/images/24x24/gitea-branch.png",
-                            Icon.ICON_MEDIUM_STYLE));
-            IconSet.icons.addIcon(
-                    new Icon("icon-gitea-branch icon-lg",
-                            "plugin/gitea/images/32x32/gitea-branch.png",
-                            Icon.ICON_LARGE_STYLE));
-            IconSet.icons.addIcon(
-                    new Icon("icon-gitea-branch icon-xlg",
-                            "plugin/gitea/images/48x48/gitea-branch.png",
-                            Icon.ICON_XLARGE_STYLE));
-        }
 
         @Override
         public String getDisplayName() {
@@ -1018,7 +946,7 @@ public class GiteaSCMSource extends AbstractGitSCMSource {
 
         @Override
         public String getIconClassName() {
-            return "icon-gitea-repo";
+            return "symbol-gitea-repo plugin-gitea";
         }
 
         @NonNull

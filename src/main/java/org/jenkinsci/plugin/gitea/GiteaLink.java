@@ -25,12 +25,7 @@ package org.jenkinsci.plugin.gitea;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.model.Action;
-import jenkins.model.Jenkins;
-import org.apache.commons.jelly.JellyContext;
-import org.jenkins.ui.icon.Icon;
-import org.jenkins.ui.icon.IconSet;
 import org.jenkins.ui.icon.IconSpec;
-import org.kohsuke.stapler.Stapler;
 
 /**
  * Link to Gitea
@@ -74,6 +69,14 @@ public class GiteaLink implements Action, IconSpec {
      */
     @Override
     public String getIconClassName() {
+        // Migrate old icon class names to symbol references for dark theme support.
+        // Persisted GiteaLink objects may still carry the legacy "icon-gitea-*" names.
+        if ("icon-gitea-logo".equals(iconClassName)) {
+            return "symbol-gitea plugin-gitea";
+        }
+        if (iconClassName.startsWith("icon-gitea-")) {
+            return "symbol-" + iconClassName.substring("icon-".length()) + " plugin-gitea";
+        }
         return iconClassName;
     }
 
@@ -82,16 +85,7 @@ public class GiteaLink implements Action, IconSpec {
      */
     @Override
     public String getIconFileName() {
-        String iconClassName = getIconClassName();
-        if (iconClassName != null) {
-            Icon icon = IconSet.icons.getIconByClassSpec(iconClassName + " icon-md");
-            if (icon != null) {
-                JellyContext ctx = new JellyContext();
-                ctx.setVariable("resURL", Stapler.getCurrentRequest2().getContextPath() + Jenkins.RESOURCE_PATH);
-                return icon.getQualifiedUrl(ctx);
-            }
-        }
-        return null;
+        return getIconClassName();
     }
 
     /**

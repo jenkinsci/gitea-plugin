@@ -258,7 +258,7 @@ public class GiteaSCMNavigator extends SCMNavigator {
         if (StringUtils.isNotBlank(giteaOwner.getAvatarUrl())) {
             result.add(new GiteaAvatar(giteaOwner.getAvatarUrl()));
         }
-        result.add(new GiteaLink("icon-gitea-org", objectUrl));
+        result.add(new GiteaLink("symbol-gitea-org plugin-gitea", objectUrl));
         if (giteaOwner instanceof GiteaOrganization) {
             String website = ((GiteaOrganization) giteaOwner).getWebsite();
             if (StringUtils.isBlank(website)) {
@@ -411,7 +411,7 @@ public class GiteaSCMNavigator extends SCMNavigator {
 
         @Override
         public String getIconClassName() {
-            return "icon-gitea-org";
+            return "symbol-gitea-org plugin-gitea";
         }
 
         @Override
